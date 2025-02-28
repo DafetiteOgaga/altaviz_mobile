@@ -4,10 +4,10 @@ import { useColorMode } from '../../constants/Colors';
 import { useNavigation } from 'expo-router';
 import { generalstyles } from '../../myConfig/navigation';
 import { useHeader } from '../../context/headerUpdate';
-import { usePost, useGet } from '../../requests/fetchCsrfToken'
+import { usePost, useGet } from '../../requests/makeRequests'
 import Toast from 'react-native-toast-message';
 import { toTitleCase } from '../../hooks/useAllCases';
-import { useGetDataFromStorage } from '../../hooks/useGetDataFromStorage';
+import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
 
 interface notiType {
     type: string,
