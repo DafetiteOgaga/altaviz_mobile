@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, Button, ActivityIndicator, Touchable
 import { useColorMode } from '@/constants/Colors';
 import { ScreenStyle, generalstyles } from '../myConfig/navigation';
 import { Ionicons } from '@expo/vector-icons';
-import { usePost } from '../requests/fetchCsrfToken'
+import { usePost } from '../requests/makeRequests'
 import Toast from 'react-native-toast-message';
 import { useAsyncStorageMethods } from '@/context/AsyncMethodsContext';
 
