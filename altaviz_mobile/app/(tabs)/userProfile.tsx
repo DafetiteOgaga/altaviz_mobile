@@ -4,13 +4,13 @@ import { View, Text, StyleSheet, Button, ActivityIndicator, ScrollView,
 import React, {useEffect} from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { ScreenStyle } from '../../myConfig/navigation';
-import { ThemedText } from '../../components/ThemedText';
-import { useGet } from '@/requests/fetchCsrfToken';
+// import { ThemedText } from '../../components/ThemedText';
+import { useGet } from '@/requests/makeRequests';
 import { useColorMode } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { toTitleCase } from '@/hooks/useAllCases';
 import { baseUrl } from '@/constants/urlOrigin';
-import { useGetDataFromStorage } from '@/hooks/useGetDataFromStorage';
+// import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
 
 export default function UserProfile() {
 	// const baseUrl = useGetDataFromStorage('baseUrl')
