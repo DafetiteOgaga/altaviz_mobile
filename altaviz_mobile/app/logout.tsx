@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import Toast from "react-native-toast-message";
-import { usePost } from "../requests/fetchCsrfToken";
+import { usePost } from "../requests/makeRequests";
 import { useAsyncStorageMethods } from "../context/AsyncMethodsContext";
 import { useColorMode } from "../constants/Colors";
 
