@@ -8,8 +8,8 @@ import { useColorMode } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useGetIcon } from '@/components/getIcon';
 import { ThemedText } from '@/components/ThemedText';
-import { useGetDataFromStorage } from '@/hooks/useGetDataFromStorage';
-import { useDelete, usePatch } from '@/requests/fetchCsrfToken';
+import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
+import { useDelete, usePatch } from '@/requests/makeRequests';
 import Toast from 'react-native-toast-message';
 import RequestItem from './requestItem';
 
