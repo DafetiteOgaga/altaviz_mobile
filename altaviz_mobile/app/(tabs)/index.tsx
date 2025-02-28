@@ -1,252 +1,361 @@
-import {useState, useEffect} from "react";
-import { StyleSheet, Text, View, SafeAreaView, TextInput,
-    Button, FlatList, ActivityIndicator, useColorScheme, Image, } from "react-native";
-
-import { useCurrColorMode } from '@/constants/Colors';
-import { StatusBar as MyBar } from 'expo-status-bar';
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, Linking, StyleSheet,
+	useColorScheme, Image, ActivityIndicator, ScrollView, RefreshControl } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { ScreenStyle } from '../../myConfig/navigation';
+import { useColorMode } from '../../constants/Colors';
+import ParallaxScrollView from '../../components/ParallaxScrollView';
 import { useNavigation } from 'expo-router';
-import ScreenStyle from '@/hooks/ScreenStyle';
+import TimeOfDayGreeting from '../../hooks/TimeOfDayGreeting';
+import { useGetDataFromStorage } from '../../hooks/useGetDataFromStorage';
+import { useGet } from "../../requests/fetchCsrfToken";
+import { useGetIcon } from "../../components/getIcon";
 
-// type declarations
-interface getType {
-    userId: number,
-    id: number,
-    title: string,
-    body: string,
+type customComponent = {
+    icon: React.ComponentProps<typeof Ionicons>['name'],
+	mode?: string,
+	label: string,
+	variant?: string,
+	onPress?: any,
+	userID?: number,
+	urlRoute?: string,
+	screen?: string,
+	id?: number,
+	onRefresh?: ()=>void,
+	endOnRefresh?: (value: boolean)=>void,
 }
-interface postType {
-    title: string,
-    body: string,
-}
 
-// switch between images based on color scheme
-const dafelogoDarkBg = require('@/assets/images/dafelogo1.png');
-const dafelogoWhiteBg = require('@/assets/images/dafelogo4.png');
+const DASHBOARD_HEADER_HEIGHT = 200;
 
-export default function App() {
-    const navigation: any = useNavigation(); // navigation to set/update data to another screen/the screen itself
-    const currColor = useCurrColorMode(); // get styles based on the current color mode
-    const colorScheme = useColorScheme(); // Detect system theme
-    const [isError, setIsError] = useState<string|null>(null);
-    const initials = {title: '', body: ''};
-    const [userPost, setUserPost] = useState<postType>(initials)
-    const [posting, setIsPosting] = useState<boolean>(false)
-    const [getData, setGetData] = useState<getType[]|null>(null);
-    const [isLoading, setIsloading] = useState<boolean>(true);
-    const [refreshing, setRefreshing] = useState<boolean>(false);
-    const [limit, setLimit] = useState<number>(10);
-    const dafelogo: any = colorScheme==='dark' ? dafelogoDarkBg : dafelogoWhiteBg;
-    const placeholderTextColor = colorScheme==='dark'?'#777':'#bbb'
-    const inputBgColor = colorScheme==='dark'?'#353939':'#b9b6b6'
+const Dashboard = () => {
+	const [refreshing, setRefreshing] = useState<boolean>(false);
+	// const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	// const [userData, setUserData] = useState(null);
+	const navigation: any|undefined = useNavigation();
+	// const [scrollOffset, setScrollOffset] = useState(0);
+	const uniColorMode = useColorMode()
+	// const colorScheme = useColorScheme();
+	// const isDark = colorScheme === "dark";
+	const dashboardData = useGetDataFromStorage('loginData')
+	console.log('dashboard', JSON.stringify(dashboardData, null, 4).slice(0, 100))
+	if (!dashboardData) return <ActivityIndicator size="large" color={uniColorMode.buttonSpin} />
 
-    // Fetch data from API
-    const fetchData = async () => {
-        try {
-            const response = await fetch(`https://jsonplaceholder.typicode.com/posts?_limit=${limit}`);
-            if (!response.ok) {
-                setIsError('Failed to fetch data')
-                throw new Error('Failed to fetch data')
-            }
-            const data = await response.json();
-            setIsError(null)
-            setGetData(data);
-        } catch (e: any) {
-            setIsError(`Error fetching data (message): ${e.message}`)
-            throw new Error('Error fetching data (message):', e.message);
-        } finally {
-            setIsloading(false)
-        }
-    }
-    useEffect(()=>{fetchData()}, []) // Fetch data only on component mount
-    const handleRefresh = () => { // Refresh/pull more data from server upon refresh
-        setLimit(prev=>prev+10);
+	// const handleScrollOffsetChange = (value: any) => {
+	// 	console.log({value});
+	// 	console.log('##########################')
+	// 	setScrollOffset(value);
+	// };
+	// if (getData) setUserData(getData)
+	// console.log('getData: '.repeat(3), getData)
+	const handleRefresh = () => { // Refresh/pull new data from server upon refresh
         setRefreshing(true);
-        fetchData();
-        setRefreshing(false);
     }
+	// const endRefresh = () => { // Refresh/pull new data from server upon refresh
+    //     setRefreshing(false);
+    // }
+	const role = dashboardData?.role
+	console.log('role (dashboard):', role)
+	return (
+		<ScrollView
+		refreshControl={
+			<RefreshControl
+			refreshing={refreshing}
+			onRefresh={handleRefresh}
+			colors={[uniColorMode.mb]}
+			tintColor={uniColorMode.mb} // iOS spinner color
+			/>}
+		style={[ScreenStyle.allScreenContainer]}>
+			<View style={[styles.emailInfoBox]}>
+				<View style={{paddingTop: 2}}>
+					<Ionicons name={"mail-outline"} size={13} color="#A0AEC0" />
+				</View>
+				<View>
+					<Text style={styles.emailInfoLabel}> {dashboardData?.email}</Text>
+				</View>
+			</View>
+			<ParallaxScrollView
+				headerBackgroundColor={{ light: uniColorMode.background, dark: uniColorMode.background }}
+				headerHeight={DASHBOARD_HEADER_HEIGHT}
+				childrenPadding={10}
+				// onScrollOffsetChange={handleScrollOffsetChange}
+				headerImage={
+					<>
+						{/* <Image source={companyLogo} style={{width: 100, height: 50}} /> */}
+						<View>
+							<TimeOfDayGreeting name={dashboardData?.first_name}/>
+						</View>
+					</>
+				}
+			>
+				{/* engineer */}
+				{role==='engineer' &&
+				<>
+					<View style={styles.statsMainContainer}>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="cog-outline"
+								userID={dashboardData?.id}
+								mode='request'
+								urlRoute="request-component"
+								label="Pending Component Requests" variant="pendingComponents" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="cube-outline"
+								userID={dashboardData?.id}
+								mode='request'
+								urlRoute="request-part"
+								label="Pending Part Requests" variant="pendingParts" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+					<View style={styles.statsMainContainer}>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="construct-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="engineer-pending-faults"
+								label="Pending Faults" variant="faults" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="hourglass-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="engineer-unconfirmed-faults"
+								label="Unconfirmed Resolutions" variant="unconfirmedResolutions" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+				</>}
 
-    // Post data to API
-    const handleSubmit = async () => {
-        setIsPosting(true);
-        try {
-            const response = await fetch('https://jsonplaceholder.typicode.com/posts',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(userPost),
-                }
-            );
-            if (!response.ok) {
-                setIsError('Failed to post data')
-                throw new Error('Failed to post data')
-            }
-            const resp = await response.json()
-            setIsError(null)
-            setGetData(getData?[resp, ...getData]:[resp]);
-            setUserPost(initials)
-        } catch (e: any) {
-            setIsError(`Error posting data (message): ${e.message}`);
-            throw new Error('Error posting data (message):', e.message);
-        } finally {
-            setIsPosting(false);
-        }
-    }
+				{/* custodian */}
+				{role==='custodian' &&
+				<>
+					<View style={styles.statsMainContainer}>
+						<CreateFaultButton
+							icon="construct-outline"
+							// userID={dashboardData?.id}
+							// mode='fault'
+							// urlRoute="pending-faults"
+							label="Log Fault"
+							// variant="faults" // screen="pendingFaults"
+							// onRefresh={handleRefresh}
+							// endOnRefresh={setRefreshing}
+							/>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="construct-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="pending-faults"
+								label="Pending Faults" variant="faults" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="hourglass-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="unconfirmed-faults"
+								label="Unconfirmed Resolutions" variant="unconfirmedResolutions" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+				</>}
+				<View style={styles.actionContainer}>
+					<ActionButton icon="person-outline" label="Supervisor" onPress={() => navigation.navigate('userProfile')} />
+					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => navigation.navigate('userProfile')} />
+				</View>
+			</ParallaxScrollView>
+		</ScrollView>
+	);
+};
 
-    // Dynamic styles based on color scheme
-    const myDynamicStyles = StyleSheet.create({
-        bgColor: {backgroundColor: currColor.background},
-        textColor: {color: currColor.text},
-        inputColor: {
-            backgroundColor: currColor.background,
-            borderColor: currColor.icon,
-        },
-        inputBgColor: {backgroundColor: inputBgColor}
-    });
+const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, onRefresh, endOnRefresh }: customComponent) => {
+	const screen = "pendingFaults"
+	const uniColorMode = useColorMode()
+	const navigation: any|undefined = useNavigation();
+	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	const url = `${urlRoute}/${userID}/total`
+	const pressUrl = `${urlRoute}/list/${userID}/`
+	let {color, getIcon} = useGetIcon({variant: variant!})
+	const fetchData = () => {
+		// console.log('in Dashboard > StatCard '.repeat(5))
+		GetSetup(url)
+		if (endOnRefresh) endOnRefresh(false)
+	}
+	useEffect(()=>{
+		// console.log('fetcing in Dashboard > StatCard '.repeat(5))
+		fetchData()
+	}, [onRefresh])
 
-    // Loading screen (if data is still loading)
-    if (isLoading) {
-        return (
-            <SafeAreaView style={[ScreenStyle.allScreenContainer, styles.loading]}>
-                <MyBar style="auto" />
-                <ActivityIndicator size="large" color="blue" />
-                <Text style={[myDynamicStyles.textColor]}>Loading...</Text>
-            </SafeAreaView>
-        )
-    }
+	// @ts-ignore
+	if (getData?.total===0) {color = 'green'}
+	// @ts-ignore
+	else if (!getData?.total) {color = 'transparent'}
+	// console.log({color}, {getIcon})
+	return (
+		<View style={[styles.statCardView, { backgroundColor: uniColorMode.vdrkb }]}>
+		{(isGetLoading&&!getData)?
+			<ActivityIndicator style={{
+				padding: 16,
+			}} size="small" color={uniColorMode.buttonSpin} />:
+		<TouchableOpacity
+		onPress={() => navigation.navigate(
+			screen,
+			{
+				url: pressUrl,
+				label: label,
+				mode: mode,
+				variant: variant
+			})}
+			style={[styles.statCard]}
+			>
+			<Ionicons name={icon} size={24} color={color} />
+			{/* @ts-ignore */}
+			<Text style={[styles.statValue, {color: color}]}>{getData?.total||0}</Text>
+			<Text style={[styles.statLabel, {color: color}]}>{label}</Text>
+		</TouchableOpacity>}
+		</View>
+	);
+};
 
-    return (
-        <>
-            {/* safeareaview works only on ios */}
-            <SafeAreaView style={[ScreenStyle.allScreenContainer]}>
-            <MyBar // StatusBar styling
-            style="auto" />
+const CreateFaultButton = ({ icon, label }: customComponent) => {
+	const uniColorMode = useColorMode()
+	const fontColor = '#bbb'
+	const navigation:any = useNavigation();
+	return(
+		<TouchableOpacity onPress={()=>navigation.navigate('createFault')} style={[styles.faultButton, {backgroundColor: uniColorMode.dkrb}]}>
+			<Ionicons name={icon} size={20} color={fontColor} />
+			<Text style={[styles.actionText, {color: fontColor, fontWeight: 'bold'}]}>{label}</Text>
+		</TouchableOpacity>
+)};
 
-            <View style={styles.imageContainer}>
-                <Image // logo
-                source={dafelogo} style={styles.image} />
-            </View>
+const ActionButton = ({ icon, label, onPress }: customComponent) => {
+	// const uniColorMode = useColorMode()
+	return(
+		<TouchableOpacity onPress={onPress} style={styles.actionButton}>
+			<Ionicons name={icon} size={20} color={"#3182CE"} />
+			<Text style={styles.actionText}>{label}</Text>
+		</TouchableOpacity>
+)};
 
-            {isError? // if there's an error, show error message
-                (<View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>Oopsy!</Text>
-                    <Text style={styles.errorText}>{isError}</Text>
-                </View>) :
-                (// otherwise, if there's no error, show the form and the data
-                <>
-
-                <View style={[styles.formContainer, myDynamicStyles.bgColor]}>
-                    <Text // form/post container
-                    style={[styles.headerFooter, myDynamicStyles.textColor]}>Create Post</Text>
-                    <TextInput // input1 (title)
-                        style={[styles.input, myDynamicStyles.inputColor, myDynamicStyles.textColor, myDynamicStyles.inputBgColor]}
-                        placeholder="Title"
-                        placeholderTextColor={placeholderTextColor}
-                        value={userPost.title}
-                        onChangeText={title=>setUserPost({...userPost, title})}
-                    />
-                    <TextInput // input2 (body)
-                        style={[styles.input, myDynamicStyles.inputColor, myDynamicStyles.textColor, myDynamicStyles.inputBgColor]}
-                        placeholder="Body"
-                        placeholderTextColor={placeholderTextColor}
-                        value={userPost.body}
-                        onChangeText={body=>setUserPost({...userPost, body})}
-                    />
-                    <Button title={posting?'Posting...':'Post'} onPress={handleSubmit}
-                    disabled={posting}
-                    />
-                </View>
-
-                <View style={{paddingHorizontal: 90, paddingBottom: 20}}>
-                    <Button // button to go to Greet screen with data passed from this screen to Greet screen
-                    title="Goto Greet" onPress={()=>navigation.navigate("greet", {
-                        message: "Hello from Index!\nShit be working!",
-                        myName: "Dafe"
-                        })} />
-                </View>
-
-                {getData && //data container
-                <View>
-                    <FlatList // preferred way to display data over map()
-                    data={getData}
-                    renderItem={({item})=>{
-                        return (
-                            <View style={[styles.card, myDynamicStyles.bgColor]}>
-                                <Text style={[styles.titleText, myDynamicStyles.textColor]}>{item.title}</Text>
-                                <Text style={[myDynamicStyles.textColor]}>{item.body}</Text>
-                            </View>
-                    )}}
-                    keyExtractor={(item, index)=>item.id+index+item.title.toString()}
-                    ItemSeparatorComponent={()=><View style={{height: 5}} />}
-                    ListEmptyComponent={()=><Text style={[styles.notFound, myDynamicStyles.textColor]}>No Post found</Text>}
-                    ListHeaderComponent={()=><Text style={[styles.headerFooter, myDynamicStyles.textColor]}>Post List {getData.length} Items</Text>}
-                    ListFooterComponent={()=><Text style={[styles.headerFooter, myDynamicStyles.textColor, {paddingBottom: 320,}]}>End of Post</Text>}
-                    refreshing={refreshing}
-                    onRefresh={handleRefresh}
-                    />
-                </View>}</>)}
-            </SafeAreaView>
-        </>
-    )
-}
-
+// Styles
 const styles = StyleSheet.create({
-    card: {
-        padding: 16,
-        borderRadius: 10,
-        borderWidth: 1,
-    },
-    titleText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    notFound: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        paddingTop: 100
-    },
-    headerFooter: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        padding: 10,
-    },
-    loading: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    formContainer: {
-        padding: 20,
-        borderRadius: 10,
-        marginBottom: 10,
-        borderWidth: 1,
-    },
-    input: {
-        borderWidth: 1,
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorContainer: {
-        paddingTop: 100,
-    },
-    errorText: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        color: 'red',
-        textAlign: 'center',
-        // borderWidth: 1,
-        paddingTop: 10,
-    },
-    imageContainer: {
-        // width: 10
-    },
-    image: {
-        width: 100,
-        height: 40,
-        resizeMode: 'contain',
-    },
+	headerImage: {
+		color: '#808080',
+		bottom: -90,
+		left: -35,
+		position: 'absolute',
+	},
+	statsMainContainer: {
+		marginBottom: 10,
+	},
+	statsContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	statCardView: {
+		flex: 1,
+		
+		borderRadius: 12,
+		// alignItems: "center",
+		// justifyContent: "center",
+		marginHorizontal: 4,
+	},
+	statCard: {
+		// flex: 1,
+		padding: 16,
+		// borderRadius: 12,
+		alignItems: "center",
+		// justifyContent: "center",
+		// marginHorizontal: 4,
+		},
+	statValue: {
+	  fontSize: 22,
+	  fontWeight: "bold",
+	  marginTop: 6,
+	},
+	statLabel: {
+	  fontSize: 14,
+	  color: "#718096",
+	},
+	infoBox: {
+	  borderRadius: 12,
+	  padding: 16,
+	  shadowOpacity: 0.1,
+	  shadowRadius: 4,
+	  shadowOffset: { height: 2, width: 0 },
+	},
+	emailInfoBox: {
+		flexDirection: "row",
+		justifyContent: 'flex-end',
+		alignItems: 'center',
+		borderRadius: 12,
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		shadowOffset: { height: 2, width: 0 },
+	},
+	emailInfoLabel: {
+		fontSize: 14,
+		color: "#A0AEC0",
+	},
+	infoRow: {
+	  flexDirection: "row",
+	  alignItems: "center",
+	  marginBottom: 12,
+	  gap: 12,
+	},
+	infoLabel: {
+	  fontSize: 14,
+	  color: "#A0AEC0",
+	},
+	infoValue: {
+	  fontSize: 16,
+	  fontWeight: "500",
+	},
+	actionContainer: {
+		marginTop: 20,
+		flexDirection: "row",
+		justifyContent: "space-around",
+	},
+	actionButton: {
+	  flexDirection: "row",
+	  alignItems: "center",
+	  paddingVertical: 12,
+	  paddingHorizontal: 16,
+	  backgroundColor: "#E2E8F0",
+	  borderRadius: 10,
+	  marginBottom: 10,
+	},
+	faultButton: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: 12,
+		paddingHorizontal: 16,
+		// backgroundColor: "blue",
+		borderRadius: 10,
+		marginBottom: 10,
+	},
+	actionText: {
+	  marginLeft: 5,
+	  fontSize: 16,
+	  fontWeight: "500",
+	//   color: "#3182CE",
+	},
 });
+export default Dashboard;
