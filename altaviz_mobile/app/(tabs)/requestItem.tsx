@@ -12,11 +12,11 @@ import { useHeader } from '../../context/headerUpdate';
 
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { fetchCsrfToken } from '@/requests/fetchCsrfToken'
-import { usePost } from '../../requests/fetchCsrfToken'
+import { usePost } from '../../requests/makeRequests'
 import Toast from 'react-native-toast-message';
 import { useAsyncStorageMethods } from '../../context/AsyncMethodsContext';
 import { toTitleCase } from '../../hooks/useAllCases';
-import { useGet } from "../../requests/fetchCsrfToken";
+import { useGet } from "../../requests/makeRequests";
 
 interface postType {
     email: string,
