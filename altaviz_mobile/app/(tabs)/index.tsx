@@ -7,8 +7,8 @@ import { useColorMode } from '../../constants/Colors';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
 import { useNavigation } from 'expo-router';
 import TimeOfDayGreeting from '../../hooks/TimeOfDayGreeting';
-import { useGetDataFromStorage } from '../../hooks/useGetDataFromStorage';
-import { useGet } from "../../requests/fetchCsrfToken";
+import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
+import { useGet } from "../../requests/makeRequests";
 import { useGetIcon } from "../../components/getIcon";
 
 type customComponent = {
