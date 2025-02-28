@@ -1,54 +1,117 @@
 import { Drawer } from 'expo-router/drawer';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../constants/Colors';
-import { useNavigation, usePathname, useRouter } from 'expo-router';
+import { useColorMode } from '../constants/Colors';
+import { useNavigation, usePathname } from 'expo-router';
+import { DrawerActions } from '@react-navigation/native';
 import React from 'react';
 import { screenConfig } from '@/myConfig/navigation'
+import { CustomDrawerHeader } from './drawerHeader';
+import { Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useGetDataFromStorage } from '../hooks/useGetDataFromStorage';
+import { useHeader } from '@/context/headerUpdate';
+import { baseUrl } from '@/constants/urlOrigin';
 
 export default function DrawerNavigator() {
-	// const isDrawerOpen = useDrawerStatus();
-	const colorScheme = useColorScheme();
+	const { headerTitle } = useHeader();
+	const uniColorMode = useColorMode();
 	let path:string|null = usePathname();
 	const navigation: any|undefined = useNavigation();
 	const [,titleKey] = path?.split('/')
+	const drawerData = useGetDataFromStorage('headerDetails')
+	console.log('\ndrawerSetup', {path},{drawerData}, {baseUrl})
+	if (!drawerData) (<ActivityIndicator size="small" color={uniColorMode.buttonSpin} />)
+	// console.log('drawer titleKey:', titleKey)
+	// console.log('drawer drawerData:', drawerData)
+	let loggedIn = false
+	if (drawerData) loggedIn = true
+	console.log({headerTitle})
+	let fault = true
+	if (String(headerTitle)?.split?.(' ')?.some?.(item=>item.toLowerCase()==='component'||item.toLowerCase()==='part')) fault = false
+	let resolvedHeaderTitle =
+		(titleKey==='createFault')?headerTitle:
+		(titleKey==='requestItem')?headerTitle:
+		(titleKey==='pendingFaults'&&fault)?headerTitle:
+		(titleKey==='pendingFaults'&&!fault)?headerTitle:
+		(titleKey==='detailScreen'&&fault)?headerTitle:
+		(titleKey==='detailScreen'&&!fault)?headerTitle:
+		(titleKey==='')?'Home Title Drawer':
+		// (titleKey!=='pendingFaults'&&titleKey!=='detailScreen')?
+		`${screenConfig[titleKey]?.title}`
+	resolvedHeaderTitle = resolvedHeaderTitle.trim()
 	return (
-		<Drawer screenOptions={{
+		<>
+		<Drawer
+		drawerContent={drawerData?(props) => <CustomDrawerHeader {...props} userData={drawerData} isDark={true} baseUrl={baseUrl} />:undefined}
+		screenOptions={{
+			headerLeft: () => (
+				<TouchableOpacity onPress={() => (
+					// titleKey!=='login'?
+					navigation.dispatch(DrawerActions.toggleDrawer())
+				// :null
+				)}>
+					{(titleKey==='login'||!drawerData)?
+					(<Ionicons
+						name="menu"
+						size={30}
+						color={uniColorMode.text}
+						style={styles.headerImageIcon}
+						/>):
+					(<Image
+						source={{ uri: `${baseUrl}${drawerData?.profile_picture}` }}
+						style={[styles.headerImageIcon, {borderColor: '#fff',}]}
+						resizeMode="contain"
+					/>)}
+				</TouchableOpacity>
+			),
 			headerShown: true,
-			drawerActiveBackgroundColor: colorScheme==='dark'?'#242f2f':'#dbd0d0',
-			drawerActiveTintColor: colorScheme==='dark'?'#dfdfdf':'#464646',
-			drawerInactiveTintColor: colorScheme==='dark'?'#9f9f9f':'#606060',
-			headerSearchBarOptions: {
+			drawerActiveBackgroundColor: uniColorMode.dkb,
+			drawerActiveTintColor: uniColorMode.text,
+			drawerInactiveTintColor: uniColorMode.icon,
+			headerSearchBarOptions: titleKey!=='login'?{
 				placeholder: 'Search',
 				onChangeText: (e) => console.log(e.nativeEvent.text),
-			},
+			}:undefined,
 			headerStyle: {
-				backgroundColor: Colors[colorScheme?? 'light'].background,
-				// You can add more custom styling here
+				backgroundColor: uniColorMode.background,
+				// You can add more custom styling here.
 			},
 			headerTitleStyle: {
 				fontWeight: 'bold',
+				marginLeft: 5,
 				// You can add more custom styling here
 			},
 			// headerTitleAlign: 'center',
 			// You can add more custom styling here
+			drawerStyle: {
+				backgroundColor: uniColorMode.vdrkb, // Background color
+				width: 250, // Set drawer width
+				// padding: 15, // Add padding inside drawer
+				paddingTop: 20,
+				borderTopRightRadius: 20, // Rounded corners on the top
+				borderBottomRightRadius: 20, // Rounded corners on the bottom
+			},
+			drawerLabelStyle: {
+				fontSize: 16, // Customize label size
+				fontWeight: 'bold',
+				// marginLeft: 10, // Add spacing to the left
+			},
 		}}
 		>
 			<Drawer.Screen
 				name="(tabs)"
 				options={({navigation})=>({
 					title: screenConfig['index'].title,
-					headerTitle: titleKey?`${screenConfig[titleKey]?.title}`:'Home Title',
+					headerTitle: resolvedHeaderTitle,
 					drawerIcon: ({focused, color, size}) => (
 						<Ionicons name={screenConfig['index'].icon} size={size} color={focused? color : color} />
 					)
 				})}
-				listeners={{
-					drawerItemPress: (e) => {
-						e.preventDefault();
-						navigation.navigate('(tabs)', { screen: 'index' });
-					}
-				}}
+				// listeners={{
+				// 	drawerItemPress: (e) => {
+				// 		e.preventDefault();
+				// 		navigation.navigate('(tabs)', { screen: 'index' });
+				// 	}
+				// }}
 			/>
 			<Drawer.Screen
 				name="testcomp"
@@ -61,11 +124,97 @@ export default function DrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="login"
+				options={{
+					drawerItemStyle: loggedIn?{ height: 0 }:null,
+					title: screenConfig['login'].title,
+					headerTitle: 'Login',
+					drawerIcon: ({focused, color, size}) => (
+						<Ionicons name={screenConfig['login'].icon} size={size} color={focused? color : color} />
+					)
+				}}
+			/>
+			<Drawer.Screen
+				name="logout"
+				options={{
+					drawerItemStyle: loggedIn?null:{ height: 0 },
+					title: screenConfig['logout'].title,
+					headerTitle: 'Login',
+					drawerIcon: ({focused, color, size}) => (
+						<Ionicons name={screenConfig['logout'].icon} size={size} color={focused? color : color} />
+					)
+				}}
+			/>
+			<Drawer.Screen
+				name="chatroom"
+				options={{
+					title: screenConfig['chatroom'].title,
+					headerTitle: 'ChatRoom',
+					drawerIcon: ({focused, color, size}) => (
+						<Ionicons name={screenConfig['chatroom'].icon} size={size} color={focused? color : color} />
+					)
+				}}
+			/>
+			<Drawer.Screen
+				name="profile"
+				options={{
+					title: screenConfig['profile'].title,
+					headerTitle: 'Profile',
+					drawerIcon: ({focused, color, size}) => (
+						<Ionicons name={screenConfig['profile'].icon} size={size} color={focused? color : color} />
+					)
+				}}
+			/>
+			<Drawer.Screen
+				name="settings"
+				options={{
+					title: screenConfig['settings'].title,
+					headerTitle: 'Settings',
+					drawerIcon: ({focused, color, size}) => (
+						<Ionicons name={screenConfig['settings'].icon} size={size} color={focused? color : color} />
+					)
+				}}
+			/>
+			<Drawer.Screen
+				name="about"
+				options={{
+					title: screenConfig['about'].title,
+					headerTitle: 'About',
+					drawerIcon: ({focused, color, size}) => (
+						<Ionicons name={screenConfig['about'].icon} size={size} color={focused? color : color} />
+					)
+				}}
+			/>
+			<Drawer.Screen
 				name="+not-found"
 				options={{
-				drawerItemStyle: { height: 0 },  // This hides the item from drawer
+					drawerItemStyle: { height: 0 },  // This hides the item from drawer
 				}}
 			/>
 		</Drawer>
+		</>
 	);
 }
+
+const styles = StyleSheet.create({
+	headerImageIcon: {
+		width: 30,
+		height: 30,
+		marginLeft: 15,
+		borderWidth: 1,
+		// borderColor: '#fff',
+		borderRadius: 50
+	},
+	emailInfoBox: {
+		flexDirection: "row",
+		justifyContent: 'flex-end',
+		borderRadius: 12,
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		shadowOffset: { height: 2, width: 0 },
+	},
+	emailInfoLabel: {
+		fontSize: 14,
+		color: "#A0AEC0",
+	},
+})
