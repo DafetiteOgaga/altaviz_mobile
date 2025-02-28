@@ -10,8 +10,8 @@ export default function TestScreen() {
     <>
       <Stack.Screen />
       <ThemedView style={[ScreenStyle.allScreenContainer, styles.container]}>
-        <ThemedText type="title">This is a test screen.</ThemedText>
-        <ThemedText type="link">Go nowhere!</ThemedText>
+        <ThemedText type="title">This is the chatroom page.</ThemedText>
+        {/* <ThemedText type="link">Go nowhere!</ThemedText> */}
       </ThemedView>
     </>
   );
