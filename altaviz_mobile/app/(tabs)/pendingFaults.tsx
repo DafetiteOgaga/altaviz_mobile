@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
 import { useHeader } from '@/context/headerUpdate';
-import { useGet } from '@/requests/fetchCsrfToken';
+import { useGet } from '@/requests/makeRequests';
 import { useColorMode } from '@/constants/Colors';
 import { useGetIcon } from '@/components/getIcon';
 import { CardView } from '@/components/cardView';
