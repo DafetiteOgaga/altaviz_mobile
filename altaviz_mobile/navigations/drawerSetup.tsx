@@ -7,7 +7,7 @@ import React from 'react';
 import { screenConfig } from '@/myConfig/navigation'
 import { CustomDrawerHeader } from './drawerHeader';
 import { Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { useGetDataFromStorage } from '../hooks/useGetDataFromStorage';
+import { useGetDataFromStorage } from '../context/useGetDataFromStorage';
 import { useHeader } from '@/context/headerUpdate';
 import { baseUrl } from '@/constants/urlOrigin';
 
