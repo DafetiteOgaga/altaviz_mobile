@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { useNavigation, usePathname } from 'expo-router';
 import { DrawerActions } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { screenConfig } from '@/myConfig/navigation'
 import { CustomDrawerHeader } from './drawerHeader';
 import { Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
@@ -27,17 +27,22 @@ export default function DrawerNavigator() {
 	console.log({headerTitle})
 	let fault = true
 	if (String(headerTitle)?.split?.(' ')?.some?.(item=>item.toLowerCase()==='component'||item.toLowerCase()==='part')) fault = false
-	let resolvedHeaderTitle =
-		(titleKey==='createFault')?headerTitle:
-		(titleKey==='requestItem')?headerTitle:
-		(titleKey==='pendingFaults'&&fault)?headerTitle:
-		(titleKey==='pendingFaults'&&!fault)?headerTitle:
-		(titleKey==='detailScreen'&&fault)?headerTitle:
-		(titleKey==='detailScreen'&&!fault)?headerTitle:
-		(titleKey==='')?'Home Title Drawer':
-		// (titleKey!=='pendingFaults'&&titleKey!=='detailScreen')?
-		`${screenConfig[titleKey]?.title}`
-	resolvedHeaderTitle = resolvedHeaderTitle.trim()
+	const resolvedHeaderTitle = useRef<string|undefined>(undefined)
+	useEffect(()=>{
+		resolvedHeaderTitle.current =
+			(titleKey==='engineersFaults')?headerTitle:
+			(titleKey==='createFault')?headerTitle:
+			(titleKey==='requestItem')?headerTitle:
+			(titleKey==='pendingFaults'&&fault)?headerTitle:
+			(titleKey==='pendingFaults'&&!fault)?headerTitle:
+			(titleKey==='detailScreen'&&fault)?headerTitle:
+			(titleKey==='detailScreen'&&!fault)?headerTitle:
+			(titleKey==='')?'Home Title Drawer':
+			// (titleKey!=='pendingFaults'&&titleKey!=='detailScreen')?
+			`${screenConfig[titleKey]?.title}`
+	}, [path, titleKey, headerTitle])
+	
+	resolvedHeaderTitle?.current!?.trim()
 	return (
 		<>
 		<Drawer
@@ -101,7 +106,7 @@ export default function DrawerNavigator() {
 				name="(tabs)"
 				options={({navigation})=>({
 					title: screenConfig['index'].title,
-					headerTitle: resolvedHeaderTitle,
+					headerTitle: resolvedHeaderTitle.current,
 					drawerIcon: ({focused, color, size}) => (
 						<Ionicons name={screenConfig['index'].icon} size={size} color={focused? color : color} />
 					)
