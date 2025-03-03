@@ -70,6 +70,8 @@ export default function Login() {
             }
             setItem('headerDetails', headerDetails)
             console.log('Response (in login) set')
+            const data = {type: 'success', msg: 'Login successful'}
+            showToast(data)
             setLoginPost(initials)
         } else if (isPostError) {
             console.log('Error (login):', isPostError)
