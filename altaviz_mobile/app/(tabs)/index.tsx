@@ -14,13 +14,15 @@ import { useGetIcon } from "../../components/getIcon";
 type customComponent = {
     icon: React.ComponentProps<typeof Ionicons>['name'],
 	mode?: string,
-	label: string,
+	label?: string,
 	variant?: string,
 	onPress?: any,
 	userID?: number,
 	urlRoute?: string,
 	screen?: string,
 	id?: number,
+	url?: string,
+	level?: string,
 	onRefresh?: ()=>void,
 	endOnRefresh?: (value: boolean)=>void,
 }
@@ -37,8 +39,8 @@ const Dashboard = () => {
 	// const colorScheme = useColorScheme();
 	// const isDark = colorScheme === "dark";
 	const dashboardData = useGetDataFromStorage('loginData')
-	console.log('dashboard', JSON.stringify(dashboardData, null, 4).slice(0, 100))
-	if (!dashboardData) return <ActivityIndicator size="large" color={uniColorMode.buttonSpin} />
+	console.log('dashboard', JSON.stringify(dashboardData, null, 4))
+	if (!dashboardData) return <ActivityIndicator style={{marginTop: 250}} size="large" color={uniColorMode.buttonSpin} />
 
 	// const handleScrollOffsetChange = (value: any) => {
 	// 	console.log({value});
@@ -55,6 +57,7 @@ const Dashboard = () => {
     // }
 	const role = dashboardData?.role
 	console.log('role (dashboard):', role)
+	console.log('email:', dashboardData?.email)
 	return (
 		<ScrollView
 		refreshControl={
@@ -144,6 +147,7 @@ const Dashboard = () => {
 					<View style={styles.statsMainContainer}>
 						<CreateFaultButton
 							icon="construct-outline"
+							screen='createFault'
 							// userID={dashboardData?.id}
 							// mode='fault'
 							// urlRoute="pending-faults"
@@ -175,6 +179,130 @@ const Dashboard = () => {
 						</View>
 					</View>
 				</>}
+
+				{/* workshop */}
+				{role==='workshop' &&
+				<>
+					<View style={styles.statsMainContainer}>
+						<View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
+							<CreateFaultButton
+								icon="cog-outline"
+								screen='requestItem'
+								url='request-component'
+								// userID={dashboardData?.id}
+								// mode='fault'
+								// urlRoute="pending-faults"
+								label="Request Component"
+								// variant="faults" // screen="pendingFaults"
+								// onRefresh={handleRefresh}
+								// endOnRefresh={setRefreshing}
+								/>
+							<CreateFaultButton
+							icon="cube-outline"
+							screen='requestItem'
+							url='post-part'
+							// userID={dashboardData?.id}
+							// mode='fault'
+							// urlRoute="pending-faults"
+							label="Request Part"
+							// variant="faults" // screen="pendingFaults"
+							// onRefresh={handleRefresh}
+							// endOnRefresh={setRefreshing}
+							/>
+						</View>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="cog-outline"
+								userID={dashboardData?.id}
+								mode='request'
+								urlRoute="request-component"
+								label="Pending Component Requests" variant="pendingComponents" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="cube-outline"
+								userID={dashboardData?.id}
+								mode='request'
+								urlRoute="post-part"
+								label="Posted Parts" variant="pendingParts" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+				</>}
+
+				{/* help-desk */}
+				{role==='help-desk' &&
+				<>
+					<View style={styles.statsMainContainer}>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="hourglass-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="user-request"
+								label="Engineers with Pending Requests" variant="faults" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="ban-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="regional-unconfirmed-faults"
+								label="Engineers with Unresolved Faults" variant="unconfirmedResolutions" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+				</>}
+
+				{/* supervisor */}
+				{role==='supervisor' &&
+				<>
+					<View style={styles.statsMainContainer}>
+						<CreateFaultButton
+							icon="location-outline"
+							screen='engineersToLocations'
+							// level='supervisor'
+							// onRefresh={handleRefresh}
+							// endOnRefresh={setRefreshing}
+							userID={dashboardData?.id}
+							// mode='fault'
+							urlRoute="new-location-assignment"
+							label="Locations waiting to be Assigned"
+							// variant="faults" // screen="pendingFaults"
+							onRefresh={handleRefresh}
+							endOnRefresh={setRefreshing}
+							/>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="hourglass-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="user-request"
+								label="Engineers with Pending Requests" variant="faults" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="ban-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="regional-unconfirmed-faults"
+								label="Engineers with Unresolved Faults" variant="unconfirmedResolutions" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+				</>}
 				<View style={styles.actionContainer}>
 					<ActionButton icon="person-outline" label="Supervisor" onPress={() => navigation.navigate('userProfile')} />
 					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => navigation.navigate('userProfile')} />
@@ -183,6 +311,47 @@ const Dashboard = () => {
 		</ScrollView>
 	);
 };
+
+const CreateFaultButton = ({ userID, icon, label, screen, url, urlRoute, onRefresh, endOnRefresh }: customComponent) => {
+	const dashboardData = useGetDataFromStorage('loginData')
+	const email = dashboardData?.email
+	// const id = dashboardData?.id
+	const uniColorMode = useColorMode()
+	const fontColor = '#bbb'
+	const navigation:any = useNavigation();
+	const fetchUrl = `${urlRoute}/${userID}/total/`
+	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	const fetchData = () => {
+		// console.log('in Dashboard > StatCard '.repeat(5))
+		GetSetup(fetchUrl)
+		if (endOnRefresh) endOnRefresh(false)
+	}
+	useEffect(()=>{
+		// console.log('fetcing in Dashboard > StatCard '.repeat(5))
+		fetchData()
+	}, [onRefresh])
+	console.log('in CreateFaultButton', {email}, {userID})
+	if (!dashboardData||isGetLoading) return <ActivityIndicator size="small" color={uniColorMode.buttonSpin} />
+	// @ts-ignore
+	const supervisorLabel = (dashboardData?.role==='supervisor')&&`${getData?.total} ${label}`
+	console.log('getData in index', getData)
+	return(
+		<View>
+			{/* @ts-ignore */}
+			{(!userID||getData?.total) &&
+			<TouchableOpacity
+			style={[styles.faultButton, {backgroundColor: uniColorMode.dkrb}]}
+			onPress={()=>navigation.navigate(screen, {
+				screen: screen,
+				email: email,
+				id: userID,
+				url: url,
+			})}>
+				<Ionicons name={icon} size={20} color={fontColor} />
+				<Text style={[styles.actionText, {color: fontColor, fontWeight: 'bold'}]}>{supervisorLabel??label}</Text>
+			</TouchableOpacity>}
+		</View>
+)};
 
 const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, onRefresh, endOnRefresh }: customComponent) => {
 	const screen = "pendingFaults"
@@ -233,17 +402,6 @@ const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, o
 	);
 };
 
-const CreateFaultButton = ({ icon, label }: customComponent) => {
-	const uniColorMode = useColorMode()
-	const fontColor = '#bbb'
-	const navigation:any = useNavigation();
-	return(
-		<TouchableOpacity onPress={()=>navigation.navigate('createFault')} style={[styles.faultButton, {backgroundColor: uniColorMode.dkrb}]}>
-			<Ionicons name={icon} size={20} color={fontColor} />
-			<Text style={[styles.actionText, {color: fontColor, fontWeight: 'bold'}]}>{label}</Text>
-		</TouchableOpacity>
-)};
-
 const ActionButton = ({ icon, label, onPress }: customComponent) => {
 	// const uniColorMode = useColorMode()
 	return(
@@ -290,8 +448,9 @@ const styles = StyleSheet.create({
 	  marginTop: 6,
 	},
 	statLabel: {
-	  fontSize: 14,
-	  color: "#718096",
+		fontSize: 14,
+		color: "#718096",
+		textAlign: "center",
 	},
 	infoBox: {
 	  borderRadius: 12,
