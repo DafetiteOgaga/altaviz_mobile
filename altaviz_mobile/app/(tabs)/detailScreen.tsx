@@ -13,7 +13,6 @@ import { useDelete, usePatch } from '@/requests/makeRequests';
 import Toast from 'react-native-toast-message';
 import RequestItem from './requestItem';
 
-// const DetailScreen = ({ route }) => {
 export default function DetailScreen () {
 	const [renderComponentRequestForm, setRenderComponentRequestForm] = useState<boolean>(false)
 	const [renderPartRequestForm, setRenderPartRequestForm] = useState<boolean>(false)
@@ -21,7 +20,7 @@ export default function DetailScreen () {
 	const navigation: any|undefined = useNavigation();
 	const userDetails = useGetDataFromStorage('headerDetails')
 	const { setHeaderTitle } = useHeader();
-	let { data, arrayData, type, variant } = useLocalSearchParams();
+	let { data, arrayData, type, variant, engineer } = useLocalSearchParams();
 	const { color, getIcon } = useGetIcon({variant: String(variant)})
 
 	const handerComponentRequestFormRender = (switchValue=null)=>{setRenderComponentRequestForm(switchValue!==null?switchValue:!renderComponentRequestForm)}
@@ -32,9 +31,16 @@ export default function DetailScreen () {
 	item = JSON.parse(data)
 	// @ts-ignore
 	parsedArray = JSON.parse(arrayData)
-	// title = `${String(type).toLowerCase()!=='fault'?'Request':'Fault'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
-	console.log('Parsed item (detailScreen):', JSON.stringify(item, null, 4));
-	const title = `${String(type).toLowerCase()!=='fault'?'Request':'Fault'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
+	// console.log('Parsed item (detailScreen):', JSON.stringify(item, null, 4));
+	if (engineer) type = 'fault'
+	console.log(
+		'\ntype (detailScreen):', type,
+		'\nengineer (detailScreen):', engineer, '12345',
+		// '\nitem (detailScreen):', item,
+		'\narrayData (detailScreen):', parsedArray,
+		'\nvartiant (detailScreen):', variant,
+	)
+	const title = `${String(type).toLowerCase()==='fault'?'Fault':String(type).toLowerCase()==='parts'?'Post':'Request'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
 	useEffect(()=>setHeaderTitle(title), [title])
 	const [requestDuration, requestColorStyle, requestMode] = dateDifference(item?.requested_at)?.split?.('-')||[]
 	const [faultDuration, fauktColorStyle, faultMode] = dateDifference(item?.created_at)?.split?.('-')||[]
@@ -44,10 +50,10 @@ export default function DetailScreen () {
 	const supervisedBy = item?.fault?.supervised_by?.id||item?.supervised_by?.id
 	const parsedArrayString = JSON.stringify(parsedArray)
 	console.log('userDetails (in detailScreen):', userDetails)
-	const modeType = (item?.type)?'request':'fault'
 	const role = userDetails?.role
+	console.log('role (detailScreen):', role)
+	const modeType = (item?.type)?'request':(item?.type==='fixed-part')?'request':'fault'
 	const resolvedBy = (item?.replacement_engineer?.email)||(item?.assigned_to?.email)
-	console.log('role:', role)
 	const resolutionDetails = {
 		loggedBy: item?.logged_by?.custodian?.email,
 		assignedTo: item?.assigned_to?.email,
@@ -58,6 +64,14 @@ export default function DetailScreen () {
 	}
 	const hasRequestsAndApproved = item?.requestComponent?.some?.((comp:any)=>comp.approved)||item?.requestPart?.some?.((part:any)=>part.approved)||false
 	console.log({hasRequestsAndApproved})
+	const requests = {
+		email: userDetails?.email,
+		id: item?.id,
+		type: 'component',
+		url: 'request-component',
+		setForm: handerComponentRequestFormRender,
+		screen: 'detailScreen',
+	}
 	return (
 		<ScrollView style={[ScreenStyle.allScreenContainer, styles.detailMain, {marginBottom: 0,}]}>
 			<ThemedText type={'link'}>Assigned to: {assignedTo}</ThemedText>
@@ -71,6 +85,7 @@ export default function DetailScreen () {
 			<ThemedText type={'link'}>assigned_to: {item?.assigned_to?.email}</ThemedText>
 			<ThemedText type={'link'}>resolutionDetails: {JSON.stringify(resolutionDetails, null, 4)}</ThemedText>
 			<ThemedText type={'link'}>hasRequestsAndApproved: {hasRequestsAndApproved?.toString()}</ThemedText>
+			<ThemedText type={'link'}>role: {role}</ThemedText>
 			{/* <CustomDropdown /> */}
 			{/* <RequestItem id={item?.id} type={'component'} url='request-component' /> */}
 			<View style={{paddingBottom: 20}}>
@@ -78,13 +93,10 @@ export default function DetailScreen () {
 					(<ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />) :
 					(
 					String(type).toLowerCase()!=='fault' ?
-						<View style={[styles.card, {
-							// backgroundColor: 'green'
-							}]}>
+					// request display
+						<View style={[styles.card]}>
 							<View style={[styles.header, {
-								backgroundColor: uniColorMode.newdrkb
-								// backgroundColor: 'darkslategrey'
-								}]}>
+								backgroundColor: uniColorMode.newdrkb}]}>
 								<View style={styles.titleWIcon}>
 									<Ionicons name={getIcon} size={15} color={color} />
 									<Text style={[styles.title, { color: color }]}>{toTitleCase(item?.name?.name||item?.title?.name)}</Text>
@@ -109,8 +121,8 @@ export default function DetailScreen () {
 								</Text>
 							</View>
 
-							{/* pressValue='detailScreen' */}
-							{/* Request Details */}
+							{/* Request Details others */}
+							{role!=='workshop' ?
 							<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
 								<InfoRow label="Bank" value={item?.fault?.logged_by?.branch?.bank?.name?.toUpperCase()} valueColor={{ color: 'lightsteelblue' }} icon="business-outline" iconColor={{ color: 'lightblue' }} />
 								<InfoRow label="Branch" value={toTitleCase(item?.fault?.logged_by?.branch?.name||'')} valueColor={{ color: 'lightsteelblue' }} icon="location-outline" iconColor={{ color: 'lightblue' }} />
@@ -129,15 +141,19 @@ export default function DetailScreen () {
 								<InfoRow label="Supervised by" value={toTitleCase(item?.fault?.supervised_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="checkmark-done-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: 'userProfile', additionals: {id: supervisedBy}}} />
 								<InfoRow label="Reason" value={item?.other} valueColor={{ color: 'lightsteelblue' }} icon="help-circle-outline" iconColor={{ color: 'white' }} />
 							</View>
+							:
+							// Request Details workshop
+							<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
+								<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: 'userProfile', additionals: {id: userDetails?.id}}} />
+								<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={formatDate(item?.requested_at)} valueColor={{ color: 'lightsteelblue' }} icon="calendar-outline" iconColor={{ color: 'slateblue' }} />
+								<InfoRow label="Reason" value={item?.other} valueColor={{ color: 'lightsteelblue' }} icon="help-circle-outline" iconColor={{ color: 'white' }} />
+							</View>}
 						</View>
 					:
-					<View style={[styles.card, {
-						// backgroundColor: uniColorMode.background
-						}]}>
+					// fault display
+					<View style={[styles.card]}>
 						<View style={[styles.header, {
-								backgroundColor: uniColorMode.newdrkb
-								// backgroundColor: 'darkslategrey'
-								}]}>
+								backgroundColor: uniColorMode.newdrkb}]}>
 								<View style={styles.titleWIcon}>
 									<Ionicons name={getIcon} size={15} color={color} />
 									<Text style={[styles.title, { color: color }]}>{toTitleCase(item?.title?.name||'')}</Text>
@@ -163,7 +179,8 @@ export default function DetailScreen () {
 							<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
 								<View style={styles.bankId}>
 									<InfoRow label="Bank" value={item?.logged_by?.branch?.bank?.name?.toUpperCase()} valueColor={{ color: 'lightsteelblue' }} icon="business-outline" iconColor={{ color: 'lightblue' }} />
-									<InfoRow label="ID" value={`#${item?.id}`} valueColor={{ color: 'white' }} line={{borderWidth: 1,
+									{/* @ts-ignore */}
+									<InfoRow label="ID" value={`#${item?.id}`} valueColor={{ color: 'white', fontStyle: 'italic', }} line={{borderWidth: 1,
 										// , marginVertical: 0,
 										gap: 0,
 										}} />
@@ -201,7 +218,7 @@ export default function DetailScreen () {
 											key={component.id}
 											style={[styles.requestRow]}>
 												<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
-												<Text style={styles.requestLabel}>{index+1}. {toTitleCase(component.name.name||'')}:</Text>
+												<Text style={styles.requestLabel}>{toTitleCase(component.name.name||'')}:</Text>
 												<Text style={styles.requestLabel}>#{component.id}</Text>
 											</View>
 										);
@@ -221,7 +238,7 @@ export default function DetailScreen () {
 											key={part.id}
 											style={[styles.requestRow]}>
 												<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
-												<Text style={styles.requestLabel} numberOfLines={1} ellipsizeMode="tail">{index+1}. {toTitleCase(part.name.name||'')}:</Text>
+												<Text style={styles.requestLabel} numberOfLines={1} ellipsizeMode="tail">{toTitleCase(part.name.name||'')}:</Text>
 												<Text style={styles.requestLabel}>#{part.id}</Text>
 											</View>
 										);
@@ -232,17 +249,20 @@ export default function DetailScreen () {
 					)}
 					</View>)
 				}
+				{/* toggle forms */}
 				{renderComponentRequestForm&&
 				<View>
-					<RequestItem email={userDetails?.email} id={item?.id} type={'component'} url='request-component' setForm={handerComponentRequestFormRender} />
+					<RequestItem requests={requests} />
 				</View>}
 				{renderPartRequestForm&&
 				<View>
-					<RequestItem email={userDetails?.email} id={item?.id} type={'part'} url='request-part' setForm={handerPartRequestFormRender} />
+					<RequestItem requests={requests} />
 				</View>}
+				{/* button */}
 				<View style={styles.actionContainer}>
 					{(getStatusText({item, type: 'fault'})!=='Unconfirmed') &&
 						(modeType === 'request' ?
+							// request buttons
 							<>
 								<ActionButton
 									icon={getIcon}
@@ -250,12 +270,13 @@ export default function DetailScreen () {
 									label={role}
 									type={item?.type}
 									background={['red', 'darkred']}
-									buttonText={['Withdraw Request', 'Withdrawing...']}
+									buttonText={[`Withdraw ${String(type)==='Parts'&&role==='workshop'?'Part':'Request'}`, 'Withdrawing...']}
 									modeType={modeType}
 									// onPress={() => null}
 									/>
 							</>
 							:
+							// fault buttons
 							<>
 								<View>
 									{role==='engineer' &&
@@ -286,35 +307,40 @@ export default function DetailScreen () {
 											/>
 									</View>}
 									{/* <View style={}> */}
+									{role!=='help-desk' &&
 									<View style={role==='engineer'?{justifyContent: 'center', alignItems: 'center', marginTop: 10}:{flexDirection: 'row', gap: 20}}>
 										{(role!=='custodian'||!hasRequestsAndApproved) &&
 										<ActionButton
-											icon={role==='engineer'?'hourglass-outline':'construct-outline'}
+											icon={role==='engineer'?'hourglass-outline':role==='supervisor'?'':'construct-outline'}
 											id={item?.id}
+											item={item}
 											label={role}
 											userID={userDetails?.id}
+											userEmail={userDetails?.email}
 											// type={item?.type}
 											background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-											buttonText={role==='engineer'?['Seek Confirmation', 'Seeking...']:['Withdraw Fault', 'Withdrawing...']}
+											buttonText={role==='engineer'?['Seek Confirmation', 'Seeking...']:role==='supervisor'?['Reject Requests', 'Rejecting...']:['Withdraw Fault', 'Withdrawing...']}
 											modeType={modeType}
 											textColor={role==='engineer'?'#FFA500':'#FF4C4C'}
 											// onPress={() => null}
 											/>}
 										{role!=='engineer' &&
 										<ActionButton
-											icon={'hourglass-outline'}
+											icon={role==='supervisor'?'':'hourglass-outline'}
 											id={item?.id}
+											item={item}
 											label={role}
 											userID={userDetails?.id}
+											userEmail={userDetails?.email}
 											// type={item?.type}
 											background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-											buttonText={['Confirm Resolution', 'Confirming...']}
+											buttonText={role==='supervisor'?['Approve Requests', 'Approving...']:['Confirm Resolution', 'Confirming...']}
 											modeType={modeType}
 											textColor={'#FFA500'}
 											resolutionDetails={resolutionDetails}
 											// onPress={() => null}
 											/>}
-									</View>
+									</View>}
 								</View>
 							</>)}
 				</View>
@@ -323,7 +349,7 @@ export default function DetailScreen () {
 	);
 };
 
-const ActionButton = ({ icon, label, id, type, background, buttonText, modeType, textColor, userID, setForm, onPress, resolutionDetails }: customComponent) => {
+const ActionButton = ({ item, icon, label, id, type, background, buttonText, modeType, textColor, userID, userEmail, setForm, onPress, resolutionDetails }: customComponent) => {
 	const uniColorMode = useColorMode()
 	const navigation: any|undefined = useNavigation();
 	const { deleteData, isDeleteError, isDeleteLoading, DeleteSetup }: useTypes = useDelete();
@@ -348,7 +374,7 @@ const ActionButton = ({ icon, label, id, type, background, buttonText, modeType,
 		console.log('id (ActionButton in detailScreen):', id)
 		console.log('...')
 	} else if (label?.toLowerCase()==='supervisor') {
-		buttonText = ['Delete Request']
+		url = `request-status/${userID}/`
 	} else if (label?.toLowerCase()==='human-resource') {
 		buttonText = ['Delete Request']
 	} else if (label?.toLowerCase()==='custodian') {
@@ -358,15 +384,22 @@ const ActionButton = ({ icon, label, id, type, background, buttonText, modeType,
 			url = `unconfirmed-faults/${userID}/`
 		}
 	} else if (label?.toLowerCase()==='workshop') {
-		buttonText = ['Delete Request']
+		console.log('detailScreen',{type})
+		if (buttonText?.[0]==='Withdraw Request') {
+			url = `request-${type}/${id}/delete/`
+		} else if (buttonText?.[0]==='Withdraw Part') {
+			url = `post-part/${id}/delete/`
+		}
 	} else if (label?.toLowerCase()==='help-desk') {
-		buttonText = ['Delete Request']
+		// help desk
 	}
 	const handleRequests = () => {
+		console.log('handleREquest in detailScreen')
 		const formData = new FormData();
-		formData.append('faultID', `${id}`)
+		// formData.append('faultID', `${id}`)
 		// formData.append('verify_resolve', 'true')
 		if (label?.toLowerCase()==='engineer') {
+			formData.append('faultID', `${id}`)
 			if (type) {
 				DeleteSetup(url)
 			} else {
@@ -375,6 +408,7 @@ const ActionButton = ({ icon, label, id, type, background, buttonText, modeType,
 				PatchSetup(url, formData)
 			}
 		} else if (label?.toLowerCase()==='custodian') {
+			formData.append('faultID', `${id}`)
 			if (buttonText?.[0]==='Withdraw Fault') {
 				DeleteSetup(url)
 			} else {
@@ -387,6 +421,47 @@ const ActionButton = ({ icon, label, id, type, background, buttonText, modeType,
 				// @ts-ignore
 				PatchSetup(url, formData)
 			}
+		} else if (label?.toLowerCase()==='workshop') {
+			console.log('button clicked by woskshop in detailScreen')
+			console.log('button (in detailScreen):', buttonText)
+			console.log('in detailScreen url:', url)
+			if (buttonText?.[0]==='Withdraw Part') {
+				console.log('parts button clicked in detailScreen')
+				DeleteSetup(url)
+			} else if (buttonText?.[0]==='Withdraw Request') {
+				console.log('components button clicked in detailScreen')
+				DeleteSetup(url)
+			}
+		} else if (label?.toLowerCase()==='supervisor') {
+			let requestComponentIds;
+			let requestPartIDs;
+			console.log(
+				'\nbutton clicked by supervisor in detailScreen',
+				'\nitem (in detailScreen):', JSON.stringify(item, null, 4),
+			)
+			if (item?.requestComponent) {
+				requestComponentIds = item?.requestComponent.map((component:any) => component.id)
+				console.log({requestComponentIds})
+			}
+			if (item?.requestPart) {
+				requestPartIDs = item.requestPart.map((part:any) => part.id)
+			}
+			if (requestComponentIds) {formData.append('requestComponentIds', requestComponentIds)}
+			if (requestPartIDs) {formData.append('requestPartIDs', requestPartIDs)}
+			// newFormData.append(type, [...requestComponentIds, ...requestPartIDs])
+			// formData.append(type, true)
+			formData.append('approved_by', String(userEmail))
+			if (buttonText?.[0]==='Reject Requests') {
+				console.log('Reject Requests button clicked in detailScreen')
+				formData.append('rejected', 'true')
+				// DeleteSetup(url)
+			} else if (buttonText?.[0]==='Approve Requests') {
+				console.log('Approve Requests button clicked in detailScreen')
+				formData.append('approved', 'true')
+				// DeleteSetup(url)
+			}
+			// @ts-ignore
+			PatchSetup(url, formData)
 		}
 	}
 	useEffect(() => {
@@ -425,9 +500,11 @@ type customComponent = {
 	variant?: string,
 	onPress?: any,
 	userID?: number,
+	userEmail?: string,
 	urlRoute?: string,
 	screen?: string,
 	id?: number,
+	item?: Record<string, any>,
 	type?: string,
 	background?: string[]|undefined,
 	buttonText?: string[]|undefined,
