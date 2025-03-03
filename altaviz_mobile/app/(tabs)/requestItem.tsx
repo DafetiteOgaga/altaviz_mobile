@@ -4,46 +4,63 @@ import { StyleSheet, Text, View, TextInput,
     TouchableOpacity } from "react-native";
 
 import { useColorMode } from '../../constants/Colors';
-import { StatusBar } from 'expo-status-bar';
+// import { StatusBar } from 'expo-status-bar';
 import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
-import { Ionicons } from '@expo/vector-icons';
+// import { Ionicons } from '@expo/vector-icons';
 import { useHeader } from '../../context/headerUpdate';
 
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { fetchCsrfToken } from '@/requests/fetchCsrfToken'
 import { usePost } from '../../requests/makeRequests'
 import Toast from 'react-native-toast-message';
-import { useAsyncStorageMethods } from '../../context/AsyncMethodsContext';
+// import { useAsyncStorageMethods } from '../../context/AsyncMethodsContext';
 import { toTitleCase } from '../../hooks/useAllCases';
 import { useGet } from "../../requests/makeRequests";
 
-interface postType {
-    email: string,
-    password: string,
-}
+// interface postType {
+//     email: string,
+//     password: string,
+// }
 interface notiType {
     type: string,
     msg: string
 }
-interface postData {
-    profile_picture: string,
-}
+// interface postData {
+//     profile_picture: string,
+// }
 interface UsePostReturn {
     postData: Record<string, any> | null;
     isPostError: string | null;
     isPostLoading: boolean;
     PostSetup: (url: string, formData: FormData) => Promise<void>;
 }
-interface headerDetailsType {
-    profile_picture: string,
-    first_name: string,
-    last_name: string,
-    role: string,
-}
+// interface headerDetailsType {
+//     profile_picture: string,
+//     first_name: string,
+//     last_name: string,
+//     role: string,
+// }
+
+// interface requests {
+//     email:string,
+//     id: string,
+//     type: string,
+//     url: string,
+//     setForm: ()=>void
+// }
 
 console.log('imported requestItem.tsx')
-export default function RequestItem({id, email, type, url, setForm}: {email:string, id: string, type: string, url: string, setForm: ()=>void}) {
+export default function RequestItem({requests}: {requests: any} ) {
+    const navProps = useLocalSearchParams()
+    let {id, email, type, url, setForm, screen} = requests||{}
+    let urlKey:string
+    if (!screen) {
+        email = navProps.email
+        url = navProps.url
+        urlKey = url.split('-')[1]
+        console.log('urlKey (requestItem):', urlKey)
+    }
     const navigation:any|undefined = useNavigation();
     const [itemList, setItemList] = useState<any>(null);
     const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -52,24 +69,29 @@ export default function RequestItem({id, email, type, url, setForm}: {email:stri
     const [modalQuantityVisible, setModalQuantityVisible] = useState<any>(false);
     const {getData, isGetError, isGetLoading, GetSetup} = useGet();
     const { setHeaderTitle } = useHeader();
-    // const { id, type, url } = useLocalSearchParams();
     console.log(
         '\nin requestItem:',
         '\nid:', id,
+        '\nemail:', email,
         '\ntype:', type,
         '\nurl:', url,
+        '\nscreen:', screen
     )
-    const { setItem } = useAsyncStorageMethods();
+    // const { setItem } = useAsyncStorageMethods();
     const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
     // const [secureText, setSecureText] = useState(true);
 	const uniColorMode = useColorMode(); // get styles based on the current color mode
 	// const placeholderTextColor = uniColorMode.icon
 	// const [isError, setIsError] = useState<string|null>(null);
 
-    useEffect(()=>{GetSetup(`${type}s`)}, [])
+    useEffect(()=>{
+        GetSetup(type?`${type}s`:`${urlKey}s`)
+        setSelectedItem(null)
+        setSelectedQuantity(null)
+    }, [url])
     useEffect(()=>{
         if (getData) {
-            console.log('Response:', getData)
+            console.log('Response (requestItem):', getData)
             setItemList(getData)
         } else if (isGetError) {
             console.log('Error:', isGetError)
@@ -77,8 +99,8 @@ export default function RequestItem({id, email, type, url, setForm}: {email:stri
             showToast(data)
         }
     }, [getData, isGetError])
-    useEffect(()=>setHeaderTitle(`${toTitleCase(String(type))} Request`), [type])
-    const initials = {email: '', password: ''};
+    useEffect(()=>setHeaderTitle(`${toTitleCase(type?String(type):urlKey)} Request`), [type])
+    // const initials = {email: '', password: ''};
     // const [loginPost, setLoginPost] = useState<postType>(initials)
     // const [formData, setFormData] = useState(new FormData())
     // const [posting, setIsPosting] = useState<boolean>(false)
@@ -103,8 +125,7 @@ export default function RequestItem({id, email, type, url, setForm}: {email:stri
             formData.append('fault', id?.toString());
             formData.append('user', email);
             formData.append('mobile', 'true');
-            PostSetup(
-                `${url}/`,
+            PostSetup(url==='post-part'?`${url}/${1}/`:`${url}/`,
                 formData
             );
         }
@@ -112,11 +133,13 @@ export default function RequestItem({id, email, type, url, setForm}: {email:stri
     useEffect(()=>{
         if (postData) {
             // @ts-ignore
-            const data:any = {type: 'success', msg: postData?.msg}
+            const data:any = {type: 'success', msg: postData?.msg||postData?.received}
             showToast(data)
             // @ts-ignore
-            setForm(false)
-            navigation.navigate('dashboard')
+            if (type) {setForm(
+                false)
+            }
+            navigation.navigate('index')
         } else if (isPostError) {
             // console.log('Error (login):', isPostError)
             const data = {type: 'error', msg: isPostError}
@@ -146,23 +169,23 @@ export default function RequestItem({id, email, type, url, setForm}: {email:stri
             setModalQuantityVisible(false)
         }
     };
-    const selectItemObj = {name: `Select ${toTitleCase(type)}`, quantity: 1}
+    const selectItemObj = {name: `Select ${toTitleCase(type?type:urlKey!)}`, quantity: 1}
     const selectQuantityObj = 'Select Quantity'
 	return (
         // <Text style={{color: 'white'}}>Request Item</Text>
 		<View style={[
-            // ScreenStyle.allScreenContainer,
-            requestStyles.requestContainer
+            requestStyles.requestContainer,
+            {marginTop: type?15:250,}
             ]}>
             <View>
                 {itemList &&
                     <View style={[
                         requestStyles.formContainer,
                         myDynamicStyles.bgColor,
-                        // requestStyles.requestContainer,
+                        {paddingVertical: type?10:30,}
                     ]}>
                         <Text // form/post container
-                        style={[ generalstyles.headerFooter, myDynamicStyles.textColor]}>Request {type}</Text>
+                        style={[ generalstyles.headerFooter, myDynamicStyles.textColor]}>Request {toTitleCase((type?type:urlKey!)||'')}</Text>
                         <View style={requestStyles.selectionContainer}>
                             {/* item requested */}
                             <View>
@@ -246,12 +269,12 @@ export default function RequestItem({id, email, type, url, setForm}: {email:stri
 
 const requestStyles = StyleSheet.create({
     requestContainer: {
-        marginTop: 15,
+        // marginTop: 15,
         paddingHorizontal: 20,
     },
     formContainer: {
         borderRadius: 10,
-        paddingVertical: 10,
+        // paddingVertical: 10,
     },
     input: {
         // height: 50,
@@ -270,17 +293,6 @@ const requestStyles = StyleSheet.create({
         transform: [{ translateY: -12 }],
         // marginBottom: 30,
         // alignSelf: 'center',
-    },
-    passwordField: {
-        // position: 'relative',
-        // width: '100%',
-        // top: 0,
-        // right: 0,
-        // flexDirection: "row",
-        // justifyContent: "center",
-        // borderWidth: 1,
-        // borderRadius: 8,
-        // paddingHorizontal: 10
     },
     button: {
         marginTop: 10,
@@ -351,4 +363,3 @@ const requestStyles = StyleSheet.create({
         paddingVertical: 5,
     }
 })
-
