@@ -5,14 +5,27 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
 
-export function CardView ({mode, icon, color, item}: {
-	mode: string,
-	icon: keyof typeof Ionicons.glyphMap,
-	color: string,
-	item: Record<string, any>
+export function CardView ({mode, icon, color, item, role}: {
+	mode?: string,
+	icon?: keyof typeof Ionicons.glyphMap,
+	color?: string,
+	item: Record<string, any>,
+	role?: string
 }) {
 	const uniColorMode = useColorMode();
-	const numberOfRequests = (item?.requestStatus)?(item?.requestComponent?.length||0)+(item?.requestPart?.length||0):'None'
+	// console.log('item (cardView):', JSON.stringify(item, null, 4))
+	const numberOfRequests = (item?.faults)?
+		(item?.faults?.reduce?.((sum:number, request:any)=>(sum +
+			(request?.requestStatus?(request?.requestComponent?.length||0):0) +
+			(request?.requestStatus?(request?.requestPart?.length||0):0)), 0))
+			:
+			item?.requestStatus?
+				(item?.requestComponent?.length||0) +
+				(item?.requestPart?.length||0)
+				:'None'
+	console.log('role (in cardView)', {role})
+	console.log('number of requests', {numberOfRequests})
+	console.log('requestStatus (in cardView)', item?.requestStatus)
 	return (
 		<>
 			<Card style={[styles.card, {
@@ -25,7 +38,12 @@ export function CardView ({mode, icon, color, item}: {
 								{toTitleCase(String(mode))} #{item.id}
 							</Text>
 						</View>
-						<View style={[styles.cardContent, {backgroundColor: uniColorMode.shadowdkr, borderColor: uniColorMode.dkrb}]}>
+						<View style={[styles.cardContent, {
+							backgroundColor: uniColorMode.shadowdkr,
+							borderColor: uniColorMode.dkrb,
+							flexDirection: role!=='workshop'?'column':'row',
+							justifyContent: role!=='workshop'?'center':'space-evenly',
+							}]}>
 							<View style={styles.textBox1}>
 								<View>
 									<Text style={[styles.subText, {fontWeight: 'bold', fontSize: 16}]}>
@@ -33,6 +51,9 @@ export function CardView ({mode, icon, color, item}: {
 									</Text>
 								</View>
 							</View>
+
+							{/* exempt workshop */}
+							{role!=='workshop'&&
 							<View style={styles.textBox2}>
 								<Text style={[styles.subText, styles.outerTextColor]}>
 									Details: <Text style={{color: uniColorMode.ltrb}}>{toTitleCase(item?.fault?.title?.name)}</Text>
@@ -40,7 +61,7 @@ export function CardView ({mode, icon, color, item}: {
 								<Text style={[styles.subText, styles.outerTextColor]}>
 									Bank: <Text style={{color: 'cyan'}}>{item?.fault?.logged_by?.branch?.bank?.name?.toUpperCase()}</Text>
 								</Text>
-							</View>
+							</View>}
 							<View style={styles.textBox}>
 								<View>
 									<Text style={[styles.subText, styles.outerTextColor]}>
@@ -136,7 +157,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderRadius: 5,
 		padding: 10,
-		backgroundBlendMode: 'multiply',
+		// backgroundBlendMode: 'multiply',
 	},
     title: {
         fontSize: 18,
