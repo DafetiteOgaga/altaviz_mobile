@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { ScrollView, StyleSheet, ActivityIndicator, Text, View, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useHeader } from '@/context/headerUpdate';
 import { toTitleCase } from '@/hooks/useAllCases';
 import { ScreenStyle } from '@/myConfig/navigation';
@@ -17,7 +17,7 @@ export default function DetailScreen () {
 	const [renderComponentRequestForm, setRenderComponentRequestForm] = useState<boolean>(false)
 	const [renderPartRequestForm, setRenderPartRequestForm] = useState<boolean>(false)
 	const uniColorMode = useColorMode();
-	const navigation: any|undefined = useNavigation();
+	const router = useRouter();
 	const userDetails = useGetDataFromStorage('headerDetails')
 	const { setHeaderTitle } = useHeader();
 	let { data, arrayData, type, variant, engineer } = useLocalSearchParams();
@@ -37,11 +37,9 @@ export default function DetailScreen () {
 		'\ntype (detailScreen):', type,
 		'\nengineer (detailScreen):', engineer, '12345',
 		// '\nitem (detailScreen):', item,
-		'\narrayData (detailScreen):', parsedArray,
+		// '\narrayData (detailScreen):', parsedArray,
 		'\nvartiant (detailScreen):', variant,
 	)
-	const title = `${String(type).toLowerCase()==='fault'?'Fault':String(type).toLowerCase()==='parts'?'Post':'Request'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
-	useEffect(()=>setHeaderTitle(title), [title])
 	const [requestDuration, requestColorStyle, requestMode] = dateDifference(item?.requested_at)?.split?.('-')||[]
 	const [faultDuration, fauktColorStyle, faultMode] = dateDifference(item?.created_at)?.split?.('-')||[]
 	const loggedBy = item?.logged_by?.custodian?.id
@@ -52,7 +50,11 @@ export default function DetailScreen () {
 	console.log('userDetails (in detailScreen):', userDetails)
 	const role = userDetails?.role
 	console.log('role (detailScreen):', role)
-	const modeType = (item?.type)?'request':(item?.type==='fixed-part')?'request':'fault'
+	const modeType =
+		// (item?.type==='fixed-part')?'request':
+		item?.type?'request':'fault'
+	const title = `${modeType==='fault'?'Fault':String(type).toLowerCase()==='parts'?'Post':'Request'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
+	useEffect(()=>setHeaderTitle(title), [title])
 	const resolvedBy = (item?.replacement_engineer?.email)||(item?.assigned_to?.email)
 	const resolutionDetails = {
 		loggedBy: item?.logged_by?.custodian?.email,
@@ -63,7 +65,7 @@ export default function DetailScreen () {
 		region: item?.logged_by?.branch?.region?.name
 	}
 	const hasRequestsAndApproved = item?.requestComponent?.some?.((comp:any)=>comp.approved)||item?.requestPart?.some?.((part:any)=>part.approved)||false
-	console.log({hasRequestsAndApproved})
+	// console.log({hasRequestsAndApproved})
 	const requests = {
 		email: userDetails?.email,
 		id: item?.id,
@@ -72,12 +74,14 @@ export default function DetailScreen () {
 		setForm: handerComponentRequestFormRender,
 		screen: 'detailScreen',
 	}
+	const notWorkshopAndHR = role!=='workshop'&&role!=='human-resource'
 	return (
 		<ScrollView style={[ScreenStyle.allScreenContainer, styles.detailMain, {marginBottom: 0,}]}>
 			<ThemedText type={'link'}>Assigned to: {assignedTo}</ThemedText>
 			<ThemedText type={'link'}>Managed by: {managedBy}</ThemedText>
 			<ThemedText type={'link'}>Supervised by: {supervisedBy}</ThemedText>
 			<ThemedText type={'link'}>faultid: {item?.id}</ThemedText>
+			<ThemedText type={'link'}>title: {title}</ThemedText>
 			<ThemedText type={'link'}>arrayData: {parsedArrayString?.slice(0, 50)}</ThemedText>
 			<ThemedText type={'link'}>type: {String(type)}</ThemedText>
 			<ThemedText type={'link'}>item type (modeType): {modeType}</ThemedText>
@@ -89,11 +93,12 @@ export default function DetailScreen () {
 			{/* <CustomDropdown /> */}
 			{/* <RequestItem id={item?.id} type={'component'} url='request-component' /> */}
 			<View style={{paddingBottom: 20}}>
-				{!data ?
-					(<ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />) :
-					(
-					String(type).toLowerCase()!=='fault' ?
-					// request display
+				{(!item||!userDetails) ?
+					(<ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />)
+					:
+					(<>
+						{modeType!=='fault' ?
+						// request display
 						<View style={[styles.card]}>
 							<View style={[styles.header, {
 								backgroundColor: uniColorMode.newdrkb}]}>
@@ -122,228 +127,238 @@ export default function DetailScreen () {
 							</View>
 
 							{/* Request Details others */}
-							{role!=='workshop' ?
+							{notWorkshopAndHR ?
 							<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
+								<View style={styles.bankId}>
 								<InfoRow label="Bank" value={item?.fault?.logged_by?.branch?.bank?.name?.toUpperCase()} valueColor={{ color: 'lightsteelblue' }} icon="business-outline" iconColor={{ color: 'lightblue' }} />
-								<InfoRow label="Branch" value={toTitleCase(item?.fault?.logged_by?.branch?.name||'')} valueColor={{ color: 'lightsteelblue' }} icon="location-outline" iconColor={{ color: 'lightblue' }} />
+									{/* @ts-ignore */}
+									<InfoRow label="ID" value={`#${item?.id}`} valueColor={{ color: 'white', fontStyle: 'italic', }} line={{borderWidth: 1, gap: 0}} />
+								</View>
+								{/* <InfoRow label="Bank" value={item?.fault?.logged_by?.branch?.bank?.name?.toUpperCase()} valueColor={{ color: 'lightsteelblue' }} icon="business-outline" iconColor={{ color: 'lightblue' }} /> */}
+								<InfoRow label="Branch" value={toTitleCase(item?.fault?.logged_by?.branch?.name||'')} valueColor={{ color: 'lightsteelblue' }} icon="card-outline" iconColor={{ color: 'lightblue' }} />
 								<InfoRow label="State" value={`${toTitleCase(item?.fault?.logged_by?.branch?.state?.name||'')}|${item?.fault?.logged_by?.branch?.state?.initial}`} valueColor={{ color: 'lightsteelblue' }} icon="map-outline" iconColor={{ color: 'teal' }} />
 								<InfoRow label="Location" value={toTitleCase(item?.fault?.logged_by?.branch?.location?.location||'')} valueColor={{ color: 'lightsteelblue' }} icon="navigate-outline" iconColor={{ color: 'teal' }} />
-								<InfoRow label="Requested by" value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: 'userProfile', additionals: {id: assignedTo}}} />
+								<InfoRow label="Requested by" value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: '/userProfile', additionals: {id: assignedTo}}} />
 								<InfoRow label="Requested on" value={formatDate(item?.requested_at)} valueColor={{ color: 'lightsteelblue' }} icon="calendar-outline" iconColor={{ color: 'slateblue' }} />
 								<InfoRow label="Fault" value={toTitleCase(item?.fault?.title?.name||'')}
 									valueColor={{ color: 'lightsteelblue' }}
 									// valueColor={{ color: 'orange', textDecorationLine: 'underline' }}
 									icon="alert-circle-outline" iconColor={{ color: 'red' }}
-									// pressValue={{path: 'blueBlank', additionals: {id: assignedTo, faultID: item?.fault?.id, arrayData: parsedArrayString}}}
+									// pressValue={{path: '/blueBlank', additionals: {id: assignedTo, faultID: item?.fault?.id, arrayData: parsedArrayString}}}
 									/>
 								<InfoRow label="Fault ID" value={`#${item?.fault?.id}`} valueColor={{ color: 'lightsteelblue' }} icon="barcode-outline" iconColor={{ color: 'red' }} />
-								<InfoRow label="Managed by" value={toTitleCase(item?.fault?.managed_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="briefcase-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: 'userProfile', additionals: {id: managedBy}}} />
-								<InfoRow label="Supervised by" value={toTitleCase(item?.fault?.supervised_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="checkmark-done-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: 'userProfile', additionals: {id: supervisedBy}}} />
+								<InfoRow label="Managed by" value={toTitleCase(item?.fault?.managed_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="briefcase-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: '/userProfile', additionals: {id: managedBy}}} />
+								<InfoRow label="Supervised by" value={toTitleCase(item?.fault?.supervised_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="checkmark-done-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: '/userProfile', additionals: {id: supervisedBy}}} />
 								<InfoRow label="Reason" value={item?.other} valueColor={{ color: 'lightsteelblue' }} icon="help-circle-outline" iconColor={{ color: 'white' }} />
 							</View>
 							:
 							// Request Details workshop
 							<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
-								<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: 'userProfile', additionals: {id: userDetails?.id}}} />
+								<View style={styles.bankId}>
+								<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: '/userProfile', additionals: {id: userDetails?.id}}} />
+									{/* @ts-ignore */}
+									<InfoRow label="ID" value={`#${item?.id}`} valueColor={{ color: 'white', fontStyle: 'italic', }} line={{borderWidth: 1, gap: 0}} />
+								</View>
+								{/* <InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: '/userProfile', additionals: {id: userDetails?.id}}} /> */}
 								<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={formatDate(item?.requested_at)} valueColor={{ color: 'lightsteelblue' }} icon="calendar-outline" iconColor={{ color: 'slateblue' }} />
 								<InfoRow label="Reason" value={item?.other} valueColor={{ color: 'lightsteelblue' }} icon="help-circle-outline" iconColor={{ color: 'white' }} />
 							</View>}
 						</View>
-					:
-					// fault display
-					<View style={[styles.card]}>
-						<View style={[styles.header, {
-								backgroundColor: uniColorMode.newdrkb}]}>
-								<View style={styles.titleWIcon}>
-									<Ionicons name={getIcon} size={15} color={color} />
-									<Text style={[styles.title, { color: color }]}>{toTitleCase(item?.title?.name||'')}</Text>
-								{/* <Text style={[styles.subtitle, { color: 'skyblue' }]}>Quantity: {item?.quantityRequested}</Text> */}
+						:
+						// fault display
+						<View style={[styles.card]}>
+							<View style={[styles.header, {
+									backgroundColor: uniColorMode.newdrkb}]}>
+									<View style={styles.titleWIcon}>
+										<Ionicons name={getIcon} size={15} color={color} />
+										<Text style={[styles.title, { color: color }]}>{toTitleCase(item?.title?.name||'')}</Text>
+									{/* <Text style={[styles.subtitle, { color: 'skyblue' }]}>Quantity: {item?.quantityRequested}</Text> */}
+									</View>
 								</View>
-							</View>
 
-							{/* Status Section */}
-							<View style={styles.statusContainer}>
-								<Text style={styles.label}>Status:</Text>
-								<Text style={[styles.statusText, { backgroundColor: getStatusColor({item, type: 'fault'}) }]}>
-									{getStatusText({item, type: 'fault'})}
-								</Text>
-								<Text style={[styles.statusText, { color: fauktColorStyle }]}>
-									({faultDuration} {
-									(faultMode==='d'&&faultDuration==='1')?'Day':faultMode==='d'&&faultDuration!=='1'?'Days':
-									(faultMode==='h'&&faultDuration==='1')?'Hour':faultMode==='h'&&faultDuration!=='1'?'Hours':
-									(faultDuration==='1')?'Minute': 'Minutes'} Ago)
-								</Text>
-							</View>
-
-							{/* Request Details */}
-							<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
-								<View style={styles.bankId}>
-									<InfoRow label="Bank" value={item?.logged_by?.branch?.bank?.name?.toUpperCase()} valueColor={{ color: 'lightsteelblue' }} icon="business-outline" iconColor={{ color: 'lightblue' }} />
-									{/* @ts-ignore */}
-									<InfoRow label="ID" value={`#${item?.id}`} valueColor={{ color: 'white', fontStyle: 'italic', }} line={{borderWidth: 1,
-										// , marginVertical: 0,
-										gap: 0,
-										}} />
+								{/* Status Section */}
+								<View style={styles.statusContainer}>
+									<Text style={styles.label}>Status:</Text>
+									<Text style={[styles.statusText, { backgroundColor: getStatusColor({item, type: 'fault'}) }]}>
+										{getStatusText({item, type: 'fault'})}
+									</Text>
+									<Text style={[styles.statusText, { color: fauktColorStyle }]}>
+										({faultDuration} {
+										(faultMode==='d'&&faultDuration==='1')?'Day':faultMode==='d'&&faultDuration!=='1'?'Days':
+										(faultMode==='h'&&faultDuration==='1')?'Hour':faultMode==='h'&&faultDuration!=='1'?'Hours':
+										(faultDuration==='1')?'Minute': 'Minutes'} Ago)
+									</Text>
 								</View>
-								<InfoRow label="Branch" value={toTitleCase(item?.logged_by?.branch?.name||'')} valueColor={{ color: 'lightsteelblue' }} icon="location-outline" iconColor={{ color: 'lightblue' }} />
-								<InfoRow label="State" value={`${toTitleCase(item?.logged_by?.branch?.state?.name||'')}|${item?.logged_by?.branch?.state?.initial}`} valueColor={{ color: 'lightsteelblue' }} icon="map-outline" iconColor={{ color: 'teal' }} />
-								<InfoRow label="Region" value={`${toTitleCase(item?.logged_by?.branch?.region?.name||'')}`} valueColor={{ color: 'lightsteelblue' }} icon="map-outline" iconColor={{ color: 'teal' }} />
-								<InfoRow label="Location" value={toTitleCase(item?.logged_by?.branch?.location?.location||'')} valueColor={{ color: 'lightsteelblue' }} icon="navigate-outline" iconColor={{ color: 'teal' }} />
-								<InfoRow label="Logged by" value={toTitleCase(item?.logged_by?.custodian?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: 'userProfile', additionals: {id: loggedBy}}} />
-								<InfoRow label="Logged on" value={formatDate(item?.created_at)} valueColor={{ color: 'lightsteelblue' }} icon="calendar-outline" iconColor={{ color: 'slateblue' }} />
-								<InfoRow label="Assigned to" value={toTitleCase(item?.assigned_to?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: 'userProfile', additionals: {id: assignedTo}}} />
-								<InfoRow label="Managed by" value={toTitleCase(item?.managed_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="briefcase-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: 'userProfile', additionals: {id: managedBy}}} />
-								<InfoRow label="Supervised by" value={toTitleCase(item?.supervised_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="checkmark-done-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: 'userProfile', additionals: {id: supervisedBy}}} />
-								<InfoRow label="Other" value={item?.other} valueColor={{ color: 'lightsteelblue' }} icon="help-circle-outline" iconColor={{ color: 'white' }} />
-							</View>
 
-						{ // Requests
-						(item?.requestStatus)&& (
-						<View style={[styles.requestStatus, {backgroundColor: uniColorMode.newdrkb1,}]}>
-							<View>
-								<Text style={[styles.title, styles.requestTitle, {backgroundColor: uniColorMode.shadowLeft,}]}>Requests:</Text>
-							</View>
-							<View style={styles.partsCompContainer}>
+								{/* fault Details */}
+								<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
+									<View style={styles.bankId}>
+										<InfoRow label="Bank" value={item?.logged_by?.branch?.bank?.name?.toUpperCase()} valueColor={{ color: 'lightsteelblue' }} icon="business-outline" iconColor={{ color: 'lightblue' }} />
+										{/* @ts-ignore */}
+										<InfoRow label="ID" value={`#${item?.id}`} valueColor={{ color: 'white', fontStyle: 'italic', }} line={{borderWidth: 1, gap: 0}} />
+									</View>
+									<InfoRow label="Branch" value={toTitleCase(item?.logged_by?.branch?.name||'')} valueColor={{ color: 'lightsteelblue' }} icon="card-outline" iconColor={{ color: 'lightblue' }} />
+									<InfoRow label="State" value={`${toTitleCase(item?.logged_by?.branch?.state?.name||'')}|${item?.logged_by?.branch?.state?.initial}`} valueColor={{ color: 'lightsteelblue' }} icon="map-outline" iconColor={{ color: 'teal' }} />
+									<InfoRow label="Region" value={`${toTitleCase(item?.logged_by?.branch?.region?.name||'')}`} valueColor={{ color: 'lightsteelblue' }} icon="map-outline" iconColor={{ color: 'teal' }} />
+									<InfoRow label="Location" value={toTitleCase(item?.logged_by?.branch?.location?.location||'')} valueColor={{ color: 'lightsteelblue' }} icon="navigate-outline" iconColor={{ color: 'teal' }} />
+									<InfoRow label="Logged by" value={toTitleCase(item?.logged_by?.custodian?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: '/userProfile', additionals: {id: loggedBy}}} />
+									<InfoRow label="Logged on" value={formatDate(item?.created_at)} valueColor={{ color: 'lightsteelblue' }} icon="calendar-outline" iconColor={{ color: 'slateblue' }} />
+									<InfoRow label="Assigned to" value={toTitleCase(item?.assigned_to?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: '/userProfile', additionals: {id: assignedTo}}} />
+									<InfoRow label="Managed by" value={toTitleCase(item?.managed_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="briefcase-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: '/userProfile', additionals: {id: managedBy}}} />
+									<InfoRow label="Supervised by" value={toTitleCase(item?.supervised_by?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline', }} icon="checkmark-done-outline" iconColor={{ color: 'skyblue' }} pressValue={{path: '/userProfile', additionals: {id: supervisedBy}}} />
+									<InfoRow label="Other" value={item?.other} valueColor={{ color: 'lightsteelblue' }} icon="help-circle-outline" iconColor={{ color: 'white' }} />
+								</View>
+
+							{ // Requests
+							(item?.requestStatus)&& (
+							<View style={[styles.requestStatus, {backgroundColor: uniColorMode.newdrkb1,}]}>
 								<View>
-									{item?.requestComponent&&
-									<View>
-										<Text style={styles.itemColor}>Component{(item?.requestComponent?.length>1)?'s':undefined}</Text>
-									</View>}
-									{item?.requestComponent?.map?.((component: Record<string|number, any>, index: number) => {
-										const approved = component.approved
-										const rejected = component.rejected
-										console.log('detailScreen:', {approved}, {rejected})
-										return (
-											<View
-											key={component.id}
-											style={[styles.requestRow]}>
-												<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
-												<Text style={styles.requestLabel}>{toTitleCase(component.name.name||'')}:</Text>
-												<Text style={styles.requestLabel}>#{component.id}</Text>
-											</View>
-										);
-									})}
+									<Text style={[styles.title, styles.requestTitle, {backgroundColor: uniColorMode.shadowLeft,}]}>Requests:</Text>
 								</View>
-								<View>
-									{item?.requestPart&&
+								<View style={styles.partsCompContainer}>
 									<View>
-										<Text style={styles.itemColor}>Part{(item?.requestPart?.length>1)?'s':undefined}</Text>
-									</View>}
-									{item?.requestPart?.map?.((part: Record<string|number, any>, index: number) => {
-										const approved = part.approved
-										const rejected = part.rejected
-										console.log('detailScreen:', {approved}, {rejected})
-										return (
-											<View
-											key={part.id}
-											style={[styles.requestRow]}>
-												<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
-												<Text style={styles.requestLabel} numberOfLines={1} ellipsizeMode="tail">{toTitleCase(part.name.name||'')}:</Text>
-												<Text style={styles.requestLabel}>#{part.id}</Text>
-											</View>
-										);
-									})}
+										{item?.requestComponent&&
+										<View>
+											<Text style={styles.itemColor}>Component{(item?.requestComponent?.length>1)?'s':undefined}</Text>
+										</View>}
+										{item?.requestComponent?.map?.((component: Record<string|number, any>, index: number) => {
+											const approved = component.approved
+											const rejected = component.rejected
+											console.log('detailScreen:', {approved}, {rejected})
+											return (
+												<View
+												key={component.id}
+												style={[styles.requestRow]}>
+													<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
+													<Text style={styles.requestLabel}>{toTitleCase(component.name.name||'')}:</Text>
+													<Text style={styles.requestLabel}>#{component.id}</Text>
+												</View>
+											);
+										})}
+									</View>
+									<View>
+										{item?.requestPart&&
+										<View>
+											<Text style={styles.itemColor}>Part{(item?.requestPart?.length>1)?'s':undefined}</Text>
+										</View>}
+										{item?.requestPart?.map?.((part: Record<string|number, any>, index: number) => {
+											const approved = part.approved
+											const rejected = part.rejected
+											console.log('detailScreen:', {approved}, {rejected})
+											return (
+												<View
+												key={part.id}
+												style={[styles.requestRow]}>
+													<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
+													<Text style={styles.requestLabel} numberOfLines={1} ellipsizeMode="tail">{toTitleCase(part.name.name||'')}:</Text>
+													<Text style={styles.requestLabel}>#{part.id}</Text>
+												</View>
+											);
+										})}
+									</View>
 								</View>
 							</View>
+						)}
+						</View>}
+						{/* toggle forms */}
+						<>
+						{renderComponentRequestForm&&
+						<View>
+							<RequestItem requests={requests} />
+						</View>}
+						{renderPartRequestForm&&
+						<View>
+							<RequestItem requests={requests} />
+						</View>}
+						</>
+						{/* button */}
+						<View style={styles.actionContainer}>
+							{(getStatusText({item, type: 'fault'})!=='Unconfirmed') &&
+								((modeType==='request'&&role!=='human-resource') ?
+									// request buttons
+									<>
+										<ActionButton
+											icon={getIcon}
+											id={item?.id}
+											label={role}
+											type={item?.type}
+											background={['red', 'darkred']}
+											buttonText={[`Withdraw ${String(type)==='Parts'&&role==='workshop'?'Part':'Request'}`, 'Withdrawing...']}
+											modeType={modeType}
+											// onPress={() => null}
+											/>
+									</>
+									:
+									// fault buttons
+									<>
+										<View>
+											{role==='engineer' &&
+											<View style={{flexDirection: 'row', gap: 20}}>
+												<ActionButton
+													icon={'cog-outline'}
+													id={item?.id}
+													label={role}
+													// type={item?.type}
+													background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
+													buttonText={['Request Component', 'Requesting...']}
+													modeType={modeType}
+													textColor={'#17A2B8'}
+													setForm={handerComponentRequestFormRender}
+													onPress={5}
+													/>
+												<ActionButton
+													icon={'cube-outline'}
+													id={item?.id}
+													label={role}
+													// type={item?.type}
+													background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
+													buttonText={['Request Part', 'Requesting...']}
+													modeType={modeType}
+													textColor={'#007BFF'}
+													setForm={handerPartRequestFormRender}
+													onPress={5}
+													/>
+											</View>}
+											{/* <View style={}> */}
+											{role!=='help-desk' &&
+											<View style={role==='engineer'?{justifyContent: 'center', alignItems: 'center', marginTop: 10}:{flexDirection: 'row', gap: 20}}>
+												{(role!=='custodian'||!hasRequestsAndApproved) &&
+												<ActionButton
+													icon={role==='engineer'?'hourglass-outline':(role==='supervisor'||role==='human-resource')?'':'construct-outline'}
+													id={item?.id}
+													item={item}
+													label={role}
+													userID={userDetails?.id}
+													userEmail={userDetails?.email}
+													// type={item?.type}
+													background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
+													buttonText={role==='engineer'?['Seek Confirmation', 'Seeking...']:(role==='human-resource'&&modeType==='request')?['Reject Request', 'Rejecting...']:(role==='supervisor'||role==='human-resource')?['Reject Requests', 'Rejecting...']:['Withdraw Fault', 'Withdrawing...']}
+													modeType={modeType}
+													textColor={role==='engineer'?'#FFA500':'#FF4C4C'}
+													// onPress={() => null}
+													/>}
+												{role!=='engineer' &&
+												<ActionButton
+													icon={(role==='supervisor'||role==='human-resource')?'':'hourglass-outline'}
+													id={item?.id}
+													item={item}
+													label={role}
+													userID={userDetails?.id}
+													userEmail={userDetails?.email}
+													// type={item?.type}
+													background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
+													buttonText={(role==='human-resource'&&modeType==='request')?['Approve Request', 'Approving...']:(role==='supervisor'||role==='human-resource')?['Approve Requests', 'Approving...']:['Confirm Resolution', 'Confirming...']}
+													modeType={modeType}
+													textColor={'#FFA500'}
+													resolutionDetails={resolutionDetails}
+													// onPress={() => null}
+													/>}
+											</View>}
+										</View>
+									</>)
+							}
 						</View>
-					)}
-					</View>)
-				}
-				{/* toggle forms */}
-				{renderComponentRequestForm&&
-				<View>
-					<RequestItem requests={requests} />
-				</View>}
-				{renderPartRequestForm&&
-				<View>
-					<RequestItem requests={requests} />
-				</View>}
-				{/* button */}
-				<View style={styles.actionContainer}>
-					{(getStatusText({item, type: 'fault'})!=='Unconfirmed') &&
-						(modeType === 'request' ?
-							// request buttons
-							<>
-								<ActionButton
-									icon={getIcon}
-									id={item?.id}
-									label={role}
-									type={item?.type}
-									background={['red', 'darkred']}
-									buttonText={[`Withdraw ${String(type)==='Parts'&&role==='workshop'?'Part':'Request'}`, 'Withdrawing...']}
-									modeType={modeType}
-									// onPress={() => null}
-									/>
-							</>
-							:
-							// fault buttons
-							<>
-								<View>
-									{role==='engineer' &&
-									<View style={{flexDirection: 'row', gap: 20}}>
-										<ActionButton
-											icon={'cog-outline'}
-											id={item?.id}
-											label={role}
-											// type={item?.type}
-											background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-											buttonText={['Request Component', 'Requesting...']}
-											modeType={modeType}
-											textColor={'#17A2B8'}
-											setForm={handerComponentRequestFormRender}
-											onPress={5}
-											/>
-										<ActionButton
-											icon={'cube-outline'}
-											id={item?.id}
-											label={role}
-											// type={item?.type}
-											background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-											buttonText={['Request Part', 'Requesting...']}
-											modeType={modeType}
-											textColor={'#007BFF'}
-											setForm={handerPartRequestFormRender}
-											onPress={5}
-											/>
-									</View>}
-									{/* <View style={}> */}
-									{role!=='help-desk' &&
-									<View style={role==='engineer'?{justifyContent: 'center', alignItems: 'center', marginTop: 10}:{flexDirection: 'row', gap: 20}}>
-										{(role!=='custodian'||!hasRequestsAndApproved) &&
-										<ActionButton
-											icon={role==='engineer'?'hourglass-outline':role==='supervisor'?'':'construct-outline'}
-											id={item?.id}
-											item={item}
-											label={role}
-											userID={userDetails?.id}
-											userEmail={userDetails?.email}
-											// type={item?.type}
-											background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-											buttonText={role==='engineer'?['Seek Confirmation', 'Seeking...']:role==='supervisor'?['Reject Requests', 'Rejecting...']:['Withdraw Fault', 'Withdrawing...']}
-											modeType={modeType}
-											textColor={role==='engineer'?'#FFA500':'#FF4C4C'}
-											// onPress={() => null}
-											/>}
-										{role!=='engineer' &&
-										<ActionButton
-											icon={role==='supervisor'?'':'hourglass-outline'}
-											id={item?.id}
-											item={item}
-											label={role}
-											userID={userDetails?.id}
-											userEmail={userDetails?.email}
-											// type={item?.type}
-											background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-											buttonText={role==='supervisor'?['Approve Requests', 'Approving...']:['Confirm Resolution', 'Confirming...']}
-											modeType={modeType}
-											textColor={'#FFA500'}
-											resolutionDetails={resolutionDetails}
-											// onPress={() => null}
-											/>}
-									</View>}
-								</View>
-							</>)}
-				</View>
+					</>)}
 			</View>
 		</ScrollView>
 	);
@@ -351,7 +366,7 @@ export default function DetailScreen () {
 
 const ActionButton = ({ item, icon, label, id, type, background, buttonText, modeType, textColor, userID, userEmail, setForm, onPress, resolutionDetails }: customComponent) => {
 	const uniColorMode = useColorMode()
-	const navigation: any|undefined = useNavigation();
+	const router = useRouter()
 	const { deleteData, isDeleteError, isDeleteLoading, DeleteSetup }: useTypes = useDelete();
 	const { patchData, isPatchError, isPatchLoading, PatchSetup }: useTypes = usePatch();
 	let url: string = ''
@@ -376,7 +391,13 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 	} else if (label?.toLowerCase()==='supervisor') {
 		url = `request-status/${userID}/`
 	} else if (label?.toLowerCase()==='human-resource') {
-		buttonText = ['Delete Request']
+		// console.log('item (ActionButton in detailScreen):', JSON.stringify(item, null, 4))
+		// url = `${()?'post-part':'request-'+{item?.type}+'/'+{userID}+'/'}`
+		if (modeType==='request') {
+			url = item?.type==='fixed-part'?`post-part/${userID}/`:`request-${item?.type}/${userID}/`
+		} else {
+			url = `request-status/${userID}/`
+		}
 	} else if (label?.toLowerCase()==='custodian') {
 		if (buttonText?.[0]==='Withdraw Fault') {
 			url = `fault/${id}/delete/`
@@ -395,7 +416,7 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 	}
 	const handleRequests = () => {
 		console.log('handleREquest in detailScreen')
-		const formData = new FormData();
+		let formData = new FormData();
 		// formData.append('faultID', `${id}`)
 		// formData.append('verify_resolve', 'true')
 		if (label?.toLowerCase()==='engineer') {
@@ -433,32 +454,25 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 				DeleteSetup(url)
 			}
 		} else if (label?.toLowerCase()==='supervisor') {
-			let requestComponentIds;
-			let requestPartIDs;
-			console.log(
-				'\nbutton clicked by supervisor in detailScreen',
-				'\nitem (in detailScreen):', JSON.stringify(item, null, 4),
-			)
-			if (item?.requestComponent) {
-				requestComponentIds = item?.requestComponent.map((component:any) => component.id)
-				console.log({requestComponentIds})
-			}
-			if (item?.requestPart) {
-				requestPartIDs = item.requestPart.map((part:any) => part.id)
-			}
-			if (requestComponentIds) {formData.append('requestComponentIds', requestComponentIds)}
-			if (requestPartIDs) {formData.append('requestPartIDs', requestPartIDs)}
-			// newFormData.append(type, [...requestComponentIds, ...requestPartIDs])
-			// formData.append(type, true)
-			formData.append('approved_by', String(userEmail))
-			if (buttonText?.[0]==='Reject Requests') {
-				console.log('Reject Requests button clicked in detailScreen')
-				formData.append('rejected', 'true')
-				// DeleteSetup(url)
-			} else if (buttonText?.[0]==='Approve Requests') {
-				console.log('Approve Requests button clicked in detailScreen')
-				formData.append('approved', 'true')
-				// DeleteSetup(url)
+			formData = approveOrRejectAllRequests({ item, buttonText, userEmail })
+			// @ts-ignore
+			PatchSetup(url, formData)
+		} else if (label?.toLowerCase()==='human-resource') {
+			if (modeType==='request') {
+				formData.append('requestID', item?.id)
+				formData.append('approved_by', String(userEmail))
+				if (buttonText?.[0]==='Reject Request') {
+					console.log('Reject Request button clicked in detailScreen')
+					formData.append('rejected', 'true')
+					// DeleteSetup(url)
+				} else if (buttonText?.[0]==='Approve Request') {
+					console.log('Approve Request button clicked in detailScreen')
+					formData.append('approved', 'true')
+					// DeleteSetup(url)
+				}
+			} else {
+				formData = approveOrRejectAllRequests({ item, buttonText, userEmail })
+				// url = `request-status/${userID}/`
 			}
 			// @ts-ignore
 			PatchSetup(url, formData)
@@ -478,11 +492,11 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 				// @ts-ignore
 				text1: toTitleCase(deleteData?.msg||patchData?.msg||''),
 			});
-			// navigation.navigate('dashboard')
+			router.push('/')
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [deleteData, isDeleteError, patchData, isPatchError]);
-	console.log('detailSreen', {isDeleteLoading}, {modeType})
+	// console.log('detailSreen', {isDeleteLoading}, {modeType})
 	return (
 		<TouchableOpacity
 		onPress={onPress?handleNavigate:handleRequests} disabled={isDeleteLoading}
@@ -492,6 +506,39 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 		</TouchableOpacity>
 	)
 };
+
+const approveOrRejectAllRequests = (propObj: any) =>{
+	const { item, buttonText, userEmail } = propObj
+	const formData = new FormData();
+	let requestComponentIds;
+	let requestPartIDs;
+	console.log(
+		'\nbutton clicked by supervisor in detailScreen',
+		// '\nitem (in detailScreen):', JSON.stringify(item, null, 4),
+	)
+	if (item?.requestComponent) {
+		requestComponentIds = item?.requestComponent.map((component:any) => component.id)
+		console.log({requestComponentIds})
+	}
+	if (item?.requestPart) {
+		requestPartIDs = item.requestPart.map((part:any) => part.id)
+	}
+	if (requestComponentIds) {formData.append('requestComponentIds', requestComponentIds)}
+	if (requestPartIDs) {formData.append('requestPartIDs', requestPartIDs)}
+	// newFormData.append(type, [...requestComponentIds, ...requestPartIDs])
+	// formData.append(type, true)
+	formData.append('approved_by', String(userEmail))
+	if (buttonText?.[0]==='Reject Requests') {
+		console.log('Reject Requests button clicked in detailScreen')
+		formData.append('rejected', 'true')
+		// DeleteSetup(url)
+	} else if (buttonText?.[0]==='Approve Requests') {
+		console.log('Approve Requests button clicked in detailScreen')
+		formData.append('approved', 'true')
+		// DeleteSetup(url)
+	}
+	return formData
+}
 
 type customComponent = {
     icon: any,
@@ -539,11 +586,12 @@ interface InfoRowProps {
 
   // Reusable Row Component
 const InfoRow = ({ label, value, icon, iconColor, valueColor, pressValue, line }: InfoRowProps) => {
-	const navigation: any|undefined = useNavigation();
-	const onpress = ()=>navigation.navigate(
-		pressValue!.path,
-		{...pressValue!.additionals }
-	)
+	const router = useRouter()
+	const onpress = ()=>router.push({
+		// @ts-ignore
+		pathname: pressValue!.path,
+		params: pressValue!.additionals
+	})
 	return (
     <View style={[styles.row]} >
         <Ionicons name={icon} size={18} color={iconColor?.color} />
@@ -610,7 +658,7 @@ const dateDifference = (isoString: string) => {
 			daysDiff = `${Math.ceil(timeDiff / (1000 * 60))}-grey-m`
 		}
 	}
-	console.log('Days diff: (detailScreen):', daysDiff)
+	// console.log('Days diff: (detailScreen):', daysDiff)
 	return daysDiff
 };
 
@@ -727,7 +775,7 @@ const styles = StyleSheet.create({
 		// marginRight: 5,
 		color: 'lightsteelblue',
 		flexWrap: 'wrap',
-		textDecorationLine: 'underline',
+		// textDecorationLine: 'underline',
 	},
 	requestTitle: {
 		alignSelf: 'flex-start',
