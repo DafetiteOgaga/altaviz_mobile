@@ -4,12 +4,13 @@ import {
     ActivityIndicator, Modal, TextInput
 } from "react-native";
 import { useColorMode } from "../../constants/Colors";
-import { useNavigation, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { generalstyles } from "../../myConfig/navigation";
 import { useHeader } from "../../context/headerUpdate";
 import { usePatch, useGet } from "../../requests/makeRequests";
 import Toast from "react-native-toast-message";
 import { toTitleCase } from "../../hooks/useAllCases";
+// import { useAsyncStorageMethods } from "../../context/AsyncMethodsContext";
 import { useGetDataFromStorage } from "../../context/useGetDataFromStorage";
 
 interface notiType {
@@ -26,7 +27,8 @@ interface UsePostReturn {
 
 export default function EngineerToLocation() {
     const { screen, email, id, url } = useLocalSearchParams();
-    const navigation: any = useNavigation();
+    const router = useRouter();
+    // const { removeItem } = useAsyncStorageMethods();
     const [itemList, setItemList] = useState<any[]>([]);
     const [engineerList, setEngineerList] = useState<any[]>([]);
     const [activeLocationId, setActiveLocationId] = useState<any>(null);
@@ -38,6 +40,7 @@ export default function EngineerToLocation() {
 
     const { getData, isGetError, isGetLoading, GetSetup } = useGet();
     const { setHeaderTitle } = useHeader();
+    useEffect(()=>setHeaderTitle('Assign Engineers to Locations'))
     const userData = useGetDataFromStorage("loginData");
     const {patchData, isPatchError, isPatchLoading, PatchSetup}: UsePostReturn = usePatch();
     const uniColorMode = useColorMode();
@@ -53,13 +56,18 @@ export default function EngineerToLocation() {
 
     // Fetch item list
     useEffect(() => {
-        if (userData?.id) {
+        if (userData?.role==='supervisor') {
             fetchItems(`new-location-assignment/list/${userData?.id}/`)
             fetchEngineers(`region-engineers/${userData?.id}/`)
         }
+        // return () => {
+        //     removeItem("loginData");
+        //     removeItem("baseUrl");
+        //     removeItem("headerDetails");
+        //     console.log("Removed login details");
+        // }
     }, [userData?.id])
 
-    // // Fetch engineer list
     // useEffect(() => {
     //     if (userData) {fetchEngineers(`region-engineers/${userData?.id}/`)}
     // }, [userData])
@@ -89,7 +97,7 @@ export default function EngineerToLocation() {
         // const filteredItems = Object.keys(selectedEngineers)?.filter?.((selected:any)=>selectedEngineers?.[selected]?.first_name?.toLowerCase()!=='select engineer')
         // console.log('in engineerToLocation (filteredItems):', {filteredItems})
         // console.log('in engineerToLocation (selectedEngineers):', selectedEngineers)
-        Object.keys(selectedEngineers).forEach((key) => {
+        Object.keys(selectedEngineers).forEach((key:any) => {
             if (selectedEngineers[key]?.first_name?.toLowerCase() === 'select engineer') {
                 delete selectedEngineers[key];
             }
@@ -99,7 +107,7 @@ export default function EngineerToLocation() {
             let locations = {}
             let locationKey: string = '';
             let selectedEngineerConstruct: string = '';
-            Object.keys(selectedEngineers).forEach((item) => {
+            Object.keys(selectedEngineers).forEach((item:any) => {
                 console.log('in engineerToLocation (item):', item)
                 let selectedLocation = itemList.find((location) => location.id === parseInt(item));
                 console.log('in engineerToLocation (selectedLocation):', JSON.stringify(selectedLocation, null, 4))
@@ -138,7 +146,7 @@ export default function EngineerToLocation() {
             // @ts-ignore
             showToast({ type: "success", msg: patchData?.msg });
             setSelectedEngineers({});
-            navigation.navigate("index");
+            router.push("/");
         } else if (isPatchError) {
             showToast({ type: "error", msg: isPatchError });
         }
@@ -261,7 +269,7 @@ export default function EngineerToLocation() {
 /* -------------------------------------
  * Item Component
  * ------------------------------------- */
-function ItemRow({ item, selectedEngineers, setSelectedEngineers, setModalVisible, setActiveLocationId }) {
+function ItemRow({ item, selectedEngineers, setSelectedEngineers, setModalVisible, setActiveLocationId }: any) {
     // console.log('in engineerToLocation > ItemRow (selectedEngineers):', JSON.stringify(selectedEngineers, null, 4))
     // console.log('in > ItemRow (item?.id):', item?.id)
     const firstName = selectedEngineers?.first_name||selectedEngineers
@@ -295,7 +303,7 @@ function ItemRow({ item, selectedEngineers, setSelectedEngineers, setModalVisibl
 /* -------------------------------------
  * Modal Component
  * ------------------------------------- */
-function SelectModal({ engineerList, modalVisible, setModalVisible, itemList, handleSelect }) {
+function SelectModal({ engineerList, modalVisible, setModalVisible, itemList, handleSelect }: any) {
     const uniColorMode = useColorMode();
     return (
         <Modal animationType="slide" transparent={true} visible={modalVisible}>

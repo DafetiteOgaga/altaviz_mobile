@@ -113,6 +113,27 @@ export default function TabLayout() {
             }}
             />
             <Tabs.Screen // UserProfile screen
+            name="engineersFaults" // screen name (navigation)
+            options={{
+                title: 'Engineer Fault',
+                href: null, // Hides tab but keeps screen accessible via navigation.navigate()
+            }}
+            />
+            <Tabs.Screen // UserProfile screen
+            name="engineersToLocations" // screen name (navigation)
+            options={{
+                title: 'Engineer to Location',
+                href: null, // Hides tab but keeps screen accessible via navigation.navigate()
+            }}
+            />
+            <Tabs.Screen // UserProfile screen
+            name="userChangeRequest" // screen name (navigation)
+            options={{
+                title: 'Account Details Change',
+                href: null, // Hides tab but keeps screen accessible via navigation.navigate()
+            }}
+            />
+            <Tabs.Screen // UserProfile screen
             name="blueBlank" // screen name (navigation)
             options={{
                 title: 'Blue Blank Screen',

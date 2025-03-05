@@ -6,57 +6,70 @@ import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
 import { useHeader } from '../context/headerUpdate';
 
-export function EngineerCardView ({mode, icon, color, item, role, label}: {
+export function DetailsRequestCardView ({mode, icon, color, item, role, label}: {
 	mode?: string,
 	icon?: keyof typeof Ionicons.glyphMap,
 	color?: string,
 	item: Record<string, any>,
 	role?: string
-	label: string
+	label?: string
 }) {
 	const { setHeaderTitle } = useHeader();
 	useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
+	// console.log('item (DetailsRequestCardView):', JSON.stringify(item, null, 4))
 	const numberOfRequests = (item?.faults)?
-		(item?.faults?.reduce?.((sum:number, requests:any)=>(sum + (requests?.requestStatus?(requests?.requestComponent?.length||0):0) +
-		(requests?.requestStatus?(requests?.requestPart?.length||0):0)), 0)):'None'
-	const numberOfFaults = (item?.faults)?
-		(item?.faults?.reduce?.((sum:number, fault:any)=>(sum + 1), 0)):'None'
-	console.log('role (in EngineerCardView)', {role})
-	console.log('number of faults', {numberOfFaults})
+		(item?.faults?.reduce?.((sum:number, request:any)=>(sum +
+			(request?.requestStatus?(request?.requestComponent?.length||0):0) +
+			(request?.requestStatus?(request?.requestPart?.length||0):0)), 0))
+			:
+			item?.requestStatus?
+				(item?.requestComponent?.length||0) +
+				(item?.requestPart?.length||0)
+				:'None'
+	console.log('role (in DetailsRequestCardView)', {role})
 	console.log('number of requests', {numberOfRequests})
+	console.log('requestStatus (in DetailsRequestCardView)', item?.requestStatus)
 	return (
 		<>
 			<Card style={[styles.card, {
 				backgroundColor: uniColorMode.newdrkb}]}>
 				<View style={styles.cardContainer}>
 					<View style={[styles.titleContainer, {backgroundColor: uniColorMode.vvvdrkbltr}]}>
-						<Ionicons name={'person-outline'} size={15} color={'gold'} />
-						<Text style={[styles.title, { color: 'gold' }]}>
-							{toTitleCase(item?.first_name||'')}
+						<Ionicons name={'person-circle-outline'} size={15} color={color} />
+						<Text style={[styles.title, { color: color }]}>
+							{toTitleCase(`${item?.requestUser?.first_name} ${item?.requestUser?.last_name}`)} #{item.id}
 						</Text>
 					</View>
-					<View style={[styles.cardContent, {backgroundColor: uniColorMode.shadowdkr, borderColor: uniColorMode.dkrb}]}>
-						{/* <View style={styles.textBox1}> */}
-							<View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-								<View style={styles.status}>
-									<Text style={[styles.subText2]}>
-										{numberOfFaults>1?'Faults':'Fault'}: <Text style={{
-											color: typeof(numberOfRequests)==='string'?'black':'green',
-											// fontWeight: typeof(numberOfRequests)==='string'?undefined:'bold'
-											}}>{numberOfFaults}</Text>
-									</Text>
-								</View>
-								<View style={styles.status}>
-									<Text style={[styles.subText2]}>
-										{numberOfRequests>1?'Requests':'Request'}: <Text style={{
-											color: typeof(numberOfRequests)==='string'?'black':'green',
-											// fontWeight: typeof(numberOfRequests)==='string'?undefined:'bold'
-											}}>{numberOfRequests}</Text>
-									</Text>
-								</View>
+					<View>
+						<View style={styles.textBox2}>
+							<Text style={[styles.subText, styles.outerTextColor]}>
+								New Location: <Text style={{color: uniColorMode.ltrb}}>{toTitleCase(item?.newLocation)}</Text>
+							</Text>
+							<Text style={[styles.subText, styles.outerTextColor]}>
+								State: <Text style={{color: 'cyan'}}>{toTitleCase(item?.newState)}</Text>
+							</Text>
+						</View>
+						<View style={styles.textBox}>
+							<View>
+								<Text style={[styles.subText, styles.outerTextColor]}>
+									Status: <View style={[
+												styles.pending,
+												{backgroundColor: (!item?.approve&&!item?.reject)?'orange':
+													item?.approve?'green':
+													'darkcyan'},
+													]}>
+												<Text style={[
+													styles.pendingText,
+													{color: 'black'}]}>
+													{(!item?.approve&&!item?.reject)?'Pending':
+													item?.approve?'Resolved':
+													'Unconfirmed'}
+												</Text>
+											</View>
+								</Text>
 							</View>
-						{/* </View> */}
+						</View>
 					</View>
 				</View>
 			</Card>
@@ -123,8 +136,8 @@ const styles = StyleSheet.create({
 		// justifyContent: 'space-evenly',
 	},
 	textBox1: {
-		// flexDirection: 'row',
-		// justifyContent: 'space-between',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
 		// flexWrap: 'wrap',
 		// overflow: 'hidden',
 	},

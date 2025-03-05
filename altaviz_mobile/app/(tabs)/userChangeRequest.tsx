@@ -5,33 +5,63 @@ import React, {useEffect} from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle } from '../../myConfig/navigation';
 // import { ThemedText } from '../../components/ThemedText';
-import { useGet } from '@/requests/makeRequests';
-import { useColorMode } from '@/constants/Colors';
+import { useGet, usePatch } from '../../requests/makeRequests';
+import { useColorMode } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { toTitleCase } from '@/hooks/useAllCases';
-import { baseUrl } from '@/constants/urlOrigin';
+import { toTitleCase } from '../../hooks/useAllCases';
+import { baseUrl } from '../../constants/urlOrigin';
+import { useHeader } from '../../context/headerUpdate';
 // import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
 
-export default function UserProfile() {
+interface getTypes {
+	getData: {[key: string]: any}|null;
+	isGetError: string|null;
+	isGetLoading: boolean;
+	GetSetup: (url: string) => Promise<void>;
+}
+export default function UserChangeRequest() {
+	const { setHeaderTitle } = useHeader();
+	useEffect(()=>setHeaderTitle('Details Update Request'))
 	// const baseUrl = useGetDataFromStorage('baseUrl')
 	// console.log('baseUrl (userProfile):', baseUrl)
 	const uniColorMode = useColorMode();
-	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
-	const {id} = useLocalSearchParams();
+	const {patchData, isPatchError, isPatchLoading, PatchSetup} = usePatch();
+	const {getData, isGetError, isGetLoading, GetSetup}: getTypes = useGet();
+	const {data, arrayData, type, variant, user, label} = useLocalSearchParams();
 	const router = useRouter();
-	const url = `user/${id}/`
-	console.log('id (user profile):', id, {url});
+	const dataItem = JSON.parse(String(data))
+	const arrayDataItem = JSON.parse(String(arrayData))
+	console.log(
+		'\nin UserChangeRequest',
+		'\ndataItem(item):', JSON.stringify(dataItem, null, 4),
+		// '\n', {arrayData},
+		'\n', {type},
+		'\n', {variant},
+		'\n', {user},
+		'\n', {label}
+	)
+	const url = `user/${dataItem?.requestUser?.id}/`
+	// console.log('id (user profile):', id, {url});
 	console.log('getData:', (JSON.stringify(getData, null, 4)));
 	useEffect(()=>{
 		console.log('in PendingFaults '.repeat(5))
 		GetSetup(url)
 	}, [url])
+	// let dataItem: any = undefined
+	// if (dataItem) dataItem = dataItem
+	const submitHandler = (response:string) => {
+		const formData = new FormData();
+		formData.append(response, 'true');
+		formData.append('userID', dataItem?.requestUser?.id);
+		formData.append('updateRequestID', dataItem?.id);
+		PatchSetup(`approve-user-details-update/${user}/`, formData)
+    };
 	let userData: any
 	if (getData) userData = getData
 
 	return (
 		<ScrollView style={[ScreenStyle.allScreenContainer, styles.mainContainer]}>
-			{(isGetLoading||!getData) ?
+			{(!dataItem||isGetLoading) ?
 			(<ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />)
 			:
 			(<>
@@ -42,7 +72,7 @@ export default function UserProfile() {
 						resizeMode="cover"
 					/>
 					<View style={styles.userInfoContainer}>
-						<Text style={[styles.userName, {color: uniColorMode.text}]}>{toTitleCase(userData?.first_name||'')} {toTitleCase(userData.last_name||'')}</Text>
+						<Text style={[styles.userName, {color: uniColorMode.text}]}>{toTitleCase(userData?.first_name||'')} {toTitleCase(userData?.last_name||'')}</Text>
 						<Text style={[styles.userHandle, {color: uniColorMode.text}]}>{toTitleCase(userData?.username||'')}</Text>
 						<View style={[styles.role, {backgroundColor: uniColorMode.sdkb}]}>
 							<Text style={[{color: uniColorMode.text}]}>{toTitleCase(userData?.role||'')}</Text>
@@ -61,26 +91,8 @@ export default function UserProfile() {
 					</View>
 				</View>
 
-				<View style={styles.actionsContainer}>
-					<TouchableOpacity style={[styles.editButton, {backgroundColor: uniColorMode.newdrkb1}]}
-						onPress={()=>null}>
-					<Text style={[styles.editButtonText, {color: uniColorMode.text}]}>Edit Profile</Text>
-					</TouchableOpacity>
-				</View>
-
 				<View style={styles.sectionContainer}>
-					<Text style={styles.sectionTitle}>About</Text>
-					{userData?.role==='custodian' &&
-					<View style={styles.infoItemContainer}>
-						<View style={styles.infoItem}>
-							<Ionicons name="business-outline" size={20} color={uniColorMode.text} />
-							<Text style={styles.infoText}>{toTitleCase(userData?.branch?.bank?.name||'')}</Text>
-						</View>
-						<View style={styles.infoItem}>
-							<Ionicons name="card-outline" size={20} color={uniColorMode.text} />
-							<Text style={styles.infoText}>{toTitleCase(userData?.branch?.name||'')}</Text>
-						</View>
-					</View>}
+					{/* <Text style={styles.sectionTitle}>About</Text> */}
 					<View style={styles.infoItem}>
 						<Ionicons name="mail-outline" size={20} color={uniColorMode.text} />
 						<Text style={styles.infoText}>{userData?.email}</Text>
@@ -105,22 +117,62 @@ export default function UserProfile() {
 							<Text style={styles.infoText}>{toTitleCase(userData?.state?.name||'')}</Text>
 						</View>
 					</View>
+					{userData?.role==='custodian' ?
+					<>
+						<View style={styles.infoItem}>
+							<Ionicons name="card-outline" size={20} color={uniColorMode.text} />
+							{checkForUpdate(userData?.branch?.name, dataItem?.newBranch)}
+						</View>
+						<View style={styles.infoItem}>
+							<Ionicons name="location-outline" size={20} color={uniColorMode.text} />
+							{checkForUpdate(userData?.branch?.location?.location, dataItem?.newLocation)}
+						</View>
+					</>
+					:
 					<View style={styles.infoItem}>
 						<Ionicons name="location-outline" size={20} color={uniColorMode.text} />
-						<Text style={styles.infoText}>{toTitleCase((userData?.role==='custodian')?userData?.branch?.location?.location:userData?.location?.location||'')}</Text>
-					</View>
-					<View style={styles.infoItem}>
+						{checkForUpdate(userData?.location?.location, dataItem?.newLocation)}
+					</View>}
+					{/* <View style={styles.infoItem}>
 						<Ionicons name="home-outline" size={20} color={uniColorMode.text} />
-						<Text style={styles.infoText}>{toTitleCase(userData?.address||'')}</Text>
-					</View>
-					<View style={styles.infoItemNoRow}>
+						<Text style={styles.infoText}>{toTitleCase(getData?.address||'')}</Text>
+					</View> */}
+					{/* <View style={styles.infoItemNoRow}>
 						<Ionicons name="dice-outline" size={20} color={uniColorMode.text} />
-						<Text style={styles.infoText}>{toTitleCase(userData?.aboutme||'') || 'No bio available'}</Text>
+						<Text style={styles.infoText}>{toTitleCase(getData?.aboutme||'') || 'No bio available'}</Text>
+					</View> */}
+				</View>
+				{/* buttons */}
+				<View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+					<View style={styles.actionsContainer}>
+					<TouchableOpacity style={[styles.editButton, {backgroundColor: uniColorMode.newdrkb1}]}
+							onPress={()=>submitHandler('approve')}>
+						<Text style={[styles.editButtonText, {color: 'green'}]}>Approve</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.actionsContainer}>
+					<TouchableOpacity style={[styles.editButton, {backgroundColor: uniColorMode.newdrkb1}]}
+							onPress={()=>submitHandler('reject')}>
+						<Text style={[styles.editButtonText, {color: 'red'}]}>Reject</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
-			</>)}
+			</>
+		)}
 		</ScrollView>
 	);
+}
+
+const checkForUpdate = (data1: any, data2: any) => {
+	console.log('data1:', data1, 'data2:', data2)
+	if (data1!==data2) return (
+		<View style={{flexDirection: 'row'}}>
+			<Text style={[styles.infoTextForChanges, {color: 'red'}]}>{toTitleCase(data1||'')}</Text>
+			<Text style={[styles.infoTextForChanges, {color: 'red'}]}>{'-->'}</Text>
+			<Text style={[styles.infoTextForChanges]}>{toTitleCase(data2||'')}</Text>
+		</View>
+	)
+	return <View style={{flexDirection: 'row'}}><Text style={[styles.infoTextForChanges]}>{toTitleCase(data1||'')}</Text></View>
 }
 
 const styles = StyleSheet.create({
@@ -160,12 +212,13 @@ const styles = StyleSheet.create({
 		lineHeight: 20,
 	},
 	actionsContainer: {
+		flex: 1,
 		// flexDirection: 'row',
-		padding: 20,
+		padding: 10,
 		// gap: 10,
 	},
 	editButton: {
-	//   flex: 1,
+	  	// flex: 1,
 		// backgroundColor: '#0066FF',
 		padding: 12,
 		borderRadius: 25,
@@ -202,6 +255,11 @@ const styles = StyleSheet.create({
 	infoText: {
 		marginLeft: 5,
 		fontSize: 16,
+		color: '#fff',
+	},
+	infoTextForChanges: {
+		marginLeft: 5,
+		fontSize: 18,
 		color: '#fff',
 	},
 	role: {

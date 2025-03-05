@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, Button } from 'react-native';
 import React, {useEffect} from 'react';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle } from '../../myConfig/navigation';
 
 export default function BlueBlank() {
-	const {id, arrayData, faultID } = useLocalSearchParams(); // get the data from the navigation (passed from another screen)
-	const navigation: any|undefined = useNavigation(); // navigation to set/update data to another screen/the screen itself
+	const {id, arrayData, faultID } = useLocalSearchParams();
+	const router = useRouter();
 	console.log('BlueBlank id:', id);
 	console.log('BlueBlank arrayData:', arrayData);
 	console.log('BlueBlank typeof arrayData:', typeof arrayData);
@@ -23,25 +23,27 @@ export default function BlueBlank() {
 	useEffect(() => {
 		if (selectedFault) {
 			selectedFault = JSON.stringify(selectedFault)
-			navigation.navigate('detailScreen', {
-				fault: selectedFault,
-				type: 'faultRequest'
-			})
+			router.push({
+				pathname: '/detailScreen',
+				params:{
+					fault: selectedFault,
+					type: 'faultRequest'
+			}})
 		}
 	}, [selectedFault]);
 	return (
 		<>
 			<View style={[ScreenStyle.allScreenContainer, { justifyContent: 'center', alignItems: 'center'}]}>
-				<Text style={styles.text}>user id: {id}</Text>
-				<Text style={styles.text}>fault id: {faultID}</Text>
+				{/* <Text style={styles.text}>user id: {id}</Text>
+				<Text style={styles.text}>fault id: {faultID}</Text> */}
 				{/* <Text style={styles.text}>array data: {arrayData}</Text>
 				<Text style={styles.text}>type data: {typeof arrayData}</Text> */}
 				{/* <Text style={styles.text}>array data: {arrayData}</Text> */}
 				{/* <Text style={styles.text}>parsed data: {parsedArray}</Text> */}
 				{/* <Text style={styles.text}>id data: {parsedArray.id}</Text> */}
-				<Button // Button to update the Data passed from another screen
+				{/* <Button // Button to update the Data passed from another screen
 				title='Update Data' onPress={()=>navigation.setParams({message: 'updated data'})}/>
-				<Text style={styles.text}>Note: You can send Data back or to any other screen as well</Text>
+				<Text style={styles.text}>Note: You can send Data back or to any other screen as well</Text> */}
 			</View>
 		</>
 	)

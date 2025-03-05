@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
 import { useHeader } from '@/context/headerUpdate';
 import { useGet } from '@/requests/makeRequests';
@@ -8,6 +8,7 @@ import { useColorMode } from '@/constants/Colors';
 import { useGetIcon } from '@/components/getIcon';
 import { CardView } from '@/components/cardView';
 import { EngineerCardView } from '@/components/engineersCardView';
+import { DetailsRequestCardView } from '@/components/detailsRequestCardView';
 import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
 
 export default function PendingFaults() {
@@ -15,9 +16,17 @@ export default function PendingFaults() {
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 	const uniColorMode = useColorMode();
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
-	const { setHeaderTitle } = useHeader();
-	const {url, label, mode, variant} = useLocalSearchParams(); // get the data from the navigation (passed from another screen)
-	const navigation: any|undefined = useNavigation(); // navigation to set/update data to another screen/the screen itself
+	
+	const {url, label, mode, variant} = useLocalSearchParams();
+	console.log(
+		'\nin pendingFaults #######:',
+		// '\ndata:', JSON.stringify(userData, null, 4),
+        '\n', {url},
+        '\n', {label},
+        '\n', {mode},
+        '\n', {variant},
+	)
+	const router = useRouter()
 	useEffect(()=>{GetSetup(url)}, [url])
 	let name
 	const nameList = String(label).split(' ')
@@ -29,10 +38,16 @@ export default function PendingFaults() {
         setRefreshing(false);
     }
 	const {getIcon, color} = useGetIcon({variant: String(variant)})
-	useEffect(()=>setHeaderTitle(String(label)), [isGetLoading, url, label, variant])
+	// const { setHeaderTitle } = useHeader();
+	// useEffect(()=>setHeaderTitle(String(label)), [isGetLoading, url, label, variant])
 	const role = userDetails?.role
 	console.log('in pendingFaults', {role})
-	const supervisor_HelpDesk_HR = role==='help-desk'||role==='supervisor'
+	const acountUpdate = (role==='human-resource'&&label==='Account Update Requests')||null
+	console.log('in pendingFaults', {role})
+	const HRExceptuion = String(url)?.split?.('-')?.[3]?.split?.('/')?.[0]
+	const supervisor_HelpDesk_HR = role==='help-desk'||role==='supervisor'||(role==='human-resource'&&mode==='fault'&&!HRExceptuion)
+	// console.log('pendingFaults (first item):', JSON.stringify(getData?.[0], null, 4))
+	const allHRRequests = String(url)?.split?.('/')[0] === 'all-request-only'
 	return (
 		<>
 			{(!isGetLoading&&getData)?
@@ -42,22 +57,29 @@ export default function PendingFaults() {
 					data={getData}
 					keyExtractor={(item: Record<string, any>) => item.id.toString()}
 					renderItem={({ item }) => {
-						const user = item?.first_name
+						const user = acountUpdate?userDetails?.id:item?.first_name
 						console.log('pendingFaults:', {user})
 						return (
 							<TouchableOpacity
 							activeOpacity={0.8}
-							onPress={() => navigation.navigate(supervisor_HelpDesk_HR?'engineersFaults':'detailScreen', {
+							onPress={() => router.push({
+								// @ts-ignore
+								pathname: acountUpdate?'/userChangeRequest':supervisor_HelpDesk_HR?'/engineersFaults':'/detailScreen',
+								params: {
 								data: JSON.stringify(item),
 								arrayData: JSON.stringify(getData),
 								type: name,
 								variant: variant,
 								user: user,
-							})}
-							>{supervisor_HelpDesk_HR?
-								<EngineerCardView mode={String(mode)} icon={getIcon!} color={color!} item={item} role={role}/>
+								label: String(label),
+							}})}
+							>{acountUpdate?
+								<DetailsRequestCardView mode={String(mode)} icon={getIcon!} color={color!} item={item} role={role} label={String(label)}/>
 								:
-								<CardView mode={String(mode)} icon={getIcon!} color={color!} item={item} role={role}/>}
+								supervisor_HelpDesk_HR?
+									<EngineerCardView mode={String(mode)} icon={getIcon!} color={color!} item={item} role={role} label={String(label)}/>
+									:
+									<CardView mode={String(mode)} icon={getIcon!} color={color!} item={item} role={role} label={String(label)} swapCard={allHRRequests}/>}
 							</TouchableOpacity>
 						)}}
 					ItemSeparatorComponent={()=><View style={{height: 6}} />}

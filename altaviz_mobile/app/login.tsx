@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { usePost } from '../requests/makeRequests'
 import Toast from 'react-native-toast-message';
 import { useAsyncStorageMethods } from '@/context/AsyncMethodsContext';
+import { useRouter } from 'expo-router';
 
 interface postType {
     email: string,
@@ -23,6 +24,7 @@ interface UsePostReturn {
 }
 
 export default function Login() {
+    const router = useRouter();
     const { setItem } = useAsyncStorageMethods();
     const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
     const [secureText, setSecureText] = useState(true);
@@ -73,6 +75,10 @@ export default function Login() {
             const data = {type: 'success', msg: 'Login successful'}
             showToast(data)
             setLoginPost(initials)
+            const delayRouter = setTimeout(() => {
+                router.replace('/')
+            }, 500)
+            return () => clearTimeout(delayRouter)
         } else if (isPostError) {
             console.log('Error (login):', isPostError)
             const data = {type: 'error', msg: isPostError}

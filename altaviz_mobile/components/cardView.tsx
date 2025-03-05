@@ -1,17 +1,22 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
+import { useHeader } from '@/context/headerUpdate';
 
-export function CardView ({mode, icon, color, item, role}: {
+export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 	mode?: string,
 	icon?: keyof typeof Ionicons.glyphMap,
 	color?: string,
 	item: Record<string, any>,
 	role?: string
+	label?: string
+	swapCard?: boolean
 }) {
+	const { setHeaderTitle } = useHeader();
+	useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
 	// console.log('item (cardView):', JSON.stringify(item, null, 4))
 	const numberOfRequests = (item?.faults)?
@@ -26,23 +31,28 @@ export function CardView ({mode, icon, color, item, role}: {
 	console.log('role (in cardView)', {role})
 	console.log('number of requests', {numberOfRequests})
 	console.log('requestStatus (in cardView)', item?.requestStatus)
+	// console.log('item (in cardView)', JSON.stringify(item, null, 4))
+	const notWorkshopAndHR = role!=='workshop'&&(role==='human-resource'&&swapCard&&item?.fault)
 	return (
 		<>
 			<Card style={[styles.card, {
 				backgroundColor: uniColorMode.newdrkb}]}>
 				{mode==='request'?
+					// Request card
 					(<View style={styles.cardContainer}>
+						{/* icon, type and id */}
 						<View style={[styles.titleContainer, {backgroundColor: uniColorMode.vvvdrkbltr}]}>
 							<Ionicons name={icon} size={15} color={color} />
 							<Text style={[styles.title, { color: color }]}>
 								{toTitleCase(String(mode))} #{item.id}
 							</Text>
 						</View>
+						{/* nested box details */}
 						<View style={[styles.cardContent, {
 							backgroundColor: uniColorMode.shadowdkr,
 							borderColor: uniColorMode.dkrb,
-							flexDirection: role!=='workshop'?'column':'row',
-							justifyContent: role!=='workshop'?'center':'space-evenly',
+							flexDirection: notWorkshopAndHR?'column':'row',
+							justifyContent: notWorkshopAndHR?'center':'space-evenly',
 							}]}>
 							<View style={styles.textBox1}>
 								<View>
@@ -53,7 +63,7 @@ export function CardView ({mode, icon, color, item, role}: {
 							</View>
 
 							{/* exempt workshop */}
-							{role!=='workshop'&&
+							{notWorkshopAndHR&&
 							<View style={styles.textBox2}>
 								<Text style={[styles.subText, styles.outerTextColor]}>
 									Details: <Text style={{color: uniColorMode.ltrb}}>{toTitleCase(item?.fault?.title?.name)}</Text>
@@ -62,6 +72,7 @@ export function CardView ({mode, icon, color, item, role}: {
 									Bank: <Text style={{color: 'cyan'}}>{item?.fault?.logged_by?.branch?.bank?.name?.toUpperCase()}</Text>
 								</Text>
 							</View>}
+							{/* status */}
 							<View style={styles.textBox}>
 								<View>
 									<Text style={[styles.subText, styles.outerTextColor]}>
@@ -79,7 +90,9 @@ export function CardView ({mode, icon, color, item, role}: {
 						</View>
 					</View>)
 					:
+					// faults card
 					(<View style={styles.cardContainer}>
+						{/* icon, type and id */}
 						<View style={[styles.titleContainer, {backgroundColor: uniColorMode.vvvdrkbltr}]}>
 							<Ionicons name={icon} size={15} color={color} />
 							<Text style={[styles.title, { color: color }]}>
@@ -89,9 +102,11 @@ export function CardView ({mode, icon, color, item, role}: {
 						<View style={[styles.cardContent, {backgroundColor: uniColorMode.shadowdkr, borderColor: uniColorMode.dkrb}]}>
 							<View style={styles.textBox1}>
 								<View>
+									{/* fault name */}
 									<Text style={[styles.subText1, {fontWeight: 'bold', fontSize: 16}]}>
 										{toTitleCase(item?.title?.name)}
 									</Text>
+									{/* request container */}
 									<View style={styles.status}>
 										<Text style={[styles.subText2]}>
 											Requests: <Text style={{
@@ -102,6 +117,7 @@ export function CardView ({mode, icon, color, item, role}: {
 									</View>
 								</View>
 							</View>
+							{/* nested box details */}
 							<View style={styles.textBox2}>
 								<Text style={[styles.subText, styles.outerTextColor]}>
 									Assigned to: <Text style={{color: uniColorMode.ltrb}}>{toTitleCase(item?.assigned_to?.first_name)}</Text>
@@ -110,6 +126,7 @@ export function CardView ({mode, icon, color, item, role}: {
 									Bank: <Text style={{color: 'cyan'}}>{item?.logged_by?.branch?.bank?.name?.toUpperCase()}</Text>
 								</Text>
 							</View>
+							{/* status */}
 							<View style={styles.textBox}>
 								<View>
 									<Text style={[styles.subText, styles.outerTextColor]}>

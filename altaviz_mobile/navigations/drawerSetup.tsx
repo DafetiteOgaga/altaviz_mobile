@@ -6,7 +6,7 @@ import { DrawerActions } from '@react-navigation/native';
 import React, { useEffect, useRef } from 'react';
 import { screenConfig } from '@/myConfig/navigation'
 import { CustomDrawerHeader } from './drawerHeader';
-import { Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image, TouchableOpacity, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { useGetDataFromStorage } from '../context/useGetDataFromStorage';
 import { useHeader } from '@/context/headerUpdate';
 import { baseUrl } from '@/constants/urlOrigin';
@@ -30,6 +30,10 @@ export default function DrawerNavigator() {
 	const resolvedHeaderTitle = useRef<string|undefined>(undefined)
 	useEffect(()=>{
 		resolvedHeaderTitle.current =
+			(titleKey==='')?'Home Title Drawer':
+			(titleKey==='blueBlank')?headerTitle:
+			(titleKey==='engineersToLocations')?headerTitle:
+			(titleKey==='userChangeRequest')?headerTitle:
 			(titleKey==='engineersFaults')?headerTitle:
 			(titleKey==='createFault')?headerTitle:
 			(titleKey==='requestItem')?headerTitle:
@@ -37,10 +41,9 @@ export default function DrawerNavigator() {
 			(titleKey==='pendingFaults'&&!fault)?headerTitle:
 			(titleKey==='detailScreen'&&fault)?headerTitle:
 			(titleKey==='detailScreen'&&!fault)?headerTitle:
-			(titleKey==='')?'Home Title Drawer':
 			// (titleKey!=='pendingFaults'&&titleKey!=='detailScreen')?
 			`${screenConfig[titleKey]?.title}`
-	}, [path, titleKey, headerTitle])
+	})
 	
 	resolvedHeaderTitle?.current!?.trim()
 	return (
@@ -49,33 +52,39 @@ export default function DrawerNavigator() {
 		drawerContent={drawerData?(props) => <CustomDrawerHeader {...props} userData={drawerData} isDark={true} baseUrl={baseUrl} />:undefined}
 		screenOptions={{
 			headerLeft: () => (
-				<TouchableOpacity onPress={() => (
+				<>
+				{(titleKey==='login'||!drawerData) ?
+				(<Text style={{marginRight: 10}}></Text>)
+				:
+				(<TouchableOpacity onPress={() => (
 					// titleKey!=='login'?
 					navigation.dispatch(DrawerActions.toggleDrawer())
 				// :null
 				)}>
-					{(titleKey==='login'||!drawerData)?
-					(<Ionicons
-						name="menu"
-						size={30}
-						color={uniColorMode.text}
-						style={styles.headerImageIcon}
-						/>):
+					{
+					// (titleKey==='login'||!drawerData)?
+					// (<Ionicons
+					// 	name="menu"
+					// 	size={30}
+					// 	color={uniColorMode.text}
+					// 	style={styles.headerImageIcon}
+					// 	/>):
 					(<Image
 						source={{ uri: `${baseUrl}${drawerData?.profile_picture}` }}
 						style={[styles.headerImageIcon, {borderColor: '#fff',}]}
 						resizeMode="contain"
 					/>)}
-				</TouchableOpacity>
+				</TouchableOpacity>)}
+				</>
 			),
 			headerShown: true,
 			drawerActiveBackgroundColor: uniColorMode.dkb,
 			drawerActiveTintColor: uniColorMode.text,
 			drawerInactiveTintColor: uniColorMode.icon,
-			headerSearchBarOptions: titleKey!=='login'?{
-				placeholder: 'Search',
-				onChangeText: (e) => console.log(e.nativeEvent.text),
-			}:undefined,
+			// headerSearchBarOptions: titleKey!=='login'?{
+			// 	placeholder: 'Search',
+			// 	onChangeText: (e) => console.log(e.nativeEvent.text),
+			// }:undefined,
 			headerStyle: {
 				backgroundColor: uniColorMode.background,
 				// You can add more custom styling here.

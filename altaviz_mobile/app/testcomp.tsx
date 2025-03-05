@@ -4,8 +4,11 @@ import React from 'react';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
 import { ScreenStyle } from '../myConfig/navigation';
+import { useRouter } from 'expo-router';
 
 export default function TestScreen() {
+  const router = useRouter();
+  // console.log("Navigation State #####:", JSON.stringify(router.getState(), null, 4));
   return (
     <>
       <Stack.Screen />

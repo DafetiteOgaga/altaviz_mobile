@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, SafeAreaView, TextInput,
 
 import { useColorMode } from '@/constants/Colors';
 import { StatusBar } from 'expo-status-bar';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { ScreenStyle, generalstyles } from '@/myConfig/navigation';
 
 // type declarations
@@ -24,7 +24,7 @@ const dafelogoDarkBg = require('@/assets/images/dafelogo1.png');
 const dafelogoWhiteBg = require('@/assets/images/dafelogo4.png');
 
 export default function App() {
-    const navigation: any = useNavigation(); // navigation to set/update data to another screen/the screen itself
+    const router: any = useRouter();
     const uniColorMode = useColorMode(); // get styles based on the current color mode
     const colorScheme = useColorScheme(); // Detect system theme
     const [isError, setIsError] = useState<string|null>(null);
@@ -160,17 +160,21 @@ export default function App() {
 
                 <View style={{paddingHorizontal: 90, paddingBottom: 20}}>
                     <Button // button to go to Greet screen with data passed from this screen to Greet screen
-                    title="Goto Greet" onPress={()=>navigation.navigate("greet", {
-                        message: "Hello from Index!\nShit be working!",
-                        myName: "Dafe"
-                        })} />
+                    title="Goto Greet" onPress={()=>router.push({
+                        pathname: "/greet",
+                        params: {
+                            message: "Hello from Index!\nShit be working!",
+                            myName: "Dafe"
+                        }})} />
                 </View>
                 <View style={{paddingHorizontal: 90, paddingBottom: 20}}>
                      <Button // button to go to test screen
-                    title="Goto test login" onPress={()=>navigation.navigate("testlogin", {
-                        message: "Hello from Index!\nShit be working!",
-                        myName: "Dafe"
-                        })} />
+                    title="Goto test login" onPress={()=>router.push({
+                        pathname: "/testlogin",
+                        params: {
+                            message: "Hello from Index!\nShit be working!",
+                            myName: "Dafe"
+                        }})} />
                 </View>
 
                 {getData && //data container
