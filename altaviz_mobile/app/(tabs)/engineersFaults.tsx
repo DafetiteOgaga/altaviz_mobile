@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
 import { useHeader } from '../../context/headerUpdate';
 import { useGet } from '../../requests/makeRequests';
@@ -20,9 +20,9 @@ export default function EngineersFaults() {
 	// @ts-ignore
 	const userData = JSON.parse(data)
 	// const engineer = user
-	const navigation: any|undefined = useNavigation(); // navigation to set/update data to another screen/the screen itself
+	const router = useRouter();
 	// useEffect(()=>{GetSetup(url)}, [url])k
-	let name
+	let name:any
 	// const nameList = String(label).split(' ')
 	// if (String(label).split(' ').length===3||label==='Posted Parts') {name = nameList[1]}
 	// else {name = 'Fault'}
@@ -37,7 +37,7 @@ export default function EngineersFaults() {
 	console.log('in engineersFaults', {role})
 	console.log(
 		'\nin engineersFaults #######:',
-		'\ndata:', JSON.stringify(userData, null, 4),
+		// '\ndata:', JSON.stringify(userData, null, 4),
 		'\n', {arraData},
 		'\n', {type},
 		'\n',{variant},
@@ -55,13 +55,15 @@ export default function EngineersFaults() {
 					renderItem={({ item }) => (
 						<TouchableOpacity
 						activeOpacity={0.8}
-						onPress={() => navigation.navigate('detailScreen', {
-							data: JSON.stringify(item),
-							arrayData: JSON.stringify('getData'),
-							type: name,
-							variant: variant,
-							engineer: user,
-						})}
+						onPress={() => router.push({
+							pathname: '/detailScreen',
+							params:{
+								data: JSON.stringify(item),
+								arrayData: JSON.stringify('getData'),
+								type: name,
+								variant: variant,
+								engineer: user,
+						}})}
 						>
 							<CardView mode={'fault'} icon={getIcon!} color={color!} item={item} role={role}/>
 						</TouchableOpacity>
