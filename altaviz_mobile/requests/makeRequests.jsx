@@ -2,10 +2,12 @@ import { useState } from 'react';
 // import { useAsyncStorageMethods } from '@/context/AsyncMethodsContext';
 import { baseUrl } from '@/constants/urlOrigin'
 
+let requestType
 function useGet () {
 	const [getData, setGetData] = useState(null)
 	const [isGetLoading, setIsGetLoading] = useState(false)
 	const [isGetError, setIsGetError] = useState(null);
+	requestType = 'GET'
 	const GetSetup = async (url) => {
 		const finalUrl = `${baseUrl}/${url}`
 		console.log('finalUrl ###***###:', finalUrl)
@@ -21,8 +23,8 @@ function useGet () {
 				throw new Error(resp.message||'Failed to post data')
 			}
 			// console.log('Response:', resp)
-			console.log('Response:', JSON.stringify(resp, null, 2).slice(0, 100));
-			console.log('Response success')
+			// console.log('Response:', JSON.stringify(resp, null, 2).slice(0, 100));
+			console.log(`${requestType} Response: success`)
 			setGetData(resp)
 		} catch (e) {
 			setIsGetError(e.message);
@@ -39,6 +41,7 @@ function usePost () {
 	const [postData, setPostData] = useState(null)
 	const [isPostLoading, setIsPostLoading] = useState(false)
 	const [isPostError, setIsPostError] = useState(null);
+	requestType = 'POST'
 	const PostSetup = async (url, formData) => {
 		console.log('hhhh'.repeat(50))
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
@@ -66,8 +69,8 @@ function usePost () {
 				throw new Error(resp.message||'Failed to post data')
 			}
 			// console.log('Response:', resp)
-			console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log('Response success')
+			// console.log('Response:', JSON.stringify(resp, null, 2));
+			console.log(`${requestType} Response: success`)
 			setPostData(resp)
 		} catch (e) {
 			setIsPostError(e.message);
@@ -84,6 +87,7 @@ function usePut () {
 	const [putData, setPutData] = useState(null)
 	const [isPutLoading, setIsPutLoading] = useState(false)
 	const [isPutError, setIsPutError] = useState(null);
+	requestType = 'PUT'
 	const PutSetup = async (url, formData) => {
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
@@ -109,8 +113,8 @@ function usePut () {
 				throw new Error(resp.message||'Failed to post data')
 			}
 			// console.log('Response:', resp)
-			console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log('Response success')
+			// console.log('Response:', JSON.stringify(resp, null, 2));
+			console.log(`${requestType} Response: success`)
 			setPutData(resp)
 		} catch (e) {
 			setIsPutError(e.message);
@@ -127,6 +131,7 @@ function usePatch () {
 	const [patchData, setPatchData] = useState(null)
 	const [isPatchLoading, setIsPatchLoading] = useState(false)
 	const [isPatchError, setIsPatchError] = useState(null);
+	requestType = 'PATCH'
 	const PatchSetup = async (url, formData) => {
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
@@ -152,8 +157,8 @@ function usePatch () {
 				throw new Error(resp.message||'Failed to post data')
 			}
 			// console.log('Response:', resp)
-			console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log('Response success')
+			// console.log('Response:', JSON.stringify(resp, null, 2));
+			console.log(`${requestType} Response: success`)
 			setPatchData(resp)
 		} catch (e) {
 			setIsPatchError(e.message);
@@ -170,6 +175,7 @@ function useDelete () {
 	const [deleteData, setDeleteData] = useState(null)
 	const [isDeleteLoading, setIsDeleteLoading] = useState(false)
 	const [isDeleteError, setIsDeleteError] = useState(null);
+	requestType = 'DELETE'
 	const DeleteSetup = async (url) => {
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
@@ -197,8 +203,8 @@ function useDelete () {
 				throw new Error(resp.message||'Failed to post data')
 			}
 			// console.log('Response:', resp)
-			console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log('Response success')
+			// console.log('Response:', JSON.stringify(resp, null, 2));
+			console.log(`${requestType} Response: success`)
 			setDeleteData(resp)
 		} catch (e) {
 			setIsDeleteError(e.message);
