@@ -1,17 +1,21 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
+import { useHeader } from '../context/headerUpdate';
 
-export function EngineerCardView ({mode, icon, color, item, role}: {
+export function EngineerCardView ({mode, icon, color, item, role, label}: {
 	mode?: string,
 	icon?: keyof typeof Ionicons.glyphMap,
 	color?: string,
 	item: Record<string, any>,
 	role?: string
+	label: string
 }) {
+	const { setHeaderTitle } = useHeader();
+	useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
 	const numberOfRequests = (item?.faults)?
 		(item?.faults?.reduce?.((sum:number, requests:any)=>(sum + (requests?.requestStatus?(requests?.requestComponent?.length||0):0) +
