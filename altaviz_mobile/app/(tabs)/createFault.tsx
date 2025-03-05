@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { StyleSheet, Text, View, TextInput, ActivityIndicator, Modal, FlatList, TouchableOpacity } from "react-native";
 import { useColorMode } from '../../constants/Colors';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { generalstyles } from '../../myConfig/navigation';
 import { useHeader } from '../../context/headerUpdate';
 import { usePost, useGet } from '../../requests/makeRequests'
@@ -22,7 +22,7 @@ interface UsePostReturn {
 
 console.log('imported createFault.tsx')
 export default function CreateFault() {
-    const navigation:any|undefined = useNavigation();
+    const router = useRouter();
     const [itemList, setItemList] = useState<any>(null);
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [others, setOthers] = useState<any>(null);
@@ -79,10 +79,7 @@ export default function CreateFault() {
                 '\nothers:', others
             )
             formData.append('mobile', 'true');
-            PostSetup(
-                `fault/`,
-                formData
-            );
+            PostSetup(`fault/`, formData);
         }
     }
     useEffect(()=>{
@@ -91,7 +88,7 @@ export default function CreateFault() {
             const data:any = {type: 'success', msg: postData?.message}
             showToast(data)
             setSelectedItem(null)
-            navigation.navigate('index')
+            router.push('/')
         } else if (isPostError) {
             // console.log('Error (login):', isPostError)
             const data = {type: 'error', msg: isPostError}
