@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, TextInput,
 
 import { useColorMode } from '../../constants/Colors';
 // import { StatusBar } from 'expo-status-bar';
-import { useNavigation, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
 // import { Ionicons } from '@expo/vector-icons';
 import { useHeader } from '../../context/headerUpdate';
@@ -61,12 +61,13 @@ export default function RequestItem({requests}: {requests: any} ) {
         urlKey = url.split('-')[1]
         console.log('urlKey (requestItem):', urlKey)
     }
-    const navigation:any|undefined = useNavigation();
+    const router = useRouter();
     const [itemList, setItemList] = useState<any>(null);
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [selectedQuantity, setSelectedQuantity] = useState<any>(null);
     const [modalItemVisible, setModalItemVisible] = useState<any>(false);
     const [modalQuantityVisible, setModalQuantityVisible] = useState<any>(false);
+    const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
     const {getData, isGetError, isGetLoading, GetSetup} = useGet();
     const { setHeaderTitle } = useHeader();
     console.log(
@@ -78,7 +79,6 @@ export default function RequestItem({requests}: {requests: any} ) {
         '\nscreen:', screen
     )
     // const { setItem } = useAsyncStorageMethods();
-    const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
     // const [secureText, setSecureText] = useState(true);
 	const uniColorMode = useColorMode(); // get styles based on the current color mode
 	// const placeholderTextColor = uniColorMode.icon
@@ -99,7 +99,7 @@ export default function RequestItem({requests}: {requests: any} ) {
             showToast(data)
         }
     }, [getData, isGetError])
-    useEffect(()=>setHeaderTitle(`${toTitleCase(type?String(type):urlKey)} Request`), [type])
+    useEffect(()=>setHeaderTitle(url==='post-part'?'Post Part':`${toTitleCase(type?String(type):urlKey)} Request`), [type])
     // const initials = {email: '', password: ''};
     // const [loginPost, setLoginPost] = useState<postType>(initials)
     // const [formData, setFormData] = useState(new FormData())
@@ -136,10 +136,8 @@ export default function RequestItem({requests}: {requests: any} ) {
             const data:any = {type: 'success', msg: postData?.msg||postData?.received}
             showToast(data)
             // @ts-ignore
-            if (type) {setForm(
-                false)
-            }
-            navigation.navigate('index')
+            if (type) {setForm(false)}
+            router.push('/')
         } else if (isPostError) {
             // console.log('Error (login):', isPostError)
             const data = {type: 'error', msg: isPostError}
@@ -185,7 +183,7 @@ export default function RequestItem({requests}: {requests: any} ) {
                         {paddingVertical: type?10:30,}
                     ]}>
                         <Text // form/post container
-                        style={[ generalstyles.headerFooter, myDynamicStyles.textColor]}>Request {toTitleCase((type?type:urlKey!)||'')}</Text>
+                        style={[ generalstyles.headerFooter, myDynamicStyles.textColor]}>{toTitleCase(url==='post-part'?'Post Part':('Request '+(type?type:urlKey!))||'')}</Text>
                         <View style={requestStyles.selectionContainer}>
                             {/* item requested */}
                             <View>
