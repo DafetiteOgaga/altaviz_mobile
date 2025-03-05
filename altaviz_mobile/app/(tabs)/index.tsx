@@ -5,11 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScreenStyle } from '../../myConfig/navigation';
 import { useColorMode } from '../../constants/Colors';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
-import { useNavigation } from 'expo-router';
+import { useSegments, useRouter } from 'expo-router';
 import TimeOfDayGreeting from '../../hooks/TimeOfDayGreeting';
 import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
 import { useGet } from "../../requests/makeRequests";
 import { useGetIcon } from "../../components/getIcon";
+// import { useAsyncStorageMethods } from "../../context/AsyncMethodsContext";
 
 type customComponent = {
     icon: React.ComponentProps<typeof Ionicons>['name'],
@@ -18,6 +19,7 @@ type customComponent = {
 	variant?: string,
 	onPress?: any,
 	userID?: number,
+	userEmail?: string,
 	urlRoute?: string,
 	screen?: string,
 	id?: number,
@@ -30,17 +32,32 @@ type customComponent = {
 const DASHBOARD_HEADER_HEIGHT = 200;
 
 const Dashboard = () => {
+	const router = useRouter();
+	const segments = useSegments();
+	// const { removeItem } = useAsyncStorageMethods();
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 	// const {getData, isGetError, isGetLoading, GetSetup} = useGet();
 	// const [userData, setUserData] = useState(null);
-	const navigation: any|undefined = useNavigation();
 	// const [scrollOffset, setScrollOffset] = useState(0);
 	const uniColorMode = useColorMode()
 	// const colorScheme = useColorScheme();
 	// const isDark = colorScheme === "dark";
 	const dashboardData = useGetDataFromStorage('loginData')
-	console.log('dashboard', JSON.stringify(dashboardData, null, 4))
+	// console.log('dashboard', JSON.stringify(dashboardData, null, 4))
+	useEffect(() => {
+		if (!dashboardData) {
+			// removeItem("loginData");
+            // removeItem("baseUrl");
+            // removeItem("headerDetails");
+            // console.log("Removed login details");
+			const delayRouter = setTimeout(() => {
+				router.replace('/login')
+			}, 2000)
+			return () => clearTimeout(delayRouter)
+		}
+	}, [dashboardData])
 	if (!dashboardData) return <ActivityIndicator style={{marginTop: 250}} size="large" color={uniColorMode.buttonSpin} />
+	
 
 	// const handleScrollOffsetChange = (value: any) => {
 	// 	console.log({value});
@@ -58,6 +75,7 @@ const Dashboard = () => {
 	const role = dashboardData?.role
 	console.log('role (dashboard):', role)
 	console.log('email:', dashboardData?.email)
+	console.log('segments:', segments)
 	return (
 		<ScrollView
 		refreshControl={
@@ -147,7 +165,8 @@ const Dashboard = () => {
 					<View style={styles.statsMainContainer}>
 						<CreateFaultButton
 							icon="construct-outline"
-							screen='createFault'
+							screen='/createFault'
+							userEmail={dashboardData?.email}
 							// userID={dashboardData?.id}
 							// mode='fault'
 							// urlRoute="pending-faults"
@@ -187,8 +206,9 @@ const Dashboard = () => {
 						<View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
 							<CreateFaultButton
 								icon="cog-outline"
-								screen='requestItem'
+								screen='/requestItem'
 								url='request-component'
+								userEmail={dashboardData?.email}
 								// userID={dashboardData?.id}
 								// mode='fault'
 								// urlRoute="pending-faults"
@@ -199,12 +219,13 @@ const Dashboard = () => {
 								/>
 							<CreateFaultButton
 							icon="cube-outline"
-							screen='requestItem'
+							screen='/requestItem'
 							url='post-part'
+							userEmail={dashboardData?.email}
 							// userID={dashboardData?.id}
 							// mode='fault'
 							// urlRoute="pending-faults"
-							label="Request Part"
+							label="Post Part"
 							// variant="faults" // screen="pendingFaults"
 							// onRefresh={handleRefresh}
 							// endOnRefresh={setRefreshing}
@@ -268,7 +289,8 @@ const Dashboard = () => {
 					<View style={styles.statsMainContainer}>
 						<CreateFaultButton
 							icon="location-outline"
-							screen='engineersToLocations'
+							screen='/engineersToLocations'
+							userEmail={dashboardData?.email}
 							// level='supervisor'
 							// onRefresh={handleRefresh}
 							// endOnRefresh={setRefreshing}
@@ -303,60 +325,146 @@ const Dashboard = () => {
 						</View>
 					</View>
 				</>}
-				<View style={styles.actionContainer}>
-					<ActionButton icon="person-outline" label="Supervisor" onPress={() => navigation.navigate('userProfile')} />
-					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => navigation.navigate('userProfile')} />
-				</View>
+
+				{/* human-resource */}
+				{role==='human-resource' &&
+				<>
+					<View style={styles.statsMainContainer}>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="cog-outline"
+								userID={dashboardData?.id}
+								mode='request'
+								urlRoute="workshop-component-request"
+								label="Workshop Requests" variant="pendingComponents" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="cube-outline"
+								userID={dashboardData?.id}
+								mode='request'
+								urlRoute="post-part"
+								label="Fixed Parts" variant="pendingParts" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+					<View style={styles.statsMainContainer}>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="construct-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="approve-user-details-update"
+								label="Account Update Requests" variant="faults" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="hourglass-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="all-request-faults"
+								label="Engineers with Requests" variant="unconfirmedResolutions" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+					<View style={styles.statsMainContainer}>
+						<View style={styles.statsContainer}>
+							{/* @ts-ignore */}
+							<StatCard
+								icon="construct-outline"
+								userID={dashboardData?.id}
+								mode='fault'
+								urlRoute="all-pending-faults-wRequests"
+								label="All Faults With requests" variant="faults" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+							<StatCard
+								icon="hourglass-outline"
+								userID={dashboardData?.id}
+								mode='request'
+								urlRoute="all-request-only"
+								label="All Combined Requests" variant="unconfirmedResolutions" // screen="pendingFaults"
+								onRefresh={handleRefresh}
+								endOnRefresh={setRefreshing}
+								/>
+						</View>
+					</View>
+				</>}
+
+				{/* white buttons */}
+				{/* <View style={styles.actionContainer}>
+					<ActionButton icon="person-outline" label="Supervisor" onPress={() => router.push('/userProfile')} />
+					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => router.push('/userProfile')} />
+				</View> */}
 			</ParallaxScrollView>
 		</ScrollView>
 	);
 };
 
-const CreateFaultButton = ({ userID, icon, label, screen, url, urlRoute, onRefresh, endOnRefresh }: customComponent) => {
+const CreateFaultButton = ({ userID, userEmail, icon, label, screen, url, urlRoute, onRefresh, endOnRefresh }: customComponent) => {
 	const dashboardData = useGetDataFromStorage('loginData')
-	const email = dashboardData?.email
+	// const email = dashboardData?.email
 	// const id = dashboardData?.id
 	const uniColorMode = useColorMode()
 	const fontColor = '#bbb'
-	const navigation:any = useNavigation();
+	const router = useRouter()
 	const fetchUrl = `${urlRoute}/${userID}/total/`
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	const fetchHasUndefined = fetchUrl?.split?.('/')?.some?.((word:any)=>word==='undefined')
 	const fetchData = () => {
-		// console.log('in Dashboard > StatCard '.repeat(5))
-		GetSetup(fetchUrl)
-		if (endOnRefresh) endOnRefresh(false)
+		if (!fetchHasUndefined){
+			console.log('\nFetching data ###############', fetchUrl)
+			GetSetup(fetchUrl)
+			if (endOnRefresh) endOnRefresh(false)
+		}
 	}
 	useEffect(()=>{
 		// console.log('fetcing in Dashboard > StatCard '.repeat(5))
 		fetchData()
 	}, [onRefresh])
-	console.log('in CreateFaultButton', {email}, {userID})
+	console.log('in CreateFaultButton', {screen}, {url}, {userEmail}, {userID})
 	if (!dashboardData||isGetLoading) return <ActivityIndicator size="small" color={uniColorMode.buttonSpin} />
 	// @ts-ignore
-	const supervisorLabel = (dashboardData?.role==='supervisor')&&`${getData?.total} ${label}`
+	const supervisorLabel = ((dashboardData?.role==='supervisor')&&`${getData?.total} ${label}`)||undefined
 	console.log('getData in index', getData)
+	console.log(`${fetchUrl} has undefined: ${fetchHasUndefined}`)
+	console.log('isGetError:', isGetError)
 	return(
 		<View>
 			{/* @ts-ignore */}
 			{(!userID||getData?.total) &&
 			<TouchableOpacity
 			style={[styles.faultButton, {backgroundColor: uniColorMode.dkrb}]}
-			onPress={()=>navigation.navigate(screen, {
-				screen: screen,
-				email: email,
-				id: userID,
-				url: url,
+			disabled={!!isGetError}
+			onPress={()=>router.push({
+				// @ts-ignore
+				pathname: screen,
+				params: {
+					screen: screen,
+					email: userEmail,
+					id: userID,
+					url: url,
+				},
 			})}>
-				<Ionicons name={icon} size={20} color={fontColor} />
-				<Text style={[styles.actionText, {color: fontColor, fontWeight: 'bold'}]}>{supervisorLabel??label}</Text>
+				<Ionicons name={icon} size={20} color={isGetError?'red':fontColor} />
+				<Text style={[styles.actionText, {color: isGetError?'red':fontColor, fontWeight: 'bold'}]}>{isGetError?'Oopsy! Error':supervisorLabel??label}</Text>
 			</TouchableOpacity>}
 		</View>
 )};
 
 const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, onRefresh, endOnRefresh }: customComponent) => {
-	const screen = "pendingFaults"
+	const screen = "/pendingFaults"
 	const uniColorMode = useColorMode()
-	const navigation: any|undefined = useNavigation();
+	const router = useRouter()
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
 	const url = `${urlRoute}/${userID}/total`
 	const pressUrl = `${urlRoute}/list/${userID}/`
@@ -378,25 +486,24 @@ const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, o
 	// console.log({color}, {getIcon})
 	return (
 		<View style={[styles.statCardView, { backgroundColor: uniColorMode.vdrkb }]}>
-		{(isGetLoading&&!getData)?
-			<ActivityIndicator style={{
-				padding: 16,
-			}} size="small" color={uniColorMode.buttonSpin} />:
+		{(getData||isGetError) &&
 		<TouchableOpacity
-		onPress={() => navigation.navigate(
-			screen,
-			{
-				url: pressUrl,
-				label: label,
-				mode: mode,
-				variant: variant
-			})}
+		disabled={!!isGetError}
+		onPress={() => router.push({
+				// @ts-ignore
+				pathname: screen,
+				params:{
+					url: pressUrl,
+					label: label,
+					mode: mode,
+					variant: variant
+				}})}
 			style={[styles.statCard]}
 			>
-			<Ionicons name={icon} size={24} color={color} />
+			<Ionicons name={icon} size={24} color={isGetError?'red':color} />
 			{/* @ts-ignore */}
-			<Text style={[styles.statValue, {color: color}]}>{getData?.total||0}</Text>
-			<Text style={[styles.statLabel, {color: color}]}>{label}</Text>
+			<Text style={[styles.statValue, {color: isGetError?'red':color}]}>{isGetError?'Oopsi! Error':getData?.total||0}</Text>
+			<Text style={[styles.statLabel, {color: isGetError?'red':color}]}>{isGetError?'Oopsi! Error':label}</Text>
 		</TouchableOpacity>}
 		</View>
 	);
