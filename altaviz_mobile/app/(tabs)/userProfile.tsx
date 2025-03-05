@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Button, ActivityIndicator, ScrollView,
 	Image, TouchableOpacity
  } from 'react-native';
 import React, {useEffect} from 'react';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle } from '../../myConfig/navigation';
 // import { ThemedText } from '../../components/ThemedText';
 import { useGet } from '@/requests/makeRequests';
@@ -17,8 +17,8 @@ export default function UserProfile() {
 	// console.log('baseUrl (userProfile):', baseUrl)
 	const uniColorMode = useColorMode();
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
-	const {id} = useLocalSearchParams(); // get the data from the navigation (passed from another screen)
-	const navigation: any|undefined = useNavigation(); // navigation to set/update data to another screen/the screen itself
+	const {id} = useLocalSearchParams();
+	const router = useRouter();
 	const url = `user/${id}/`
 	console.log('id (user profile):', id, {url});
 	console.log('getData:', (JSON.stringify(getData, null, 4)));
@@ -26,12 +26,12 @@ export default function UserProfile() {
 		console.log('in PendingFaults '.repeat(5))
 		GetSetup(url)
 	}, [url])
-	let userData: any = undefined
+	let userData: any
 	if (getData) userData = getData
 
 	return (
 		<ScrollView style={[ScreenStyle.allScreenContainer, styles.mainContainer]}>
-			{(isGetLoading || !getData) ?
+			{(isGetLoading||!getData) ?
 			(<ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />)
 			:
 			(<>
@@ -52,10 +52,11 @@ export default function UserProfile() {
 								<Ionicons name="person-outline" size={10} color={uniColorMode.text} />
 								<Text style={[styles.infoText, {color: uniColorMode.text, marginLeft: 3,}]}>{toTitleCase(userData?.gender||'')}</Text>
 							</View>
+							{(userData?.role!=='custodian'&&userData?.role!=='human-resource') &&
 							<View style={[styles.infoItem, {marginLeft: 10}]}>
 								<Ionicons name={'cube-outline'} size={13} color={uniColorMode.text} />
 								<Text style={[styles.infoText, {color: uniColorMode.text, marginLeft: 3,}]}>{userData?.deliveryPoints?.deliveries}</Text>
-							</View>
+							</View>}
 						</View>
 					</View>
 				</View>
@@ -69,6 +70,17 @@ export default function UserProfile() {
 
 				<View style={styles.sectionContainer}>
 					<Text style={styles.sectionTitle}>About</Text>
+					{userData?.role==='custodian' &&
+					<View style={styles.infoItemContainer}>
+						<View style={styles.infoItem}>
+							<Ionicons name="business-outline" size={20} color={uniColorMode.text} />
+							<Text style={styles.infoText}>{toTitleCase(userData?.branch?.bank?.name||'')}</Text>
+						</View>
+						<View style={styles.infoItem}>
+							<Ionicons name="card-outline" size={20} color={uniColorMode.text} />
+							<Text style={styles.infoText}>{toTitleCase(userData?.branch?.name||'')}</Text>
+						</View>
+					</View>}
 					<View style={styles.infoItem}>
 						<Ionicons name="mail-outline" size={20} color={uniColorMode.text} />
 						<Text style={styles.infoText}>{userData?.email}</Text>
@@ -95,7 +107,7 @@ export default function UserProfile() {
 					</View>
 					<View style={styles.infoItem}>
 						<Ionicons name="location-outline" size={20} color={uniColorMode.text} />
-						<Text style={styles.infoText}>{toTitleCase(userData?.location?.location||'')}</Text>
+						<Text style={styles.infoText}>{toTitleCase((userData?.role==='custodian')?userData?.branch?.location?.location:userData?.location?.location||'')}</Text>
 					</View>
 					<View style={styles.infoItem}>
 						<Ionicons name="home-outline" size={20} color={uniColorMode.text} />
