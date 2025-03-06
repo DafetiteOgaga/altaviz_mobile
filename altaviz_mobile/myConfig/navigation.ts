@@ -39,7 +39,7 @@ export const screenConfig: Record<string, { title: string; icon: IconNameTYpe }>
 		title: 'Pending Faults Tab config',
 		icon: 'grid-outline',
 	},
-    userProfile: {
+    inspectUserProfile: {
 		title: 'User Profile Tab config',
 		icon: 'grid-outline',
 	},
