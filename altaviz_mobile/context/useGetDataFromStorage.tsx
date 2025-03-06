@@ -11,8 +11,8 @@ const useGetDataFromStorage = (key: string) => {
 
     const fetchData = async () => {
         const storedData = await getItem(key);
-        console.log({key, urlPath})
-        console.log('### Fetched data:', JSON.stringify(storedData).slice(0, 30));
+        // console.log({key, urlPath})
+        // console.log('### Fetched data:', JSON.stringify(storedData).slice(0, 30));
 
         if (storedData
             ||(!storedData&&(key==='loginData'||key==='headerDetails'||key==='baseUrl'))
