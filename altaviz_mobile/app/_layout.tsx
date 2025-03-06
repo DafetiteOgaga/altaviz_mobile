@@ -9,11 +9,13 @@ import { useColorMode } from '@/constants/Colors';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { AsyncStorageProvider } from '@/context/AsyncMethodsContext';
 import { HeaderProvider } from '../context/headerUpdate';
+import { getComponentName } from '@/hooks/getComponentName';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  getComponentName();
   const uniColorMode = useColorMode();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),

@@ -12,6 +12,7 @@ import Toast from "react-native-toast-message";
 import { toTitleCase } from "../../hooks/useAllCases";
 // import { useAsyncStorageMethods } from "../../context/AsyncMethodsContext";
 import { useGetDataFromStorage } from "../../context/useGetDataFromStorage";
+import { getComponentName } from "@/hooks/getComponentName";
 
 interface notiType {
     type: string;
@@ -26,6 +27,7 @@ interface UsePostReturn {
 }
 
 export default function EngineerToLocation() {
+    getComponentName()
     const { screen, email, id, url } = useLocalSearchParams();
     const router = useRouter();
     // const { removeItem } = useAsyncStorageMethods();
@@ -46,13 +48,13 @@ export default function EngineerToLocation() {
     const uniColorMode = useColorMode();
 
     const newline = "\n";
-    console.log(
-        newline, 'in engineerToLocation c:',
-        newline, {screen},
-        newline, {email},
-        newline, {id},
-        newline, {url},
-    )
+    // console.log(
+    //     newline, 'in engineerToLocation c:',
+    //     newline, {screen},
+    //     newline, {email},
+    //     newline, {id},
+    //     newline, {url},
+    // )
 
     // Fetch item list
     useEffect(() => {
@@ -77,7 +79,7 @@ export default function EngineerToLocation() {
         if (itemData) {
             setItemList(itemData);
         } else if (itemError) {
-            console.log("Error:", itemError);
+            // console.log("Error:", itemError);
             showToast({ type: "error", msg: itemError });
         }
     }, [itemData, itemError]);
@@ -87,7 +89,7 @@ export default function EngineerToLocation() {
         if (engineerData) {
             setEngineerList(engineerData);
         } else if (engineerError) {
-            console.log("Error:", engineerError);
+            // console.log("Error:", engineerError);
             showToast({ type: "error", msg: engineerError });
         }
     }, [engineerData, engineerError]);
@@ -108,9 +110,9 @@ export default function EngineerToLocation() {
             let locationKey: string = '';
             let selectedEngineerConstruct: string = '';
             Object.keys(selectedEngineers).forEach((item:any) => {
-                console.log('in engineerToLocation (item):', item)
+                // console.log('in engineerToLocation (item):', item)
                 let selectedLocation = itemList.find((location) => location.id === parseInt(item));
-                console.log('in engineerToLocation (selectedLocation):', JSON.stringify(selectedLocation, null, 4))
+                // console.log('in engineerToLocation (selectedLocation):', JSON.stringify(selectedLocation, null, 4))
                 locationKey = `${selectedLocation?.location?.location}-${selectedLocation?.location?.id}`;
                 selectedEngineerConstruct = `${selectedEngineers[item]?.first_name})-(${selectedEngineers[item]?.email})-(${selectedEngineers[item]?.id}`
                 locations = {
@@ -123,17 +125,17 @@ export default function EngineerToLocation() {
             // formData.append("title", 'selectedEngineers.name');
             // formData.append("other", others);
 
-            console.log(
-                "\nSubmitting Data:",
-                // '\n', JSON.stringify(selectedEngineers, null, 4),
-                // '\nlength of object:', Object.keys(selectedEngineers).length,
-                '\nlocation:', JSON.stringify(locations, null, 4),
-                // '\nlocationKey:', locationKey,
-                // '\nselectedEngineerConstruct:', selectedEngineerConstruct,
-                // '\nlength of array', filteredItems.length
-            )
+            // console.log(
+            //     "\nSubmitting Data:",
+            //     // '\n', JSON.stringify(selectedEngineers, null, 4),
+            //     // '\nlength of object:', Object.keys(selectedEngineers).length,
+            //     '\nlocation:', JSON.stringify(locations, null, 4),
+            //     // '\nlocationKey:', locationKey,
+            //     // '\nselectedEngineerConstruct:', selectedEngineerConstruct,
+            //     // '\nlength of array', filteredItems.length
+            // )
             Object.entries(locations)?.forEach?.(([key, value])=>{
-                console.log('in engineerToLocation (key):', key, value)
+                // console.log('in engineerToLocation (key):', key, value)
                 formData.append(key, String(value))
             })
             if (userData?.id) PatchSetup(`new-location-assignment/${userData?.id}/`, formData);
@@ -270,6 +272,7 @@ export default function EngineerToLocation() {
  * Item Component
  * ------------------------------------- */
 function ItemRow({ item, selectedEngineers, setSelectedEngineers, setModalVisible, setActiveLocationId }: any) {
+    getComponentName()
     // console.log('in engineerToLocation > ItemRow (selectedEngineers):', JSON.stringify(selectedEngineers, null, 4))
     // console.log('in > ItemRow (item?.id):', item?.id)
     const firstName = selectedEngineers?.first_name||selectedEngineers
@@ -304,6 +307,7 @@ function ItemRow({ item, selectedEngineers, setSelectedEngineers, setModalVisibl
  * Modal Component
  * ------------------------------------- */
 function SelectModal({ engineerList, modalVisible, setModalVisible, itemList, handleSelect }: any) {
+    getComponentName()
     const uniColorMode = useColorMode();
     return (
         <Modal animationType="slide" transparent={true} visible={modalVisible}>

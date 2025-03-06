@@ -5,12 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '@/constants/Colors';
 import { toTitleCase } from '@/hooks/useAllCases';
 import { baseUrl } from '@/constants/urlOrigin';
+import { getComponentName } from '@/hooks/getComponentName';
 
 // const DASHBOARD_HEADER_HEIGHT = 220;
 const CustomDrawerHeader = (props: any) => {
+	getComponentName()
     const { userData, isDark, baseUrl } = props; // Make sure userData is passed as a prop
 	const uniColorMode = useColorMode()
-	console.log('userData (drawerheader):', {userData}, {baseUrl})
+	// console.log('userData (drawerheader):', {userData}, {baseUrl})
 	// const [scrollOffset, setScrollOffset] = useState(0);
 	// const isHalfHeight = scrollOffset > DASHBOARD_HEADER_HEIGHT / 2;
 	
@@ -57,12 +59,13 @@ const headerStyles = StyleSheet.create({
 	mainContainer: {
 		flex: 1,
 		// flexDirection: 'row',
-		// paddingBottom: 30,
+		paddingTop: 30,
 		
 		// justifyContent: "center",
 	},
 	line: {
 		height: 1,
+		// width: "100%",
 		backgroundColor: "grey",
 		marginVertical: 25
 	},

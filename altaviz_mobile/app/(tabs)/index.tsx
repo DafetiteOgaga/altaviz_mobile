@@ -5,11 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScreenStyle } from '../../myConfig/navigation';
 import { useColorMode } from '../../constants/Colors';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
-import { useSegments, useRouter } from 'expo-router';
+import { useSegments, useRouter, usePathname } from 'expo-router';
 import TimeOfDayGreeting from '../../hooks/TimeOfDayGreeting';
 import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
 import { useGet } from "../../requests/makeRequests";
 import { useGetIcon } from "../../components/getIcon";
+import { getComponentName } from "@/hooks/getComponentName";
 // import { useAsyncStorageMethods } from "../../context/AsyncMethodsContext";
 
 type customComponent = {
@@ -32,6 +33,7 @@ type customComponent = {
 const DASHBOARD_HEADER_HEIGHT = 200;
 
 const Dashboard = () => {
+	getComponentName()
 	const router = useRouter();
 	const segments = useSegments();
 	// const { removeItem } = useAsyncStorageMethods();
@@ -73,9 +75,9 @@ const Dashboard = () => {
     //     setRefreshing(false);
     // }
 	const role = dashboardData?.role
-	console.log('role (dashboard):', role)
-	console.log('email:', dashboardData?.email)
-	console.log('segments:', segments)
+	// console.log('role (dashboard):', role)
+	// console.log('email:', dashboardData?.email)
+	// console.log('segments:', segments)
 	return (
 		<ScrollView
 		refreshControl={
@@ -402,8 +404,8 @@ const Dashboard = () => {
 
 				{/* white buttons */}
 				{/* <View style={styles.actionContainer}>
-					<ActionButton icon="person-outline" label="Supervisor" onPress={() => router.push('/userProfile')} />
-					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => router.push('/userProfile')} />
+					<ActionButton icon="person-outline" label="Supervisor" onPress={() => router.push('/inspectUserProfile')} />
+					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => router.push('/inspectUserProfile')} />
 				</View> */}
 			</ParallaxScrollView>
 		</ScrollView>
@@ -411,37 +413,40 @@ const Dashboard = () => {
 };
 
 const CreateFaultButton = ({ userID, userEmail, icon, label, screen, url, urlRoute, onRefresh, endOnRefresh }: customComponent) => {
+	getComponentName()
+	const pathname = usePathname().split('/')[1]
+	// console.log('pathname:', pathname, !!pathname)
 	const dashboardData = useGetDataFromStorage('loginData')
 	// const email = dashboardData?.email
 	// const id = dashboardData?.id
 	const uniColorMode = useColorMode()
-	const fontColor = '#bbb'
 	const router = useRouter()
-	const fetchUrl = `${urlRoute}/${userID}/total/`
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	useEffect(()=>{
+			if (!pathname) fetchData()
+	}, [onRefresh])
+	if (pathname) return
+	const fontColor = '#bbb'
+	const fetchUrl = `${urlRoute}/${userID}/total/`
 	const fetchHasUndefined = fetchUrl?.split?.('/')?.some?.((word:any)=>word==='undefined')
 	const fetchData = () => {
 		if (!fetchHasUndefined){
-			console.log('\nFetching data ###############', fetchUrl)
+			// console.log('\nFetching data ###############', fetchUrl)
 			GetSetup(fetchUrl)
 			if (endOnRefresh) endOnRefresh(false)
 		}
 	}
-	useEffect(()=>{
-		// console.log('fetcing in Dashboard > StatCard '.repeat(5))
-		fetchData()
-	}, [onRefresh])
-	console.log('in CreateFaultButton', {screen}, {url}, {userEmail}, {userID})
-	if (!dashboardData||isGetLoading) return <ActivityIndicator size="small" color={uniColorMode.buttonSpin} />
+	// console.log('in CreateFaultButton', {screen}, {url}, {userEmail}, {userID})
+	// if (!dashboardData||isGetError) return <ActivityIndicator size="small" color={uniColorMode.buttonSpin} />
 	// @ts-ignore
 	const supervisorLabel = ((dashboardData?.role==='supervisor')&&`${getData?.total} ${label}`)||undefined
-	console.log('getData in index', getData)
-	console.log(`${fetchUrl} has undefined: ${fetchHasUndefined}`)
-	console.log('isGetError:', isGetError)
+	// console.log('getData in index', getData)
+	// console.log(`${fetchUrl} has undefined: ${fetchHasUndefined}`)
+	// console.log('isGetError:', isGetError)
 	return(
 		<View>
 			{/* @ts-ignore */}
-			{(!userID||getData?.total) &&
+			{(!userID||getData?.total||isGetError) &&
 			<TouchableOpacity
 			style={[styles.faultButton, {backgroundColor: uniColorMode.dkrb}]}
 			disabled={!!isGetError}
@@ -462,22 +467,25 @@ const CreateFaultButton = ({ userID, userEmail, icon, label, screen, url, urlRou
 )};
 
 const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, onRefresh, endOnRefresh }: customComponent) => {
-	const screen = "/pendingFaults"
+	getComponentName()
+	const pathname = usePathname().split('/')[1]
+	// console.log('pathname:', pathname, !!pathname)
 	const uniColorMode = useColorMode()
 	const router = useRouter()
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	let {color, getIcon} = useGetIcon({variant: variant!})
+	useEffect(()=>{
+		if (!pathname) fetchData()
+	}, [onRefresh])
+	if (pathname) return
+	const screen = "/pendingFaults"
 	const url = `${urlRoute}/${userID}/total`
 	const pressUrl = `${urlRoute}/list/${userID}/`
-	let {color, getIcon} = useGetIcon({variant: variant!})
 	const fetchData = () => {
 		// console.log('in Dashboard > StatCard '.repeat(5))
 		GetSetup(url)
 		if (endOnRefresh) endOnRefresh(false)
 	}
-	useEffect(()=>{
-		// console.log('fetcing in Dashboard > StatCard '.repeat(5))
-		fetchData()
-	}, [onRefresh])
 
 	// @ts-ignore
 	if (getData?.total===0) {color = 'green'}
@@ -510,6 +518,7 @@ const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, o
 };
 
 const ActionButton = ({ icon, label, onPress }: customComponent) => {
+	getComponentName()
 	// const uniColorMode = useColorMode()
 	return(
 		<TouchableOpacity onPress={onPress} style={styles.actionButton}>

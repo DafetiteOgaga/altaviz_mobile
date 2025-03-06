@@ -5,8 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
 import { useHeader } from '../context/headerUpdate';
+import { getComponentName } from '@/hooks/getComponentName';
 
 export function EngineerCardView ({mode, icon, color, item, role, label}: {
+	// getComponentName()
 	mode?: string,
 	icon?: keyof typeof Ionicons.glyphMap,
 	color?: string,
@@ -14,6 +16,7 @@ export function EngineerCardView ({mode, icon, color, item, role, label}: {
 	role?: string
 	label: string
 }) {
+	getComponentName()
 	const { setHeaderTitle } = useHeader();
 	useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
@@ -22,9 +25,21 @@ export function EngineerCardView ({mode, icon, color, item, role, label}: {
 		(requests?.requestStatus?(requests?.requestPart?.length||0):0)), 0)):'None'
 	const numberOfFaults = (item?.faults)?
 		(item?.faults?.reduce?.((sum:number, fault:any)=>(sum + 1), 0)):'None'
-	console.log('role (in EngineerCardView)', {role})
-	console.log('number of faults', {numberOfFaults})
-	console.log('number of requests', {numberOfRequests})
+	// console.log('role (in EngineerCardView)', {role})
+	// console.log('number of faults', {numberOfFaults})
+	// console.log('number of requests', {numberOfRequests})
+	// console.log(
+	// 	'\n (in EngineerCardView):',
+	// 	'\n', {mode},
+	// 	'\n', {icon},
+	// 	'\n', {color},
+	// 	// '\n', {item},
+	// 	'\n', {label},
+	// 	'\n', {role},
+    //     '\n', {numberOfFaults},
+    //     '\n', {numberOfRequests},
+    //     // '\n', JSON.stringify(item, null, 4)
+	// )
 	return (
 		<>
 			<Card style={[styles.card, {

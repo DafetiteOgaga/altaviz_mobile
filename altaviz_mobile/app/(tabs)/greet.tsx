@@ -2,11 +2,13 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 import React from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle } from '@/myConfig/navigation';
+import { getComponentName } from '@/hooks/getComponentName';
 
 export default function Greet() {
+	getComponentName()
 	const {message, myName} = useLocalSearchParams();
 	const router = useRouter();
-	console.log({myName});
+	// console.log({myName});
 	return (
 		<>
 			<View style={[ScreenStyle.allScreenContainer, { justifyContent: 'center', alignItems: 'center'}]}>

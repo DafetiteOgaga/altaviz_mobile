@@ -5,25 +5,28 @@ import React, {useEffect} from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle } from '../../myConfig/navigation';
 // import { ThemedText } from '../../components/ThemedText';
-import { useGet } from '@/requests/makeRequests';
-import { useColorMode } from '@/constants/Colors';
+import { useGet } from '../../requests/makeRequests';
+import { useColorMode } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { toTitleCase } from '@/hooks/useAllCases';
-import { baseUrl } from '@/constants/urlOrigin';
+import { toTitleCase } from '../../hooks/useAllCases';
+import { baseUrl } from '../../constants/urlOrigin';
+import { getComponentName } from '../../hooks/getComponentName';
+import { PhoneNumberSeparator } from '../../components/phoneNumberSeparator';
 // import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
 
-export default function UserProfile() {
+export default function InspectUserProfile() {
+	getComponentName()
 	// const baseUrl = useGetDataFromStorage('baseUrl')
-	// console.log('baseUrl (userProfile):', baseUrl)
+	// console.log('baseUrl (InspectUserProfile):', baseUrl)
 	const uniColorMode = useColorMode();
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
 	const {id} = useLocalSearchParams();
 	const router = useRouter();
 	const url = `user/${id}/`
-	console.log('id (user profile):', id, {url});
-	console.log('getData:', (JSON.stringify(getData, null, 4)));
+	// console.log('id (user profile):', id, {url});
+	// console.log('getData:', (JSON.stringify(getData, null, 4)));
 	useEffect(()=>{
-		console.log('in PendingFaults '.repeat(5))
+		// console.log('in PendingFaults '.repeat(5))
 		GetSetup(url)
 	}, [url])
 	let userData: any
@@ -61,12 +64,12 @@ export default function UserProfile() {
 					</View>
 				</View>
 
-				<View style={styles.actionsContainer}>
+				{/* <View style={styles.actionsContainer}>
 					<TouchableOpacity style={[styles.editButton, {backgroundColor: uniColorMode.newdrkb1}]}
 						onPress={()=>null}>
 					<Text style={[styles.editButtonText, {color: uniColorMode.text}]}>Edit Profile</Text>
 					</TouchableOpacity>
-				</View>
+				</View> */}
 
 				<View style={styles.sectionContainer}>
 					<Text style={styles.sectionTitle}>About</Text>
@@ -88,11 +91,11 @@ export default function UserProfile() {
 					<View style={styles.infoItemContainer}>
 						<View style={styles.infoItem}>
 							<Ionicons name="call-outline" size={20} color={uniColorMode.text} />
-							<Text style={styles.infoText}>{userData?.phone}</Text>
+							<Text style={styles.infoText}>{PhoneNumberSeparator(userData?.phone||'')}</Text>
 						</View>
 						<View style={styles.infoItem}>
 							<Ionicons name="logo-whatsapp" size={20} color={uniColorMode.text} />
-							<Text style={styles.infoText}>{userData?.wphone}</Text>
+							<Text style={styles.infoText}>{PhoneNumberSeparator(userData?.wphone||'')}</Text>
 						</View>
 					</View>
 					<View style={styles.infoItemContainer}>
@@ -105,20 +108,21 @@ export default function UserProfile() {
 							<Text style={styles.infoText}>{toTitleCase(userData?.state?.name||'')}</Text>
 						</View>
 					</View>
-					<View style={styles.infoItem}>
+					{/* <View style={styles.infoItem}>
 						<Ionicons name="location-outline" size={20} color={uniColorMode.text} />
 						<Text style={styles.infoText}>{toTitleCase((userData?.role==='custodian')?userData?.branch?.location?.location:userData?.location?.location||'')}</Text>
-					</View>
-					<View style={styles.infoItem}>
+					</View> */}
+					{/* <View style={styles.infoItem}>
 						<Ionicons name="home-outline" size={20} color={uniColorMode.text} />
 						<Text style={styles.infoText}>{toTitleCase(userData?.address||'')}</Text>
-					</View>
+					</View> */}
 					<View style={styles.infoItemNoRow}>
 						<Ionicons name="dice-outline" size={20} color={uniColorMode.text} />
 						<Text style={styles.infoText}>{toTitleCase(userData?.aboutme||'') || 'No bio available'}</Text>
 					</View>
 				</View>
 			</>)}
+			{/* {PhoneNumberSeparator('8034598760')} */}
 		</ScrollView>
 	);
 }

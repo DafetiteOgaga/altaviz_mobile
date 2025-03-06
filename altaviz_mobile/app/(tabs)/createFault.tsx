@@ -8,6 +8,7 @@ import { usePost, useGet } from '../../requests/makeRequests'
 import Toast from 'react-native-toast-message';
 import { toTitleCase } from '../../hooks/useAllCases';
 import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
+import { getComponentName } from "@/hooks/getComponentName";
 
 interface notiType {
     type: string,
@@ -20,8 +21,9 @@ interface UsePostReturn {
     PostSetup: (url: string, formData: FormData) => Promise<void>;
 }
 
-console.log('imported createFault.tsx')
+// console.log('imported createFault.tsx')
 export default function CreateFault() {
+    getComponentName()
     const router = useRouter();
     const [itemList, setItemList] = useState<any>(null);
     const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -40,10 +42,10 @@ export default function CreateFault() {
     useEffect(()=>{GetSetup(`fault-name/`)}, [])
     useEffect(()=>{
         if (getData) {
-            console.log('Response:', getData)
+            // console.log('Response:', getData)
             setItemList(getData)
         } else if (isGetError) {
-            console.log('Error:', isGetError)
+            // console.log('Error:', isGetError)
             const data:any = {type: 'error', msg: isPostError}
             showToast(data)
         }
@@ -73,11 +75,11 @@ export default function CreateFault() {
 			formData.append('logged_by', userData?.email);
             formData.append('other', others);
             formData.append('title', selectedItem.name);
-            console.log(
-                '\nin createFault: XOXOXOXOXOXOXOXOXOXOXOXO',
-                '\nselectedItem:', selectedItem,
-                '\nothers:', others
-            )
+            // console.log(
+            //     '\nin createFault: XOXOXOXOXOXOXOXOXOXOXOXO',
+            //     '\nselectedItem:', selectedItem,
+            //     '\nothers:', others
+            // )
             formData.append('mobile', 'true');
             PostSetup(`fault/`, formData);
         }
@@ -101,15 +103,15 @@ export default function CreateFault() {
     //     '\nloading:', isPostLoading
     // )
     const showToast = (data: notiType) => {
-        console.log('Toast:', data)
+        // console.log('Toast:', data)
         Toast.show({
             type: data.type,  // 'success' | 'error' | 'info'
             text1: toTitleCase(data.msg||''),
         });
     };
-    console.log('in (createFault):', {itemList})
+    // console.log('in (createFault):', {itemList})
     const handleSelect = ({item}:{item:any}) => {
-        console.log('\nitem:', item)
+        // console.log('\nitem:', item)
         if (item.type==='item') {
             setSelectedItem(item.item)
             setModalItemVisible(false)

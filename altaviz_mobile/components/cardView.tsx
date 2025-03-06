@@ -5,8 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
 import { useHeader } from '@/context/headerUpdate';
+import { getComponentName } from '@/hooks/getComponentName';
 
 export function CardView ({mode, icon, color, item, role, label, swapCard}: {
+	// getComponentName()
 	mode?: string,
 	icon?: keyof typeof Ionicons.glyphMap,
 	color?: string,
@@ -15,6 +17,7 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 	label?: string
 	swapCard?: boolean
 }) {
+	getComponentName()
 	const { setHeaderTitle } = useHeader();
 	useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
@@ -28,9 +31,9 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 				(item?.requestComponent?.length||0) +
 				(item?.requestPart?.length||0)
 				:'None'
-	console.log('role (in cardView)', {role})
-	console.log('number of requests', {numberOfRequests})
-	console.log('requestStatus (in cardView)', item?.requestStatus)
+	// console.log('role (in cardView)', {role})
+	// console.log('number of requests', {numberOfRequests})
+	// console.log('requestStatus (in cardView)', item?.requestStatus)
 	// console.log('item (in cardView)', JSON.stringify(item, null, 4))
 	const notWorkshopAndHR = role!=='workshop'&&(role==='human-resource'&&swapCard&&item?.fault)
 	return (
