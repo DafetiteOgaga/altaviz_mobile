@@ -8,8 +8,10 @@ import { HapticTab } from '@/components/HapticTab';
 import { screenConfig } from '@/myConfig/navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '@/constants/Colors';
+import { getComponentName } from '@/hooks/getComponentName';
 
 export default function TabLayout() {
+    getComponentName()
     // const colorScheme = useColorScheme(); // 'light' | 'dark'
     const uniColorMode = useColorMode()
     return (
@@ -44,6 +46,7 @@ export default function TabLayout() {
             name="appIndex" // screen name (navigation)
             // initialParams={{ title: 'Explore Tab' }}
             options={{
+                href: null, // Hides tab but keeps screen accessible via navigation.navigate()
                 // title: screenConfig.dashboard.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.appIndex.icon} color={color} />,
@@ -57,6 +60,7 @@ export default function TabLayout() {
             name="explore" // screen name (navigation)
             // initialParams={{ title: 'Explore Tab' }}
             options={{
+                href: null, // Hides tab but keeps screen accessible via navigation.navigate()
                 // title: screenConfig.explore.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.explore.icon} color={color} />,
@@ -72,9 +76,32 @@ export default function TabLayout() {
                 message: 'Hello, Anon!\nFron default parameter value'
             }}
             options={{
+                href: null, // Hides tab but keeps screen accessible via navigation.navigate()
                 // title: screenConfig.greet.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.greet.icon} color={color} />,
+            }}
+            />
+            <Tabs.Screen // chatroom screen
+            name="chatroom" // screen name (navigation)
+            initialParams={{ // default parameter value
+                message: 'Hello, Anon!\nFron default parameter value'
+            }}
+            options={{
+                // title: screenConfig.greet.title, // tab title
+                // tab icon and color
+                tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.chatroom.icon} color={color} />,
+            }}
+            />
+            <Tabs.Screen // chatroom screen
+            name="profile" // screen name (navigation)
+            initialParams={{ // default parameter value
+                message: 'Hello, Anon!\nFron default parameter value'
+            }}
+            options={{
+                // title: screenConfig.greet.title, // tab title
+                // tab icon and color
+                tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.profile.icon} color={color} />,
             }}
             />
             <Tabs.Screen // pendingFaults screen
@@ -92,7 +119,7 @@ export default function TabLayout() {
             }}
             />
             <Tabs.Screen // UserProfile screen
-            name="userProfile" // screen name (navigation)
+            name="inspectUserProfile" // screen name (navigation)
             options={{
                 title: 'user',
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
