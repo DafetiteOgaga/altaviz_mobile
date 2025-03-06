@@ -1,14 +1,17 @@
 import { useState } from 'react';
 // import { useAsyncStorageMethods } from '@/context/AsyncMethodsContext';
 import { baseUrl } from '@/constants/urlOrigin'
+import { getComponentName } from '@/hooks/getComponentName';
 
 let requestType
 function useGet () {
+	getComponentName()
 	const [getData, setGetData] = useState(null)
 	const [isGetLoading, setIsGetLoading] = useState(false)
 	const [isGetError, setIsGetError] = useState(null);
 	requestType = 'GET'
 	const GetSetup = async (url) => {
+		getComponentName()
 		const finalUrl = `${baseUrl}/${url}`
 		console.log('finalUrl ###***###:', finalUrl)
 		setIsGetLoading(true);
@@ -24,7 +27,7 @@ function useGet () {
 			}
 			// console.log('Response:', resp)
 			// console.log('Response:', JSON.stringify(resp, null, 2).slice(0, 100));
-			console.log(`${requestType} Response: success`)
+			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setGetData(resp)
 		} catch (e) {
 			setIsGetError(e.message);
@@ -38,14 +41,16 @@ function useGet () {
 export { useGet };
 
 function usePost () {
+	getComponentName()
 	const [postData, setPostData] = useState(null)
 	const [isPostLoading, setIsPostLoading] = useState(false)
 	const [isPostError, setIsPostError] = useState(null);
 	requestType = 'POST'
 	const PostSetup = async (url, formData) => {
-		console.log('hhhh'.repeat(50))
+		getComponentName()
+		// console.log('hhhh'.repeat(50))
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
-		console.log('csrfToken:', csrfToken)
+		// console.log('csrfToken:', csrfToken)
 		const finalUrl = `${baseUrl}/${url}`
 		console.log('finalUrl ###***###:', finalUrl)
 		setIsPostLoading(true);
@@ -70,7 +75,7 @@ function usePost () {
 			}
 			// console.log('Response:', resp)
 			// console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log(`${requestType} Response: success`)
+			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setPostData(resp)
 		} catch (e) {
 			setIsPostError(e.message);
@@ -84,11 +89,13 @@ function usePost () {
 export { usePost };
 
 function usePut () {
+	getComponentName()
 	const [putData, setPutData] = useState(null)
 	const [isPutLoading, setIsPutLoading] = useState(false)
 	const [isPutError, setIsPutError] = useState(null);
 	requestType = 'PUT'
 	const PutSetup = async (url, formData) => {
+		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
 		console.log('finalUrl ###***###:', finalUrl)
@@ -114,7 +121,7 @@ function usePut () {
 			}
 			// console.log('Response:', resp)
 			// console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log(`${requestType} Response: success`)
+			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setPutData(resp)
 		} catch (e) {
 			setIsPutError(e.message);
@@ -128,11 +135,13 @@ function usePut () {
 export { usePut };
 
 function usePatch () {
+	getComponentName()
 	const [patchData, setPatchData] = useState(null)
 	const [isPatchLoading, setIsPatchLoading] = useState(false)
 	const [isPatchError, setIsPatchError] = useState(null);
 	requestType = 'PATCH'
 	const PatchSetup = async (url, formData) => {
+		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
 		console.log('finalUrl ###***###:', finalUrl)
@@ -158,7 +167,7 @@ function usePatch () {
 			}
 			// console.log('Response:', resp)
 			// console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log(`${requestType} Response: success`)
+			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setPatchData(resp)
 		} catch (e) {
 			setIsPatchError(e.message);
@@ -172,11 +181,13 @@ function usePatch () {
 export { usePatch };
 
 function useDelete () {
+	getComponentName()
 	const [deleteData, setDeleteData] = useState(null)
 	const [isDeleteLoading, setIsDeleteLoading] = useState(false)
 	const [isDeleteError, setIsDeleteError] = useState(null);
 	requestType = 'DELETE'
 	const DeleteSetup = async (url) => {
+		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
 		console.log('finalUrl ###***###:', finalUrl)
@@ -204,7 +215,7 @@ function useDelete () {
 			}
 			// console.log('Response:', resp)
 			// console.log('Response:', JSON.stringify(resp, null, 2));
-			console.log(`${requestType} Response: success`)
+			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setDeleteData(resp)
 		} catch (e) {
 			setIsDeleteError(e.message);
@@ -231,7 +242,7 @@ const fetchCsrfToken = async () => {
     console.log('Fetching CSRF token success')
     const data = await response.json();
     const csrfToken = data.csrfToken;
-	console.log('CSRF token:', csrfToken);
+	// console.log('CSRF token:', csrfToken);
 
     return csrfToken;
 }
