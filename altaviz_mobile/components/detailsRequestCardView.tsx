@@ -5,8 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
 import { useHeader } from '../context/headerUpdate';
+import { getComponentName } from '@/hooks/getComponentName';
 
 export function DetailsRequestCardView ({mode, icon, color, item, role, label}: {
+	// getComponentName()
 	mode?: string,
 	icon?: keyof typeof Ionicons.glyphMap,
 	color?: string,
@@ -14,6 +16,7 @@ export function DetailsRequestCardView ({mode, icon, color, item, role, label}: 
 	role?: string
 	label?: string
 }) {
+	getComponentName()
 	const { setHeaderTitle } = useHeader();
 	useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
@@ -27,9 +30,9 @@ export function DetailsRequestCardView ({mode, icon, color, item, role, label}: 
 				(item?.requestComponent?.length||0) +
 				(item?.requestPart?.length||0)
 				:'None'
-	console.log('role (in DetailsRequestCardView)', {role})
-	console.log('number of requests', {numberOfRequests})
-	console.log('requestStatus (in DetailsRequestCardView)', item?.requestStatus)
+	// console.log('role (in DetailsRequestCardView)', {role})
+	// console.log('number of requests', {numberOfRequests})
+	// console.log('requestStatus (in DetailsRequestCardView)', item?.requestStatus)
 	return (
 		<>
 			<Card style={[styles.card, {

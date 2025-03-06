@@ -9,8 +9,10 @@ import { useGetIcon } from '../../components/getIcon';
 import { CardView } from '../../components/cardView';
 import { EngineerCardView } from '../../components/engineersCardView';
 import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
+import { getComponentName } from '@/hooks/getComponentName';
 
 export default function EngineersFaults() {
+	getComponentName()
 	const userDetails = useGetDataFromStorage('headerDetails')
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 	const uniColorMode = useColorMode();
@@ -34,16 +36,16 @@ export default function EngineersFaults() {
 	const {getIcon, color} = useGetIcon({variant: String(variant)})
 	useEffect(()=>setHeaderTitle(`${user}'s ${String(type)}`), [userData?.id, data, type, variant])
 	const role = userDetails?.role
-	console.log('in engineersFaults', {role})
-	console.log(
-		'\nin engineersFaults #######:',
-		// '\ndata:', JSON.stringify(userData, null, 4),
-		'\n', {arraData},
-		'\n', {type},
-		'\n',{variant},
-		'\n', {user},
-		'\nlength of data:', userData?.faults?.length,
-	)
+	// console.log('in engineersFaults', {role})
+	// console.log(
+	// 	'\nin engineersFaults #######:',
+	// 	// '\ndata:', JSON.stringify(userData, null, 4),
+	// 	'\n', {arraData},
+	// 	'\n', {type},
+	// 	'\n',{variant},
+	// 	'\n', {user},
+	// 	'\nlength of data:', userData?.faults?.length,
+	// )
 	return (
 		<>
 			{(userData)?

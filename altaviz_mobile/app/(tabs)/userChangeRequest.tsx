@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { toTitleCase } from '../../hooks/useAllCases';
 import { baseUrl } from '../../constants/urlOrigin';
 import { useHeader } from '../../context/headerUpdate';
+import { getComponentName } from '@/hooks/getComponentName';
 // import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
 
 interface getTypes {
@@ -20,10 +21,11 @@ interface getTypes {
 	GetSetup: (url: string) => Promise<void>;
 }
 export default function UserChangeRequest() {
+	getComponentName()
 	const { setHeaderTitle } = useHeader();
 	useEffect(()=>setHeaderTitle('Details Update Request'))
 	// const baseUrl = useGetDataFromStorage('baseUrl')
-	// console.log('baseUrl (userProfile):', baseUrl)
+	// console.log('baseUrl (inspectUserProfile):', baseUrl)
 	const uniColorMode = useColorMode();
 	const {patchData, isPatchError, isPatchLoading, PatchSetup} = usePatch();
 	const {getData, isGetError, isGetLoading, GetSetup}: getTypes = useGet();
@@ -31,20 +33,20 @@ export default function UserChangeRequest() {
 	const router = useRouter();
 	const dataItem = JSON.parse(String(data))
 	const arrayDataItem = JSON.parse(String(arrayData))
-	console.log(
-		'\nin UserChangeRequest',
-		'\ndataItem(item):', JSON.stringify(dataItem, null, 4),
-		// '\n', {arrayData},
-		'\n', {type},
-		'\n', {variant},
-		'\n', {user},
-		'\n', {label}
-	)
+	// console.log(
+	// 	'\nin UserChangeRequest',
+	// 	'\ndataItem(item):', JSON.stringify(dataItem, null, 4),
+	// 	// '\n', {arrayData},
+	// 	'\n', {type},
+	// 	'\n', {variant},
+	// 	'\n', {user},
+	// 	'\n', {label}
+	// )
 	const url = `user/${dataItem?.requestUser?.id}/`
 	// console.log('id (user profile):', id, {url});
-	console.log('getData:', (JSON.stringify(getData, null, 4)));
+	// console.log('getData:', (JSON.stringify(getData, null, 4)));
 	useEffect(()=>{
-		console.log('in PendingFaults '.repeat(5))
+		// console.log('in PendingFaults '.repeat(5))
 		GetSetup(url)
 	}, [url])
 	// let dataItem: any = undefined
@@ -164,7 +166,8 @@ export default function UserChangeRequest() {
 }
 
 const checkForUpdate = (data1: any, data2: any) => {
-	console.log('data1:', data1, 'data2:', data2)
+	getComponentName()
+	// console.log('data1:', data1, 'data2:', data2)
 	if (data1!==data2) return (
 		<View style={{flexDirection: 'row'}}>
 			<Text style={[styles.infoTextForChanges, {color: 'red'}]}>{toTitleCase(data1||'')}</Text>

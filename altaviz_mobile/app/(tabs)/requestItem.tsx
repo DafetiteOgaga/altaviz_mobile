@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message';
 // import { useAsyncStorageMethods } from '../../context/AsyncMethodsContext';
 import { toTitleCase } from '../../hooks/useAllCases';
 import { useGet } from "../../requests/makeRequests";
+import { getComponentName } from "@/hooks/getComponentName";
 
 // interface postType {
 //     email: string,
@@ -50,8 +51,9 @@ interface UsePostReturn {
 //     setForm: ()=>void
 // }
 
-console.log('imported requestItem.tsx')
+// console.log('imported requestItem.tsx')
 export default function RequestItem({requests}: {requests: any} ) {
+    getComponentName()
     const navProps = useLocalSearchParams()
     let {id, email, type, url, setForm, screen} = requests||{}
     let urlKey:string
@@ -59,7 +61,7 @@ export default function RequestItem({requests}: {requests: any} ) {
         email = navProps.email
         url = navProps.url
         urlKey = url.split('-')[1]
-        console.log('urlKey (requestItem):', urlKey)
+        // console.log('urlKey (requestItem):', urlKey)
     }
     const router = useRouter();
     const [itemList, setItemList] = useState<any>(null);
@@ -70,14 +72,14 @@ export default function RequestItem({requests}: {requests: any} ) {
     const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
     const {getData, isGetError, isGetLoading, GetSetup} = useGet();
     const { setHeaderTitle } = useHeader();
-    console.log(
-        '\nin requestItem:',
-        '\nid:', id,
-        '\nemail:', email,
-        '\ntype:', type,
-        '\nurl:', url,
-        '\nscreen:', screen
-    )
+    // console.log(
+    //     '\nin requestItem:',
+    //     '\nid:', id,
+    //     '\nemail:', email,
+    //     '\ntype:', type,
+    //     '\nurl:', url,
+    //     '\nscreen:', screen
+    // )
     // const { setItem } = useAsyncStorageMethods();
     // const [secureText, setSecureText] = useState(true);
 	const uniColorMode = useColorMode(); // get styles based on the current color mode
@@ -91,10 +93,10 @@ export default function RequestItem({requests}: {requests: any} ) {
     }, [url])
     useEffect(()=>{
         if (getData) {
-            console.log('Response (requestItem):', getData)
+            // console.log('Response (requestItem):', getData)
             setItemList(getData)
         } else if (isGetError) {
-            console.log('Error:', isGetError)
+            // console.log('Error:', isGetError)
             const data:any = {type: 'error', msg: isPostError}
             showToast(data)
         }
@@ -113,11 +115,11 @@ export default function RequestItem({requests}: {requests: any} ) {
     });
     const handleSubmit = () => {
         if (selectedItem && selectedQuantity) {
-            console.log(
-                '\nin requestItem: XOXOXOXOXOXOXOXOXOXOXOXO',
-                '\nselectedItem:', selectedItem,
-                '\nselectedQuantity:', selectedQuantity
-            )
+            // console.log(
+            //     '\nin requestItem: XOXOXOXOXOXOXOXOXOXOXOXO',
+            //     '\nselectedItem:', selectedItem,
+            //     '\nselectedQuantity:', selectedQuantity
+            // )
             const formData = new FormData();
             formData.append('name', selectedItem.name);
             formData.append('quantityRequested', selectedQuantity);
@@ -150,15 +152,15 @@ export default function RequestItem({requests}: {requests: any} ) {
     //     '\nloading:', isPostLoading
     // )
     const showToast = (data: notiType) => {
-        console.log('Toast:', data)
+        // console.log('Toast:', data)
         Toast.show({
             type: data.type,  // 'success' | 'error' | 'info'
             text1: toTitleCase(data.msg||''),
         });
     };
-    console.log('in (requestItem):', {itemList})
+    // console.log('in (requestItem):', {itemList})
     const handleSelect = ({item}:{item:any}) => {
-        console.log('\nitem:', item)
+        // console.log('\nitem:', item)
         if (item.type==='item') {
             setSelectedItem(item.item)
             setModalItemVisible(false)

@@ -6,6 +6,7 @@ import { useColorMode } from '@/constants/Colors';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { ScreenStyle, generalstyles } from '@/myConfig/navigation';
+import { getComponentName } from "@/hooks/getComponentName";
 
 // type declarations
 interface getType {
@@ -24,6 +25,7 @@ const dafelogoDarkBg = require('@/assets/images/dafelogo1.png');
 const dafelogoWhiteBg = require('@/assets/images/dafelogo4.png');
 
 export default function App() {
+    getComponentName()
     const router: any = useRouter();
     const uniColorMode = useColorMode(); // get styles based on the current color mode
     const colorScheme = useColorScheme(); // Detect system theme

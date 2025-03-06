@@ -4,8 +4,10 @@ import React from 'react';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
 import { ScreenStyle } from '../myConfig/navigation';
+import { getComponentName } from '@/hooks/getComponentName';
 
 export default function About() {
+  getComponentName()
   return (
     <>
       <Stack.Screen />
