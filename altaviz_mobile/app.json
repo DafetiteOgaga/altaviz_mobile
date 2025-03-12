@@ -12,7 +12,6 @@
       "supportsTablet": true
     },
     "android": {
-      // "userInterfaceStyle": "light",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/altaviz_logo.png",
         "backgroundColor": "#121A33"
@@ -53,6 +52,14 @@
       "backgroundColor": "#121A33",
       "barStyle": "light-content",
       "translucent": false
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "b2f4f63c-4784-42d7-9cdb-c3ec1755e32a"
+      }
     }
   }
 }
