@@ -1,3 +1,13 @@
+name: Expo EAS Build (Android Production)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,7 +23,7 @@ jobs:
           node-version: 18
 
       - name: Install EAS CLI
-        run: npm install -g eas-cli
+        run: npm install -g eas-cli@latest
 
       - name: Debug EXPO_TOKEN
         run: echo "EXPO_TOKEN is set"
