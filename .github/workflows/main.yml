@@ -1,40 +1,47 @@
-name: Expo EAS Build
+name: Expo EAS Build (Android Production)
+
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
-      
-      - name: List repository contents
-        run: ls -la
-      
+
+      # Step 2: Set up Node.js
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      
+
+      # Step 3: Install EAS CLI globally
       - name: Install EAS CLI
         run: npm install -g eas-cli
-      
-      - name: Authenticate with EAS (direct method)
+
+      # Step 4: Authenticate with EAS using the EXPO_TOKEN
+      - name: Authenticate with EAS
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          mkdir -p ~/.expo
-          echo "{\"sessionSecret\":\"$EXPO_TOKEN\"}" > ~/.expo/state.json
-      
-      - name: Verify login
+        run: eas login --token $EXPO_TOKEN
+
+      # Step 5: Verify EAS login
+      - name: Verify EAS login
         run: eas whoami
-      
+
+      # Step 6: Install project dependencies
       - name: Install dependencies
-        working-directory: altaviz_mobile
+        working-directory: altaviz_mobile  # Replace with your project directory
         run: npm install
-      
-      - name: Build app
-        working-directory: altaviz_mobile
-        run: eas build --platform android --non-interactive
+
+      # Step 7: Build the Android app in production mode
+      - name: Build Android app (Production)
+        working-directory: altaviz_mobile  # Replace with your project directory
+        run: eas build --platform android --profile production --non-interactive
