@@ -32,7 +32,7 @@ jobs:
         run: eas whoami
 
       - name: Install dependencies
-        working-directory: altaviz_mobile  # Replace with your project directory
+        working-directory: altaviz_mobile
         run: npm install
 
       - name: Build Android app (Production)
