@@ -13,12 +13,13 @@ function useGet () {
 	const GetSetup = async (url) => {
 		getComponentName()
 		const finalUrl = `${baseUrl}/${url}`
-		console.log('finalUrl ###***###:', finalUrl)
+		console.log(`${requestType}: finalUrl ###***###: ${finalUrl}`)
 		setIsGetLoading(true);
 		setIsGetError(null);
 		setGetData(null);
 		try {
 			const response = await fetch(finalUrl);
+			// console.log('Response Status:', JSON.stringify(response, null, 4));
 			const resp = await response.json()
 			if (!response.ok) {
 				console.log('Error:', resp||'Failed to post data')
@@ -52,7 +53,7 @@ function usePost () {
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		// console.log('csrfToken:', csrfToken)
 		const finalUrl = `${baseUrl}/${url}`
-		console.log('finalUrl ###***###:', finalUrl)
+		console.log(`${requestType}: finalUrl ###***###: ${finalUrl}`)
 		setIsPostLoading(true);
 		setIsPostError(null);
 		setPostData(null);
@@ -62,12 +63,15 @@ function usePost () {
 					method: 'POST',
 					headers: {
 						'X-CSRFToken': csrfToken,
+						'Referer': 'https://altavizapp.pythonanywhere.com/',
 					},
 					credentials: 'include',
 					body: formData,
 				}
 			);
+			// console.log('Response Status:', JSON.stringify(response, null, 4));
 			const resp = await response.json()
+			// console.log('resp:', JSON.stringify(resp));
 			if (!response.ok) {
 				console.log('Error:', resp||'Failed to post data')
 				setIsPostError(resp||'Failed to post data')
@@ -98,7 +102,7 @@ function usePut () {
 		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
-		console.log('finalUrl ###***###:', finalUrl)
+		console.log(`${requestType}: finalUrl ###***###: ${finalUrl}`)
 		setIsPutLoading(true);
 		setIsPutError(null);
 		setPutData(null);
@@ -108,6 +112,7 @@ function usePut () {
 					method: 'PUT',
 					headers: {
 						'X-CSRFToken': csrfToken,
+						'Referer': 'https://altavizapp.pythonanywhere.com/',
 					},
 					credentials: 'include',
 					body: formData,
@@ -144,7 +149,7 @@ function usePatch () {
 		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
-		console.log('finalUrl ###***###:', finalUrl)
+		console.log(`${requestType}: finalUrl ###***###: ${finalUrl}`)
 		setIsPatchLoading(true);
 		setIsPatchError(null);
 		setPatchData(null);
@@ -154,6 +159,7 @@ function usePatch () {
 					method: 'PATCH',
 					headers: {
 						'X-CSRFToken': csrfToken,
+						'Referer': 'https://altavizapp.pythonanywhere.com/',
 					},
 					credentials: 'include',
 					body: formData,
@@ -190,7 +196,7 @@ function useDelete () {
 		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
-		console.log('finalUrl ###***###:', finalUrl)
+		console.log(`${requestType}: finalUrl ###***###: ${finalUrl}`)
 		setIsDeleteLoading(true);
 		setIsDeleteError(null);
 		setDeleteData(null);
@@ -201,6 +207,7 @@ function useDelete () {
 					method: 'DELETE',
 					headers: {
 						'X-CSRFToken': csrfToken,
+						'Referer': 'https://altavizapp.pythonanywhere.com/',
 					},
 					credentials: 'include',
 					// body: formData,
