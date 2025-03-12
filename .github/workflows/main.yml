@@ -10,25 +10,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      # Add this step if your project files are in a subdirectory
-      - name: Change to project directory
-        run: cd altaviz_mobile # Replace with your actual subdirectory name
+      - name: List repository contents
+        run: ls -la
       
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
       
-      - name: Install dependencies
-        working-directory: altaviz_mobile # Replace with your actual subdirectory name
-        run: npm install
-      
       - name: Install EAS CLI
         run: npm install -g eas-cli
       
-      - name: Setup EAS credentials
-        run: echo ${{ secrets.EXPO_TOKEN }} | eas login
+      - name: Setup Expo token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: echo "EXPO_TOKEN=$EXPO_TOKEN" >> $GITHUB_ENV
+      
+      - name: Authenticate with EAS
+        run: eas login --non-interactive
+      
+      - name: Install dependencies
+        working-directory: altaviz_mobile
+        run: npm install
+      
+      - name: Verify login
+        run: eas whoami
       
       - name: Build app
-        working-directory: altaviz_mobile # Replace with your actual subdirectory name
+        working-directory: altaviz_mobile
         run: eas build --profile development --platform android --non-interactive
