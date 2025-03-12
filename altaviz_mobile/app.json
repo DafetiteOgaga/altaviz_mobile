@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.altaviz.altaviz",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/altaviz_logo.png",
         "backgroundColor": "#121A33"
