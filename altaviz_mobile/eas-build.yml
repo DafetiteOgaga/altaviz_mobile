@@ -1,0 +1,33 @@
+name: Expo EAS Build
+
+on:
+  push:
+    branches:
+      - main  # Change this to your branch name if needed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # Change to your project's Node.js version
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Authenticate with EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas login --token $EXPO_TOKEN
+
+      - name: Configure EAS
+        run: eas build:configure
+
+      - name: Start Build
+        run: eas build --profile development --platform android
