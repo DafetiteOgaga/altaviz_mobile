@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, Button, ActivityIndicator, Touchable
 import { useColorMode } from '@/constants/Colors';
 import { ScreenStyle, generalstyles } from '../myConfig/navigation';
 import { Ionicons } from '@expo/vector-icons';
-import { usePost } from '../requests/makeRequests'
+import { usePost, useGet } from '../requests/makeRequests'
 import Toast from 'react-native-toast-message';
 import { useAsyncStorageMethods } from '@/context/AsyncMethodsContext';
 import { useRouter } from 'expo-router';
@@ -29,6 +29,7 @@ export default function Login() {
     const router = useRouter();
     const { setItem } = useAsyncStorageMethods();
     const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
+    const {getData, isGetError, isGetLoading, GetSetup} = useGet();
     const [secureText, setSecureText] = useState(true);
 	const uniColorMode = useColorMode(); // get styles based on the current color mode
 	const placeholderTextColor = uniColorMode.icon
@@ -64,6 +65,8 @@ export default function Login() {
                 // @ts-ignore
                 last_name: postData?.last_name,
                 // @ts-ignore
+                username: postData?.username,
+                // @ts-ignore
                 email: postData?.email,
                 // @ts-ignore
                 role: postData?.role,
@@ -88,6 +91,16 @@ export default function Login() {
         }
     }, [postData, isPostError])
 
+    useEffect(()=>{
+        if (getData) {
+            console.log('Response (in login):', getData)
+            const data = {type: 'success', msg: 'Login successful'}
+            showToast(data)
+        } else if (isPostError) {
+            const data = {type: 'error', msg: isPostError}
+            showToast(data)
+        }
+    }, [getData, isGetError])
     const showToast = (data: notiType) => {
         // console.log('Toast:', data)
         Toast.show({
@@ -95,6 +108,24 @@ export default function Login() {
             text1: data.msg,
         });
     };
+    // const testCsrf = async () => {
+    //     const response = await fetch('https://altavizapp.pythonanywhere.com/test-api/', {
+    //       method: 'GET',
+    //       credentials: 'include', // Important to receive cookies
+    //     });
+    //     console.log('Response:', JSON.stringify(response, null, 4));
+    //     const headers = response.headers;
+    //     console.log('Response Headers:', headers.get('set-cookie'));
+    //   };
+    // const testCsrf = () => {
+    //     if (loginPost.email.trim()!=='' && loginPost.password.trim()!=='') {
+    //         setFormData(new FormData());
+    //         formData.append('email', loginPost.email);
+    //         formData.append('password', loginPost.password);
+    //         // GetSetup('test-api/');
+    //         PostSetup('test-api/', formData);
+    //     }
+    // }
 	return (
 		<View style={[ScreenStyle.allScreenContainer, loginStyles.loginContainer]}>
 			<View style={[generalstyles.formContainer,
@@ -140,7 +171,9 @@ export default function Login() {
                 {isPostLoading?
                     (<ActivityIndicator size="small" color={uniColorMode.buttonSpin} />):
                     (<View style={loginStyles.button}>
-                        <Button color={uniColorMode.dkrb} title={isPostLoading?'Login in ...':'Login'} onPress={handleSubmit}
+                        <Button color={uniColorMode.dkrb} title={isPostLoading?'Login in ...':'Login'}
+                        onPress={handleSubmit}
+                        // onPress={testCsrf}
                         disabled={isPostLoading}
                         />
                     </View>)}
