@@ -24,7 +24,7 @@ jobs:
       - name: Authenticate with EAS
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas login --token $EXPO_TOKEN
+        run: eas whoami
 
       - name: Configure EAS
         run: eas build:configure
