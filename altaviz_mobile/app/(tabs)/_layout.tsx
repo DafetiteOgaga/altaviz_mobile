@@ -91,6 +91,10 @@ export default function TabLayout() {
                 // title: screenConfig.greet.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.chatroom.icon} color={color} />,
+                tabBarBadge: 3, // show a badge on the tab
+                tabBarBadgeStyle: { // badge style
+                backgroundColor: uniColorMode.vltb,
+                },
             }}
             />
             <Tabs.Screen // chatroom screen
@@ -102,6 +106,13 @@ export default function TabLayout() {
                 // title: screenConfig.greet.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.profile.icon} color={color} />,
+            }}
+            />
+            <Tabs.Screen // pendingFaults screen
+            name="chatScreen" // screen name (navigation)
+            options={{
+                title: 'chatScreen',
+                href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // pendingFaults screen

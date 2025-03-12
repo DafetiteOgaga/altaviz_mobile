@@ -11,7 +11,7 @@ import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
 import { useGet } from "../../requests/makeRequests";
 import { useGetIcon } from "../../components/getIcon";
 import { getComponentName } from "@/hooks/getComponentName";
-// import { useAsyncStorageMethods } from "../../context/AsyncMethodsContext";
+import { useAsyncStorageMethods } from "../../context/AsyncMethodsContext";
 
 type customComponent = {
     icon: React.ComponentProps<typeof Ionicons>['name'],
@@ -36,7 +36,7 @@ const Dashboard = () => {
 	getComponentName()
 	const router = useRouter();
 	const segments = useSegments();
-	// const { removeItem } = useAsyncStorageMethods();
+	const { removeItem } = useAsyncStorageMethods();
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 	// const {getData, isGetError, isGetLoading, GetSetup} = useGet();
 	// const [userData, setUserData] = useState(null);
@@ -404,8 +404,8 @@ const Dashboard = () => {
 
 				{/* white buttons */}
 				{/* <View style={styles.actionContainer}>
-					<ActionButton icon="person-outline" label="Supervisor" onPress={() => router.push('/inspectUserProfile')} />
-					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => router.push('/inspectUserProfile')} />
+					<ActionButton icon="person-outline" label="Supervisor" onPress={() => router.push('/userProfile')} />
+					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => router.push('/userProfile')} />
 				</View> */}
 			</ParallaxScrollView>
 		</ScrollView>
@@ -511,7 +511,7 @@ const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, o
 			<Ionicons name={icon} size={24} color={isGetError?'red':color} />
 			{/* @ts-ignore */}
 			<Text style={[styles.statValue, {color: isGetError?'red':color}]}>{isGetError?'Oopsi! Error':getData?.total||0}</Text>
-			<Text style={[styles.statLabel, {color: isGetError?'red':color}]}>{isGetError?'Oopsi! Error':label}</Text>
+			<Text style={[styles.statLabel, {color: isGetError?'red':color}]}>{isGetError?'Refresh/Check back later':label}</Text>
 		</TouchableOpacity>}
 		</View>
 	);

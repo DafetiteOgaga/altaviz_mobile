@@ -59,6 +59,9 @@ export default function Logout() {
             // console.log("Removed login details");
             // console.log("Response login:", postData);
             showToast({ type: "success", msg: "Logged out successfully" });
+            removeItem("loginData");
+            removeItem("baseUrl");
+            removeItem("headerDetails");
             router.replace("/login");
         } else if (isPostError) {
             // console.log('77777'.repeat(5))
