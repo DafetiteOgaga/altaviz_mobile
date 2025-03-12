@@ -21,21 +21,18 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
       
-      - name: Setup Expo token
+      - name: Authenticate with EAS
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: echo "EXPO_TOKEN=$EXPO_TOKEN" >> $GITHUB_ENV
+        run: npx expo login --non-interactive -t $EXPO_TOKEN
       
-      - name: Authenticate with EAS
-        run: eas login --non-interactive
+      - name: Verify login
+        run: eas whoami
       
       - name: Install dependencies
         working-directory: altaviz_mobile
         run: npm install
       
-      - name: Verify login
-        run: eas whoami
-      
       - name: Build app
         working-directory: altaviz_mobile
-        run: eas build --profile development --platform android --non-interactive
+        run: eas build --platform android --non-interactive
