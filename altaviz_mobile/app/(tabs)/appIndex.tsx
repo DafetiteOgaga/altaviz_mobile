@@ -155,7 +155,7 @@ export default function App() {
                         value={userPost.body}
                         onChangeText={body=>setUserPost({...userPost, body})}
                     />
-                    <Button title={posting?'Posting...':'Post'} onPress={handleSubmit}
+                    <Button title={posting?'Posting1...':'Post'} onPress={handleSubmit}
                     disabled={posting}
                     />
                 </View>
