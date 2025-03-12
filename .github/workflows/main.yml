@@ -21,10 +21,12 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
       
-      - name: Authenticate with EAS
+      - name: Authenticate with EAS (direct method)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: npx expo login --non-interactive -t $EXPO_TOKEN
+        run: |
+          mkdir -p ~/.expo
+          echo "{\"sessionSecret\":\"$EXPO_TOKEN\"}" > ~/.expo/state.json
       
       - name: Verify login
         run: eas whoami
