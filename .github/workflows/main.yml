@@ -26,11 +26,11 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
-      # Step 4: Authenticate with EAS using the EXPO_TOKEN
-      - name: Authenticate with EAS
+      # Step 4: Set EXPO_TOKEN environment variable
+      - name: Set up EXPO_TOKEN
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas login --token $EXPO_TOKEN
+        run: echo "EXPO_TOKEN is set"
 
       # Step 5: Verify EAS login
       - name: Verify EAS login
