@@ -35,6 +35,7 @@ export default function DrawerNavigator() {
 			(titleKey==='')?'Home Title Drawer':
 			(titleKey==='blueBlank')?headerTitle:
 			(titleKey==='detailsRequestCardView')?headerTitle:
+			(titleKey==='chatScreen')?headerTitle:
 			(titleKey==='cardView')?headerTitle:
 			(titleKey==='engineersCardView')?headerTitle:
 			(titleKey==='engineersToLocations')?headerTitle:
