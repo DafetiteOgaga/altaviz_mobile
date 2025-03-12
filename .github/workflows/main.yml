@@ -21,3 +21,4 @@ jobs:
         run: echo ${{ secrets.EXPO_TOKEN }} | eas login
       - name: Build app
         run: eas build --profile development --platform android --non-interactive
+
