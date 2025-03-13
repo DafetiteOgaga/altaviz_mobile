@@ -25,6 +25,9 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli@latest
 
+      - name: Verify EAS CLI version
+        run: eas --version
+
       - name: Debug EXPO_TOKEN
         run: echo "EXPO_TOKEN is set"
 
@@ -36,5 +39,5 @@ jobs:
         run: npm install
 
       - name: Build Android app (Production)
-        working-directory: altaviz_mobile  # Replace with your project directory
-        run: eas build --platform android --profile production --non-interactive
+        working-directory: altaviz_mobile
+        run: eas build --platform android --profile production --non-interactive --verbose
