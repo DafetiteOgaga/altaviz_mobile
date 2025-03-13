@@ -3,7 +3,7 @@ import { View, ScrollView, Text, StyleSheet, FlatList, Image, ActivityIndicator,
 	TextInput, TouchableOpacity, RefreshControl } from "react-native";
 import { useGet, usePost } from "../../requests/makeRequests";
 import { getComponentName } from "../../hooks/getComponentName";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, usePathname } from "expo-router";
 import { baseUrl } from "../../constants/urlOrigin";
 import { useColorMode } from "../../constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,6 +14,7 @@ import { toTitleCase } from "@/hooks/useAllCases";
 export default function ChatScreen () {
 	getComponentName()
 	const { setHeaderTitle } = useHeader();
+	const path = usePathname().split('/')[1];
 	const initMount = useRef(false);
 	const uniColorMode = useColorMode();
 	const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -60,7 +61,7 @@ export default function ChatScreen () {
 			newIDRef.current = currentIDRef.current
 			setChatData(null)
 		} else {
-			if (baseUrl.split(':')[0]!=='http') {
+			if (baseUrl.split(':')[0]!=='http'&&path==='chatScreen') {
 				const timeInterval = setInterval(() => {
 					updateGet(`chat-user/${cid}/${userID}/mobile/`)
 				}, 2000);
@@ -133,9 +134,12 @@ export default function ChatScreen () {
 	console.log(
 		'\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 50),
 		'\nupdateData:', JSON.stringify(updateData, null, 4).slice(0, 50),
+		// @ts-ignore
 		'\ncount:', updateData?.count,
+		// @ts-ignore
 		'\nupdateData&&!updateData?.count:', updateData&&!updateData?.count
 	)
+	console.log({path})
 	return (
 		<View style={{flex: 1}}>
 			<ScrollView

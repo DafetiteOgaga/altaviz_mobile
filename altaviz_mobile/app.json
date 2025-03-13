@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "com.altaviz.altaviz",
+      "jsEngine": "hermes",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/altaviz_logo.png",
         "backgroundColor": "#121A33"
