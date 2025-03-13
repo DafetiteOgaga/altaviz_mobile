@@ -40,4 +40,4 @@ jobs:
 
       - name: Build Android app (Production)
         working-directory: altaviz_mobile
-        run: eas build --platform android --profile production --non-interactive --verbose
+        run: eas build --platform android --profile production --non-interactive
