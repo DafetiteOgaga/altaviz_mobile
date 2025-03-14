@@ -311,7 +311,8 @@ const styles = StyleSheet.create({
 	input: {
 		fontSize: 16,
 		color: 'white',
-		marginLeft: 10,
+		marginHorizontal: 10,
+		marginVertical: -2,
 	},
 	inputContainer: {
 		flex: 1,
