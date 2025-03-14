@@ -34,6 +34,8 @@ export default function ChatScreen () {
 	const {getData:refreshData, isGetError:refreshError, isGetLoading:refreshLoading, GetSetup:refreshGet} = useGet();
 	const {getData:updateData, isGetError:updateError, isGetLoading:updateLoading, GetSetup:updateGet} = useGet();
 	const {postData, isPostError, isPostLoading, PostSetup} = usePost();
+	console.log('baseUrl:', baseUrl)
+	const productionServer = baseUrl.split(':')[0]!=='http'
 	console.log(
 		'\nid (chatScreen):',
 		'\ncid:', cid,
@@ -65,7 +67,9 @@ export default function ChatScreen () {
 		return () => setChatData(null)
 	}, [cid])
 	useEffect(()=>{
-		if (baseUrl.split(':')[0]!=='http'&& path==='chatScreen') {
+		if (
+			productionServer&&
+			path==='chatScreen') {
 			const timeInterval = setInterval(() => {
 				updateGet(`chat-user/${cid}/${userID}/mobile/`)
 			}, 2000);
@@ -222,7 +226,10 @@ export default function ChatScreen () {
 			{/* Input Field & Send Button */}
 			<View style={[styles.inputAndSend, {backgroundColor: uniColorMode.vvvdrkbltr}]}>
 							<View
-							style={[styles.inputContainer, {backgroundColor: chatMessage?undefined:uniColorMode.dkb}]}
+							style={[styles.inputContainer, {
+								backgroundColor: chatMessage?undefined:uniColorMode.dkb,
+								paddingTop: productionServer?8:0,
+							}]}
 							>
 								<TextInput
 								style={styles.input}
@@ -315,7 +322,7 @@ const styles = StyleSheet.create({
 		height: 35,
 		borderTopLeftRadius: 40,
 		borderBottomLeftRadius: 40,
-		paddingTop: 5,
+		// paddingTop: 8,
 	},
 	sendContainer: {
 		marginRight: 12,
