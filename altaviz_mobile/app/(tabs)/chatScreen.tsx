@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, ScrollView, Text, StyleSheet, FlatList, Image, ActivityIndicator,
-	TextInput, TouchableOpacity, RefreshControl } from "react-native";
+	TextInput, TouchableOpacity, RefreshControl, Keyboard } from "react-native";
 import { useGet, usePost } from "../../requests/makeRequests";
 import { getComponentName } from "../../hooks/getComponentName";
 import { useLocalSearchParams, usePathname } from "expo-router";
@@ -148,6 +148,26 @@ export default function ChatScreen () {
 		'\nupdateData&&!updateData?.count:', updateData&&!updateData?.count
 	)
 	console.log({path})
+	const heightAboveKeyboard = useRef(0)
+	useEffect(() => {
+		// Listen for keyboard open event
+		const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", (event) => {
+		  console.log('keyboardDidShowListener:')
+		  heightAboveKeyboard.current = 100
+		});
+	
+		// Listen for keyboard close event
+		const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+		 console.log('keyboardDidHideListener:')
+		 heightAboveKeyboard.current = 0
+		});
+	
+		return () => {
+		  keyboardDidShowListener.remove();
+		  keyboardDidHideListener.remove();
+		};
+	  });
+	
 	return (
 		<View style={{flex: 1}}>
 			<ScrollView
@@ -224,27 +244,29 @@ export default function ChatScreen () {
 			}
 			</ScrollView>
 			{/* Input Field & Send Button */}
-			<View style={[styles.inputAndSend, {backgroundColor: uniColorMode.vvvdrkbltr}]}>
-							<View
-							style={[styles.inputContainer, {
-								backgroundColor: chatMessage?undefined:uniColorMode.dkb,
-								paddingTop: productionServer?8:0,
-							}]}
-							>
-								<TextInput
-								style={styles.input}
-								placeholder="Type here ..."
-								placeholderTextColor="gray"
-								value={chatMessage}
-								onChangeText={setChatMessage}
-								/>
-							</View>
-							<View style={styles.sendContainer}>
-								<TouchableOpacity onPress={() => handleSend(chatMessage)}>
-									<Ionicons name="send" size={24} color="white" />
-								</TouchableOpacity>
-							</View>
-						</View>
+			<View style={[styles.inputAndSend, {
+				// bottom: heightAboveKeyboard.current,
+				backgroundColor: uniColorMode.vvvdrkbltr}]}>
+				<View
+				style={[styles.inputContainer, {
+					backgroundColor: chatMessage?undefined:uniColorMode.dkb,
+					paddingTop: productionServer?8:0,
+				}]}
+				>
+					<TextInput
+					style={styles.input}
+					placeholder="Type here ..."
+					placeholderTextColor="gray"
+					value={chatMessage}
+					onChangeText={setChatMessage}
+					/>
+				</View>
+				<View style={styles.sendContainer}>
+					<TouchableOpacity onPress={() => handleSend(chatMessage)}>
+						<Ionicons name="send" size={24} color="white" />
+					</TouchableOpacity>
+				</View>
+			</View>
 		</View>
 	)
 }
@@ -296,7 +318,7 @@ const styles = StyleSheet.create({
 		marginTop: 250,
 	},
 	inputAndSend: {
-		position: 'absolute', // Makes it fixed at the bottom
+		position: 'fixed', // Makes it fixed at the bottom
 		bottom: 0, // Aligns it to the bottom of the screen
 		left: 0, // Ensures it spans the full width
 		right: 0,
@@ -310,7 +332,7 @@ const styles = StyleSheet.create({
 		borderRadius: 40,
 		gap: 15,
 		zIndex: 1,
-		// marginTop: 50,
+		// marginBottom: 50,
 	},
 	input: {
 		fontSize: 16,
