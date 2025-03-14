@@ -69,9 +69,6 @@ export default function ChatScreen () {
 			const timeInterval = setInterval(() => {
 				updateGet(`chat-user/${cid}/${userID}/mobile/`)
 			}, 2000);
-			// console.log('initMount:', initMount.current)
-			// if (initMount.current) {initMount.current = false}
-			// console.log('initMount:', initMount.current)
 			return () => clearInterval(timeInterval);
 		}
 	})
@@ -311,14 +308,14 @@ const styles = StyleSheet.create({
 	input: {
 		fontSize: 16,
 		color: 'white',
-		marginHorizontal: 10,
-		marginVertical: -2,
+		paddingHorizontal: 10,
 	},
 	inputContainer: {
 		flex: 1,
 		height: 35,
 		borderTopLeftRadius: 40,
 		borderBottomLeftRadius: 40,
+		paddingTop: 2,
 	},
 	sendContainer: {
 		marginRight: 12,
