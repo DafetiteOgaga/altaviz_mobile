@@ -14,9 +14,10 @@
     "production": {
       "autoIncrement": true,
       "android": {
-        "env": {
-          "EXPO_ABI_FILTERS": "arm64-v8a,armeabi-v7a" // include this arch only
-        },
+        "gradleCommand": ":app:assembleRelease",
+        "extraParams": {
+          "androidNdkSplit": ["arm64-v8a", "armeabi-v7a"]
+        }, // include this arch only
         "buildType": "apk" // Add this line to generate APKs
       }
     }
