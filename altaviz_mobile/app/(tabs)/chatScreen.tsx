@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
 		height: 35,
 		borderTopLeftRadius: 40,
 		borderBottomLeftRadius: 40,
-		paddingTop: 2,
+		paddingTop: 5,
 	},
 	sendContainer: {
 		marginRight: 12,
