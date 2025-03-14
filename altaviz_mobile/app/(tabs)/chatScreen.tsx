@@ -64,17 +64,14 @@ export default function ChatScreen () {
 		setHeaderTitle(`Chats`)
 		return () => setChatData(null)
 	}, [cid])
-	useEffect(()=>{
-		if (baseUrl.split(':')[0]!=='http'&& path==='chatScreen') {
-			const timeInterval = setInterval(() => {
-				updateGet(`chat-user/${cid}/${userID}/mobile/`)
-			}, 2000);
-			// console.log('initMount:', initMount.current)
-			// if (initMount.current) {initMount.current = false}
-			// console.log('initMount:', initMount.current)
-			return () => clearInterval(timeInterval);
-		}
-	})
+	// useEffect(()=>{
+	// 	if (baseUrl.split(':')[0]!=='http'&& path==='chatScreen') {
+	// 		const timeInterval = setInterval(() => {
+	// 			updateGet(`chat-user/${cid}/${userID}/mobile/`)
+	// 		}, 2000);
+	// 		return () => clearInterval(timeInterval);
+	// 	}
+	// })
 	useEffect(() => {
 		// @ts-ignore
 		if (updateData?.results) {
@@ -311,14 +308,14 @@ const styles = StyleSheet.create({
 	input: {
 		fontSize: 16,
 		color: 'white',
-		marginHorizontal: 10,
-		marginVertical: -2,
+		paddingHorizontal: 10,
 	},
 	inputContainer: {
 		flex: 1,
 		height: 35,
 		borderTopLeftRadius: 40,
 		borderBottomLeftRadius: 40,
+		paddingTop: 2,
 	},
 	sendContainer: {
 		marginRight: 12,
