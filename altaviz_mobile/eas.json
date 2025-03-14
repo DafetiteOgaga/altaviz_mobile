@@ -14,8 +14,8 @@
     "production": {
       "autoIncrement": true,
       "android": {
-        "gradleCommand": ":app:assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a", // include this arch only
-        "buildType": "apk" // Add this line to generate APKs
+        "gradleCommand": ":app:assembleRelease -PreactNativeArchitectures=arm64-v8a", // include arm64-v8a arch only and leave out armeabi-v7a, x86 and x86_64 (remove this line to include all)
+        "buildType": "apk" // Add this line to generate APKs (remove this line to default to .aab)
       }
     }
   },
