@@ -64,14 +64,14 @@ export default function ChatScreen () {
 		setHeaderTitle(`Chats`)
 		return () => setChatData(null)
 	}, [cid])
-	// useEffect(()=>{
-	// 	if (baseUrl.split(':')[0]!=='http'&& path==='chatScreen') {
-	// 		const timeInterval = setInterval(() => {
-	// 			updateGet(`chat-user/${cid}/${userID}/mobile/`)
-	// 		}, 2000);
-	// 		return () => clearInterval(timeInterval);
-	// 	}
-	// })
+	useEffect(()=>{
+		if (baseUrl.split(':')[0]!=='http'&& path==='chatScreen') {
+			const timeInterval = setInterval(() => {
+				updateGet(`chat-user/${cid}/${userID}/mobile/`)
+			}, 2000);
+			return () => clearInterval(timeInterval);
+		}
+	})
 	useEffect(() => {
 		// @ts-ignore
 		if (updateData?.results) {
