@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, ScrollView, Text, StyleSheet, FlatList, Image, ActivityIndicator,
-	TextInput, TouchableOpacity, RefreshControl, Keyboard } from "react-native";
+	TextInput, TouchableOpacity, RefreshControl, Keyboard, Platform, KeyboardAvoidingView } from "react-native";
 import { useGet, usePost } from "../../requests/makeRequests";
 import { getComponentName } from "../../hooks/getComponentName";
 import { useLocalSearchParams, usePathname } from "expo-router";
@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { timeAgo } from "../../hooks/timeAgo";
 import { useHeader } from '../../context/headerUpdate';
 import { toTitleCase } from "@/hooks/useAllCases";
+import { KeyboardState } from '@/components/keyboardState';
 
 export default function ChatScreen () {
 	getComponentName()
@@ -148,26 +149,27 @@ export default function ChatScreen () {
 		'\nupdateData&&!updateData?.count:', updateData&&!updateData?.count
 	)
 	console.log({path})
-	const heightAboveKeyboard = useRef(0)
-	useEffect(() => {
-		// Listen for keyboard open event
-		const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", (event) => {
-		  console.log('keyboardDidShowListener:')
-		  heightAboveKeyboard.current = 100
-		});
+	// const heightAboveKeyboard = KeyboardState()
+	// const [heightAboveKeyboard, setHeightAboveKeyboard] = useState(false)
+	// useEffect(() => {
+	// 	// Listen for keyboard open event
+	// 	const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", (event) => {
+	// 	  console.log('keyboardDidShowListener:')
+	// 	  setHeightAboveKeyboard(true)
+	// 	});
 	
-		// Listen for keyboard close event
-		const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
-		 console.log('keyboardDidHideListener:')
-		 heightAboveKeyboard.current = 0
-		});
+	// 	// Listen for keyboard close event
+	// 	const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+	// 	 console.log('keyboardDidHideListener:')
+	// 	 setHeightAboveKeyboard(false)
+	// 	});
 	
-		return () => {
-		  keyboardDidShowListener.remove();
-		  keyboardDidHideListener.remove();
-		};
-	  });
-	
+	// 	return () => {
+	// 	  keyboardDidShowListener.remove();
+	// 	  keyboardDidHideListener.remove();
+	// 	};
+	//   });
+	// console.log('heightAboveKeyboard.current (chatscreen):', heightAboveKeyboard)
 	return (
 		<View style={{flex: 1}}>
 			<ScrollView
@@ -244,7 +246,16 @@ export default function ChatScreen () {
 			}
 			</ScrollView>
 			{/* Input Field & Send Button */}
+			<KeyboardAvoidingView
+      behavior={"padding"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={100}
+    >
+      <ScrollView
+	  contentContainerStyle={{ flexGrow: 1 }}
+	  >
 			<View style={[styles.inputAndSend, {
+				// marginBottom: heightAboveKeyboard?250:0,
 				// bottom: heightAboveKeyboard.current,
 				backgroundColor: uniColorMode.vvvdrkbltr}]}>
 				<View
@@ -267,6 +278,8 @@ export default function ChatScreen () {
 					</TouchableOpacity>
 				</View>
 			</View>
+			</ScrollView>
+    </KeyboardAvoidingView>
 		</View>
 	)
 }
@@ -318,8 +331,9 @@ const styles = StyleSheet.create({
 		marginTop: 250,
 	},
 	inputAndSend: {
-		position: 'fixed', // Makes it fixed at the bottom
+		position: 'absolute', // Makes it fixed at the bottom
 		bottom: 0, // Aligns it to the bottom of the screen
+		// top: 20,
 		left: 0, // Ensures it spans the full width
 		right: 0,
 		flexDirection: 'row',
@@ -332,7 +346,7 @@ const styles = StyleSheet.create({
 		borderRadius: 40,
 		gap: 15,
 		zIndex: 1,
-		// marginBottom: 50,
+		// marginBottom: 250,
 	},
 	input: {
 		fontSize: 16,
