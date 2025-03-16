@@ -10,7 +10,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { timeAgo } from "../../hooks/timeAgo";
 import { useHeader } from '../../context/headerUpdate';
 import { toTitleCase } from "@/hooks/useAllCases";
-import { KeyboardState } from '@/components/keyboardState';
+import { ChatInput } from "@/components/chatInput";
+// import { KeyboardState } from '@/components/keyboardState';
 
 export default function ChatScreen () {
 	getComponentName()
@@ -30,7 +31,7 @@ export default function ChatScreen () {
 	const {userID, userPicture, userUname, userEmail} = JSON.parse(String(chatObj))
 	let [chatData, setChatData] = useState<any>(null);
 	// const [updateChatData, setUpdateChatData] = useState<any>(null);
-	const [chatMessage, setChatMessage] = useState('');
+	// const [chatMessage, setChatMessage] = useState('');
 	// const flatListRef = useRef<FlatList>(null);
 	const {getData:refreshData, isGetError:refreshError, isGetLoading:refreshLoading, GetSetup:refreshGet} = useGet();
 	const {getData:updateData, isGetError:updateError, isGetLoading:updateLoading, GetSetup:updateGet} = useGet();
@@ -69,7 +70,7 @@ export default function ChatScreen () {
 	}, [cid])
 	useEffect(()=>{
 		if (
-			productionServer&&
+			// productionServer&&
 			path==='chatScreen') {
 			const timeInterval = setInterval(() => {
 				updateGet(`chat-user/${cid}/${userID}/mobile/`)
@@ -92,7 +93,7 @@ export default function ChatScreen () {
 		if (updateData&&!updateData.count) {setChatData({new: 'no chat history'})}
 	}, [updateData, updateError, updateLoading])
 	useEffect(() => {initMount.current = true}, [])
-	console.log({chatMessage})
+	// console.log({chatMessage})
 	const handleSend = (chatMessageString:string) => {
 		if (chatMessageString) {
 			const formData = new FormData()
@@ -101,7 +102,7 @@ export default function ChatScreen () {
 			formData.append('mobile', 'true')
 			// const chat2send = chatMessageString
 			PostSetup(`chat-user/${cid}/${userID}/`, formData)
-			setChatMessage('')
+			// setChatMessage('')
 			// Ensure scrolls to bottom after sending a message
 			setTimeout(() => {
 				scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -181,7 +182,7 @@ export default function ChatScreen () {
 				}
 			}}
 			// onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })} // Auto-scroll when content size changes
-			contentContainerStyle={{ paddingBottom: 60 }} // Add padding to avoid overlap with fixed input field
+			contentContainerStyle={{ paddingBottom: 10 }} // Add padding to avoid overlap with fixed input field
 			refreshControl={
 				<RefreshControl
 				refreshing={refreshing}
@@ -246,40 +247,41 @@ export default function ChatScreen () {
 			}
 			</ScrollView>
 			{/* Input Field & Send Button */}
-			<KeyboardAvoidingView
-      behavior={"padding"}
-      style={{ flex: 1 }}
-      keyboardVerticalOffset={-130} // lower number moves the input container down
-    >
-      <ScrollView
-	  contentContainerStyle={{ flexGrow: 1 }}
-	  >
-			<View style={[styles.inputAndSend, {
-				// marginBottom: heightAboveKeyboard?250:0,
-				// bottom: heightAboveKeyboard.current,
-				backgroundColor: uniColorMode.vvvdrkbltr}]}>
-				<View
-				style={[styles.inputContainer, {
-					backgroundColor: chatMessage?undefined:uniColorMode.dkb,
-					paddingTop: productionServer?8:0,
-				}]}
+			<ChatInput onSend={handleSend} />
+			{/* <KeyboardAvoidingView
+			behavior={"padding"}
+			style={{ flex: 1}}
+			keyboardVerticalOffset={-130} // lower number moves the input container down
+			>
+				<ScrollView
+				contentContainerStyle={{ flexGrow: 1 }}
 				>
-					<TextInput
-					style={styles.input}
-					placeholder="Type here ..."
-					placeholderTextColor="gray"
-					value={chatMessage}
-					onChangeText={setChatMessage}
-					/>
-				</View>
-				<View style={styles.sendContainer}>
-					<TouchableOpacity onPress={() => handleSend(chatMessage)}>
-						<Ionicons name="send" size={24} color="white" />
-					</TouchableOpacity>
-				</View>
-			</View>
-			</ScrollView>
-    </KeyboardAvoidingView>
+					<View style={[styles.inputAndSend, {
+						// marginBottom: heightAboveKeyboard?250:0,
+						// bottom: heightAboveKeyboard.current,
+						backgroundColor: uniColorMode.vvvdrkbltr}]}>
+						<View
+						style={[styles.inputContainer, {
+							backgroundColor: chatMessage?undefined:uniColorMode.dkb,
+							paddingTop: productionServer?8:0,
+						}]}
+						>
+							<TextInput
+							style={styles.input}
+							placeholder="Type here ..."
+							placeholderTextColor="gray"
+							value={chatMessage}
+							onChangeText={setChatMessage}
+							/>
+						</View>
+						<View style={styles.sendContainer}>
+							<TouchableOpacity onPress={() => handleSend(chatMessage)}>
+								<Ionicons name="send" size={24} color="white" />
+							</TouchableOpacity>
+						</View>
+					</View>
+				</ScrollView>
+			</KeyboardAvoidingView> */}
 		</View>
 	)
 }
@@ -331,8 +333,8 @@ const styles = StyleSheet.create({
 		marginTop: 250,
 	},
 	inputAndSend: {
-		position: 'absolute', // Makes it fixed at the bottom
-		bottom: 0, // Aligns it to the bottom of the screen
+		// position: 'absolute', // Makes it fixed at the bottom
+		bottom: -20, // Aligns it to the bottom of the screen
 		// top: 20,
 		left: 0, // Ensures it spans the full width
 		right: 0,
@@ -358,7 +360,7 @@ const styles = StyleSheet.create({
 		height: 35,
 		borderTopLeftRadius: 40,
 		borderBottomLeftRadius: 40,
-		// paddingTop: 8,
+		// marginTop: 8,
 	},
 	sendContainer: {
 		marginRight: 12,
