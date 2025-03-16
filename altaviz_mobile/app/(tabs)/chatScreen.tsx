@@ -95,6 +95,7 @@ export default function ChatScreen () {
 	useEffect(() => {initMount.current = true}, [])
 	// console.log({chatMessage})
 	const handleSend = (chatMessageString:string) => {
+		console.log('chatMessageString:', chatMessageString)
 		if (chatMessageString) {
 			const formData = new FormData()
 			formData.append('currentUser', userEmail)
@@ -182,7 +183,7 @@ export default function ChatScreen () {
 				}
 			}}
 			// onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })} // Auto-scroll when content size changes
-			contentContainerStyle={{ paddingBottom: 10 }} // Add padding to avoid overlap with fixed input field
+			contentContainerStyle={{ paddingBottom: 60 }} // Add padding to avoid overlap with fixed input field
 			refreshControl={
 				<RefreshControl
 				refreshing={refreshing}
@@ -332,24 +333,24 @@ const styles = StyleSheet.create({
 	loading: {
 		marginTop: 250,
 	},
-	inputAndSend: {
-		// position: 'absolute', // Makes it fixed at the bottom
-		bottom: -20, // Aligns it to the bottom of the screen
-		// top: 20,
-		left: 0, // Ensures it spans the full width
-		right: 0,
-		flexDirection: 'row',
-		alignItems: 'center',
-		// justifyContent: 'space-evenly',
-		borderWidth: 1,
-		borderColor: 'gray',
-		padding: 3,
-		// height: 50,
-		borderRadius: 40,
-		gap: 15,
-		zIndex: 1,
-		// marginBottom: 250,
-	},
+	// inputAndSend: {
+	// 	// position: 'absolute', // Makes it fixed at the bottom
+	// 	bottom: -20, // Aligns it to the bottom of the screen
+	// 	// top: 20,
+	// 	left: 0, // Ensures it spans the full width
+	// 	right: 0,
+	// 	flexDirection: 'row',
+	// 	alignItems: 'center',
+	// 	// justifyContent: 'space-evenly',
+	// 	borderWidth: 1,
+	// 	borderColor: 'gray',
+	// 	padding: 3,
+	// 	// height: 50,
+	// 	borderRadius: 40,
+	// 	gap: 15,
+	// 	zIndex: 1,
+	// 	// marginBottom: 250,
+	// },
 	input: {
 		fontSize: 16,
 		color: 'white',
