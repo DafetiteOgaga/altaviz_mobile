@@ -249,7 +249,7 @@ export default function ChatScreen () {
 			<KeyboardAvoidingView
       behavior={"padding"}
       style={{ flex: 1 }}
-      keyboardVerticalOffset={-140}
+      keyboardVerticalOffset={-135}
     >
       <ScrollView
 	  contentContainerStyle={{ flexGrow: 1 }}
