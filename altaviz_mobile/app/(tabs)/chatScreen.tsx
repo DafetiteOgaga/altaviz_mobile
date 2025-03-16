@@ -249,7 +249,7 @@ export default function ChatScreen () {
 			<KeyboardAvoidingView
       behavior={"padding"}
       style={{ flex: 1 }}
-      keyboardVerticalOffset={-135}
+      keyboardVerticalOffset={-130} // lower number moves the input container down
     >
       <ScrollView
 	  contentContainerStyle={{ flexGrow: 1 }}
