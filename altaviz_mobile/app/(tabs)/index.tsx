@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Linking, StyleSheet,
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, TouchableOpacity, Linking, StyleSheet, Alert,
 	useColorScheme, Image, ActivityIndicator, ScrollView, RefreshControl } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenStyle } from '../../myConfig/navigation';
@@ -12,6 +12,7 @@ import { useGet } from "../../requests/makeRequests";
 import { useGetIcon } from "../../components/getIcon";
 import { getComponentName } from "@/hooks/getComponentName";
 import { useAsyncStorageMethods } from "../../context/AsyncMethodsContext";
+import {UpdateModal} from '../../components/checkForUpdate';
 
 type customComponent = {
     icon: React.ComponentProps<typeof Ionicons>['name'],
@@ -34,13 +35,43 @@ const DASHBOARD_HEADER_HEIGHT = 200;
 
 const Dashboard = () => {
 	getComponentName()
+	const packageJson = require("../../package.json");
+	const pathname = usePathname().split('/')[1]
+	console.log('version:', packageJson.version)
 	const router = useRouter();
 	const segments = useSegments();
 	const { removeItem } = useAsyncStorageMethods();
 	const [refreshing, setRefreshing] = useState<boolean>(false);
-	// const {getData, isGetError, isGetLoading, GetSetup} = useGet();
-	// const [userData, setUserData] = useState(null);
-	// const [scrollOffset, setScrollOffset] = useState(0);
+	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	const [modalVisible, setModalVisible] = useState(false);
+	const [newVersionNumber, setNewVersionNumber] = useState<boolean|null>(null);
+	const [newVersion, setNewVersion] = useState<boolean|null>(null);
+	useEffect(() => {
+		// @ts-ignore
+		if (getData?.version && getData.version !== packageJson.version) {
+			setNewVersion(true);
+			setModalVisible(true);
+			// @ts-ignore
+			setNewVersionNumber(getData?.version);
+		} else setNewVersion(false);
+		console.log(
+			'\ncurrentVersion:', packageJson.version,
+			// @ts-ignore
+			"\nnew version:", getData?.version,
+            "\nnew version available", newVersion,
+		)
+	}, [getData]);
+
+	const handleUpdate = () => {
+		if (newVersionNumber) {
+			setModalVisible(false);
+			console.log('update clicked')
+			Linking.openURL(`https://github.com/DafetiteOgaga/altavizMobileReleases/releases/download/${newVersionNumber}/altaviz.apk`)
+			// Linking.openURL("https://play.google.com/store/apps/details?id=com.altaviz.altaviz_mobile");
+			setNewVersion(false);
+		}
+	};
+
 	const uniColorMode = useColorMode()
 	// const colorScheme = useColorScheme();
 	// const isDark = colorScheme === "dark";
@@ -58,6 +89,30 @@ const Dashboard = () => {
 			return () => clearTimeout(delayRouter)
 		}
 	}, [dashboardData])
+	useEffect(() => {
+		const getVersion = setInterval(() => {
+			GetSetup('version/')
+			}, 1000*60*60*24);
+		// }, 10000);
+		return () => clearInterval(getVersion)
+	}, [pathname])
+	// useEffect(() => {
+	// if (getData) {
+	// 	// checkForUpdate(getData)
+	// 	return (
+	// 		<UpdateModal
+	// 		visible={modalVisible}
+	// 		onClose={() => setModalVisible(false)}
+	// 		onUpdate={handleUpdate}
+	// 		// @ts-ignore
+	// 		newVersion={getData?.version}
+	// 		/>
+	// 	)
+	// }
+	// }, [getData, isGetError, isGetLoading])
+	// const [userData, setUserData] = useState(null);
+	// const [scrollOffset, setScrollOffset] = useState(0);
+	
 	if (!dashboardData) return <ActivityIndicator style={{marginTop: 250}} size="large" color={uniColorMode.buttonSpin} />
 	
 
@@ -78,6 +133,24 @@ const Dashboard = () => {
 	// console.log('role (dashboard):', role)
 	// console.log('email:', dashboardData?.email)
 	// console.log('segments:', segments)
+	if (newVersion) {
+		// checkForUpdate(getData)
+		return (
+			<UpdateModal
+			visible={modalVisible}
+			onClose={() => {
+				setNewVersion(false);
+				console.log('close clicked')
+				// setModalVisible(false);
+			}}
+			onUpdate={handleUpdate}
+			// @ts-ignore
+			newVersion={getData?.version}
+			/>
+		)
+	}
+	console.log('\n',{newVersion})
+	// console.log('\nnewversion:', newVersion.current)
 	return (
 		<ScrollView
 		refreshControl={
