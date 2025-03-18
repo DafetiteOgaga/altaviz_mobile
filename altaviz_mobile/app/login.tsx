@@ -17,18 +17,27 @@ interface notiType {
     type: string,
     msg: string
 }
-interface UsePostReturn {
-    postData: Record<string, any> | null;
-    isPostError: string | null;
-    isPostLoading: boolean;
-    PostSetup: (url: string, formData: FormData) => Promise<void>;
-}
+// interface UsePostReturn {
+//     postData: {
+//         profile_picture: string,
+//         first_name: string,
+//         last_name: string,
+//         username: string,
+//         email: string,
+//         role: string,
+//         deliveryPoints: {deliveries: number},
+//         id: number
+//     } | null;
+//     isPostError: string | null;
+//     isPostLoading: boolean;
+//     PostSetup: (url: string, formData: FormData) => Promise<void>;
+// }
 
 export default function Login() {
     getComponentName()
     const router = useRouter();
     const { setItem } = useAsyncStorageMethods();
-    const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
+    const {postData, isPostError, isPostLoading, PostSetup} = usePost();
     const {getData, isGetError, isGetLoading, GetSetup} = useGet();
     const [secureText, setSecureText] = useState(true);
 	const uniColorMode = useColorMode(); // get styles based on the current color mode
@@ -58,21 +67,13 @@ export default function Login() {
         if (postData) {
             setItem('loginData', postData)
             const headerDetails = {
-                // @ts-ignore
                 profile_picture: postData?.profile_picture,
-                // @ts-ignore
                 first_name: postData?.first_name,
-                // @ts-ignore
                 last_name: postData?.last_name,
-                // @ts-ignore
                 username: postData?.username,
-                // @ts-ignore
                 email: postData?.email,
-                // @ts-ignore
                 role: postData?.role,
-                // @ts-ignore
                 deliveryPoints: postData?.deliveryPoints?.deliveries,
-                // @ts-ignore
                 id: postData?.id,
             }
             setItem('headerDetails', headerDetails)

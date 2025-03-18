@@ -65,7 +65,6 @@ export default function ChatRoom() {
 			<View style={styles.container}>
 				<TouchableOpacity
 				onPress={()=>{router.push({
-					// @ts-ignore
 					pathname: '/(tabs)/chatScreen',
 					params: {
 						cid: contactID,

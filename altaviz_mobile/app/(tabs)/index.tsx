@@ -40,23 +40,20 @@ const Dashboard = () => {
 	console.log('version:', packageJson.version)
 	const router = useRouter();
 	const segments = useSegments();
-	const { removeItem } = useAsyncStorageMethods();
+	const { setItem, getItem, removeItem } = useAsyncStorageMethods();
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [newVersionNumber, setNewVersionNumber] = useState<boolean|null>(null);
 	const [newVersion, setNewVersion] = useState<boolean|null>(null);
 	useEffect(() => {
-		// @ts-ignore
 		if (getData?.version && getData.version !== packageJson.version) {
 			setNewVersion(true);
 			setModalVisible(true);
-			// @ts-ignore
 			setNewVersionNumber(getData?.version);
 		} else setNewVersion(false);
 		console.log(
 			'\ncurrentVersion:', packageJson.version,
-			// @ts-ignore
 			"\nnew version:", getData?.version,
             "\nnew version available", newVersion,
 		)
@@ -67,14 +64,11 @@ const Dashboard = () => {
 			setModalVisible(false);
 			console.log('update clicked')
 			Linking.openURL(`https://github.com/DafetiteOgaga/altavizMobileReleases/releases/download/${newVersionNumber}/altaviz.apk`)
-			// Linking.openURL("https://play.google.com/store/apps/details?id=com.altaviz.altaviz_mobile");
 			setNewVersion(false);
 		}
 	};
 
 	const uniColorMode = useColorMode()
-	// const colorScheme = useColorScheme();
-	// const isDark = colorScheme === "dark";
 	const dashboardData = useGetDataFromStorage('loginData')
 	// console.log('dashboard', JSON.stringify(dashboardData, null, 4))
 	useEffect(() => {
@@ -89,13 +83,26 @@ const Dashboard = () => {
 			return () => clearTimeout(delayRouter)
 		}
 	}, [dashboardData])
+	// const timeNow = useRef(Date.now().getTime());
+	// useEffect(() => {
+	// 	// const getVersion = setInterval(() => {
+	// 		GetSetup('version/')
+	// 		// }, 1000*60*60*24);
+	// 	// }, 10000);
+	// 	// return () => clearInterval(getVersion)
+	// }, [pathname])
+	const lastRun = useGetDataFromStorage("lastRunTime");
 	useEffect(() => {
-		const getVersion = setInterval(() => {
-			GetSetup('version/')
-			}, 1000*60*60*24);
-		// }, 10000);
-		return () => clearInterval(getVersion)
-	}, [pathname])
+		const now = Date.now();
+		console.log({now})
+		// const TWENTY_FOUR_HOURS = 1000 * 60
+		const TWENTY_FOUR_HOURS = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
+
+		if (!lastRun || now - parseInt(lastRun) >= TWENTY_FOUR_HOURS) {
+			GetSetup("version/");
+			setItem("lastRunTime", now.toString());
+		}
+	}, [pathname]);
 	// useEffect(() => {
 	// if (getData) {
 	// 	// checkForUpdate(getData)
@@ -104,7 +111,6 @@ const Dashboard = () => {
 	// 		visible={modalVisible}
 	// 		onClose={() => setModalVisible(false)}
 	// 		onUpdate={handleUpdate}
-	// 		// @ts-ignore
 	// 		newVersion={getData?.version}
 	// 		/>
 	// 	)
@@ -144,12 +150,14 @@ const Dashboard = () => {
 				// setModalVisible(false);
 			}}
 			onUpdate={handleUpdate}
-			// @ts-ignore
-			newVersion={getData?.version}
+			newVersion={newVersionNumber}
 			/>
 		)
 	}
 	console.log('\n',{newVersion})
+	console.log('pathname:', pathname?pathname:'no pathname',
+		{lastRun}
+	)
 	// console.log('\nnewversion:', newVersion.current)
 	return (
 		<ScrollView
@@ -162,11 +170,16 @@ const Dashboard = () => {
 			/>}
 		style={[ScreenStyle.allScreenContainer]}>
 			<View style={[styles.emailInfoBox]}>
-				<View style={{paddingTop: 2}}>
-					<Ionicons name={"mail-outline"} size={13} color="#A0AEC0" />
-				</View>
 				<View>
-					<Text style={styles.emailInfoLabel}> {dashboardData?.email}</Text>
+					<Text style={styles.versionInfoLabel}>{packageJson.version}</Text>
+				</View>
+				<View style={{flexDirection: "row", alignItems: 'center',}}>
+					<View style={{paddingTop: 2}}>
+						<Ionicons name={"mail-outline"} size={13} color="#A0AEC0" />
+					</View>
+					<View>
+						<Text style={styles.emailInfoLabel}> {dashboardData?.email}</Text>
+					</View>
 				</View>
 			</View>
 			<ParallaxScrollView
@@ -431,11 +444,11 @@ const Dashboard = () => {
 						<View style={styles.statsContainer}>
 							{/* @ts-ignore */}
 							<StatCard
-								icon="construct-outline"
+								icon="person-outline"
 								userID={dashboardData?.id}
 								mode='fault'
 								urlRoute="approve-user-details-update"
-								label="Account Update Requests" variant="faults" // screen="pendingFaults"
+								label="Account Update Requests" variant="account" // screen="pendingFaults"
 								onRefresh={handleRefresh}
 								endOnRefresh={setRefreshing}
 								/>
@@ -458,7 +471,7 @@ const Dashboard = () => {
 								userID={dashboardData?.id}
 								mode='fault'
 								urlRoute="all-pending-faults-wRequests"
-								label="All Faults With requests" variant="faults" // screen="pendingFaults"
+								label="All Faults With requests" variant="allFaults" // screen="pendingFaults"
 								onRefresh={handleRefresh}
 								endOnRefresh={setRefreshing}
 								/>
@@ -467,7 +480,7 @@ const Dashboard = () => {
 								userID={dashboardData?.id}
 								mode='request'
 								urlRoute="all-request-only"
-								label="All Combined Requests" variant="unconfirmedResolutions" // screen="pendingFaults"
+								label="All Combined Requests" variant="allRequests" // screen="pendingFaults"
 								onRefresh={handleRefresh}
 								endOnRefresh={setRefreshing}
 								/>
@@ -511,7 +524,6 @@ const CreateFaultButton = ({ userID, userEmail, icon, label, screen, url, urlRou
 	}
 	// console.log('in CreateFaultButton', {screen}, {url}, {userEmail}, {userID})
 	// if (!dashboardData||isGetError) return <ActivityIndicator size="small" color={uniColorMode.buttonSpin} />
-	// @ts-ignore
 	const supervisorLabel = ((dashboardData?.role==='supervisor')&&`${getData?.total} ${label}`)||undefined
 	// console.log('getData in index', getData)
 	// console.log(`${fetchUrl} has undefined: ${fetchHasUndefined}`)
@@ -560,9 +572,7 @@ const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, o
 		if (endOnRefresh) endOnRefresh(false)
 	}
 
-	// @ts-ignore
 	if (getData?.total===0) {color = 'green'}
-	// @ts-ignore
 	else if (!getData?.total) {color = 'transparent'}
 	// console.log({color}, {getIcon})
 	return (
@@ -571,7 +581,6 @@ const StatCard = ({ icon, mode, label, variant, onPress, userID, urlRoute, id, o
 		<TouchableOpacity
 		disabled={!!isGetError}
 		onPress={() => router.push({
-				// @ts-ignore
 				pathname: screen,
 				params:{
 					url: pressUrl,
@@ -650,7 +659,8 @@ const styles = StyleSheet.create({
 	},
 	emailInfoBox: {
 		flexDirection: "row",
-		justifyContent: 'flex-end',
+		// justifyContent: 'flex-end',
+		justifyContent: 'space-between',
 		alignItems: 'center',
 		borderRadius: 12,
 		shadowOpacity: 0.1,
@@ -660,6 +670,10 @@ const styles = StyleSheet.create({
 	emailInfoLabel: {
 		fontSize: 14,
 		color: "#A0AEC0",
+	},
+	versionInfoLabel: {
+		fontSize: 12,
+		color: "#A0AEC080",
 	},
 	infoRow: {
 	  flexDirection: "row",

@@ -34,7 +34,7 @@ export default function TabLayout() {
             <Tabs.Screen //home screen
             name="index" // screen name (navigation)
             options={{
-                // title: screenConfig.index.title, // tab title
+                title: screenConfig.index.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.index.icon} color={color} />,
             }}
@@ -45,7 +45,7 @@ export default function TabLayout() {
                 message: 'Hello, Anon!\nFron default parameter value'
             }}
             options={{
-                // title: screenConfig.chatroom.title, // tab title
+                title: screenConfig.chatroom.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.chatroom.icon} color={color} />,
                 tabBarBadge: 3, // show a badge on the tab
@@ -60,7 +60,7 @@ export default function TabLayout() {
                 message: 'Hello, Anon!\nFron default parameter value'
             }}
             options={{
-                // title: screenConfig.profile.title, // tab title
+                title: screenConfig.profile.title, // tab title
                 // tab icon and color
                 tabBarIcon: ({ color }) => <Ionicons size={28} name={screenConfig.profile.icon} color={color} />,
             }}

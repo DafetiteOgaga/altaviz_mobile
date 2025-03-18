@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { baseUrl } from '@/constants/urlOrigin'
 import { getComponentName } from '@/hooks/getComponentName';
 
-let requestType
+let requestType:string
 function useGet () {
 	getComponentName()
-	const [getData, setGetData] = useState(null)
-	const [isGetLoading, setIsGetLoading] = useState(false)
-	const [isGetError, setIsGetError] = useState(null);
+	const [getData, setGetData] = useState<any>(null)
+	const [isGetLoading, setIsGetLoading] = useState<any>(false)
+	const [isGetError, setIsGetError] = useState<any>(null);
 	requestType = 'GET'
-	const GetSetup = async (url) => {
+	const GetSetup = async (url:string) => {
 		getComponentName()
 		const finalUrl = `${baseUrl}/${url}`
 		console.log(`${requestType}: finalUrl ###***###: ${finalUrl}`)
@@ -30,7 +30,7 @@ function useGet () {
 			// console.log('Response:', JSON.stringify(resp, null, 2).slice(0, 100));
 			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setGetData(resp)
-		} catch (e) {
+		} catch (e:any) {
 			setIsGetError(e.message);
 			throw new Error('Error posting data (message):', e.message);
 		} finally {
@@ -43,11 +43,11 @@ export { useGet };
 
 function usePost () {
 	getComponentName()
-	const [postData, setPostData] = useState(null)
-	const [isPostLoading, setIsPostLoading] = useState(false)
-	const [isPostError, setIsPostError] = useState(null);
+	const [postData, setPostData] = useState<any>(null)
+	const [isPostLoading, setIsPostLoading] = useState<any>(false)
+	const [isPostError, setIsPostError] = useState<any>(null);
 	requestType = 'POST'
-	const PostSetup = async (url, formData) => {
+	const PostSetup = async (url:string, formData:any) => {
 		getComponentName()
 		// console.log('hhhh'.repeat(50))
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
@@ -81,7 +81,7 @@ function usePost () {
 			// console.log('Response:', JSON.stringify(resp, null, 2));
 			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setPostData(resp)
-		} catch (e) {
+		} catch (e:any) {
 			setIsPostError(e.message);
 			throw new Error(`Error posting data (message): ${e.message}`);
 		} finally {
@@ -94,11 +94,11 @@ export { usePost };
 
 function usePut () {
 	getComponentName()
-	const [putData, setPutData] = useState(null)
-	const [isPutLoading, setIsPutLoading] = useState(false)
-	const [isPutError, setIsPutError] = useState(null);
+	const [putData, setPutData] = useState<any>(null)
+	const [isPutLoading, setIsPutLoading] = useState<any>(false)
+	const [isPutError, setIsPutError] = useState<any>(null);
 	requestType = 'PUT'
-	const PutSetup = async (url, formData) => {
+	const PutSetup = async (url:string, formData:any) => {
 		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
@@ -128,7 +128,7 @@ function usePut () {
 			// console.log('Response:', JSON.stringify(resp, null, 2));
 			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setPutData(resp)
-		} catch (e) {
+		} catch (e:any) {
 			setIsPutError(e.message);
 			throw new Error(`Error posting data (message): ${e.message}`);
 		} finally {
@@ -141,11 +141,11 @@ export { usePut };
 
 function usePatch () {
 	getComponentName()
-	const [patchData, setPatchData] = useState(null)
-	const [isPatchLoading, setIsPatchLoading] = useState(false)
-	const [isPatchError, setIsPatchError] = useState(null);
+	const [patchData, setPatchData] = useState<any>(null)
+	const [isPatchLoading, setIsPatchLoading] = useState<any>(false)
+	const [isPatchError, setIsPatchError] = useState<any>(null);
 	requestType = 'PATCH'
-	const PatchSetup = async (url, formData) => {
+	const PatchSetup = async (url:string, formData:any) => {
 		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
@@ -175,7 +175,7 @@ function usePatch () {
 			// console.log('Response:', JSON.stringify(resp, null, 2));
 			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setPatchData(resp)
-		} catch (e) {
+		} catch (e:any) {
 			setIsPatchError(e.message);
 			throw new Error(`Error posting data (message): ${e.message}`);
 		} finally {
@@ -188,11 +188,11 @@ export { usePatch };
 
 function useDelete () {
 	getComponentName()
-	const [deleteData, setDeleteData] = useState(null)
-	const [isDeleteLoading, setIsDeleteLoading] = useState(false)
-	const [isDeleteError, setIsDeleteError] = useState(null);
+	const [deleteData, setDeleteData] = useState<any>(null)
+	const [isDeleteLoading, setIsDeleteLoading] = useState<any>(false)
+	const [isDeleteError, setIsDeleteError] = useState<any>(null);
 	requestType = 'DELETE'
-	const DeleteSetup = async (url) => {
+	const DeleteSetup = async (url:string) => {
 		getComponentName()
 		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
 		const finalUrl = `${baseUrl}/${url}`
@@ -224,7 +224,7 @@ function useDelete () {
 			// console.log('Response:', JSON.stringify(resp, null, 2));
 			console.log(`${requestType} Response: success (async) ${finalUrl.split(baseUrl)[1]}`)
 			setDeleteData(resp)
-		} catch (e) {
+		} catch (e:any) {
 			setIsDeleteError(e.message);
 			throw new Error(`Error posting data (message): ${e.message}`);
 		} finally {

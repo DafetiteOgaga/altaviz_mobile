@@ -70,7 +70,7 @@ export default function ChatScreen () {
 	}, [cid])
 	useEffect(()=>{
 		if (
-			// productionServer&&
+			productionServer&&
 			path==='chatScreen') {
 			const timeInterval = setInterval(() => {
 				updateGet(`chat-user/${cid}/${userID}/mobile/`)
@@ -79,17 +79,14 @@ export default function ChatScreen () {
 		}
 	})
 	useEffect(() => {
-		// @ts-ignore
 		if (updateData?.results) {
 			console.log('updateData (useefect) #####:', JSON.stringify(updateData, null, 4).slice(0, 100))
-			// @ts-ignore
 			setChatData([...updateData?.results]?.reverse())
 			console.log('initMount:', initMount.current)
 			if (initMount.current) {initMount.current = false}
 			console.log('initMount:', initMount.current)
 			updateRef.current = true
 		}
-		// @ts-ignore
 		if (updateData&&!updateData.count) {setChatData({new: 'no chat history'})}
 	}, [updateData, updateError, updateLoading])
 	useEffect(() => {initMount.current = true}, [])
@@ -128,26 +125,20 @@ export default function ChatScreen () {
 	}, [chatData]);
 	console.log('\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 100))
 	console.log('updateData:', JSON.stringify(updateData, null, 4).slice(0, 500))
-	// @ts-ignore
 	console.log('message:', updateData?.message)
-	// @ts-ignore
 	// console.log('refreshData length:', refreshData?.results?.length)
 	// if (updateData&&!updateData.count&&!chatData) chatData = [{
 	// 	new: ['empty', 'no chat history'],
 	// 	message: 'no message',
 	// 	id: 0,
 	// }]
-	// @ts-ignore
 	if (refreshData?.results?.length) {
-		// @ts-ignore
 		chatData = [...refreshData?.results, ...chatData]
 	}
 	console.log(
 		'\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 50),
 		'\nupdateData:', JSON.stringify(updateData, null, 4).slice(0, 50),
-		// @ts-ignore
 		'\ncount:', updateData?.count,
-		// @ts-ignore
 		'\nupdateData&&!updateData?.count:', updateData&&!updateData?.count
 	)
 	console.log({path})

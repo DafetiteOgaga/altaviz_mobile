@@ -39,11 +39,11 @@ const CustomDrawerHeader = (props: any) => {
 						]}>
                         <Text style={[headerStyles.roleText]}>{toTitleCase(userData?.role||'')}</Text>
                     </View>
-                    <View style={headerStyles.deliveries}>
+                    {(userData?.role!=='custodian'&&userData?.role!=='human-resource') && <View style={headerStyles.deliveries}>
                         <Ionicons name={'cube-outline'} size={15} color={uniColorMode.text} />
                         <Text style={headerStyles.deliveriesText}>Deliveries: {userData?.deliveryPoints}</Text>
 						{/* <Text style={headerStyles.deliveriesText}>Deliveries: {userData.deliveries}</Text> */}
-                    </View>
+                    </View>}
                 </View>
             </View>
 			<View style={headerStyles.line} />

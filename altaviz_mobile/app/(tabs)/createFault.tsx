@@ -86,7 +86,6 @@ export default function CreateFault() {
     }
     useEffect(()=>{
         if (postData) {
-            // @ts-ignore
             const data:any = {type: 'success', msg: postData?.message}
             showToast(data)
             setSelectedItem(null)

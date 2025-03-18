@@ -1,11 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useColorMode } from '@/constants/Colors';
 import { View, TextInput, StyleSheet, KeyboardAvoidingView, Platform,
 	TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { usePathname } from 'expo-router';
+import { getComponentName } from '@/hooks/getComponentName';
 
 const ChatInput = ({onSend}:{onSend:(message:string)=>void}) => {
+	getComponentName()
 	const uniColorMode = useColorMode()
+	const path = usePathname()
 	const [message, setMessage] = useState('');
 	// const [keyboardVisible, setKeyboardVisible] = useState(false);
 	const inputRef = useRef(null);
@@ -27,7 +31,15 @@ const ChatInput = ({onSend}:{onSend:(message:string)=>void}) => {
 	// 	keyboardDidHideListener.remove();
 	// 	};
 	// }, []);
-
+	// useEffect(() => {
+	// 	if (path!=='chatScreen') return ()=>setMessage('')
+	// }, [])
+	useEffect(() => {
+		// console.log('lele'.repeat(10))
+		// console.log({message})
+		if (message&&path!=='chatScreen') setMessage('')
+		// console.log({message})
+	}, [path])
 	const handleSend = () => {
 		console.log('message:', message);
 		onSend(message);

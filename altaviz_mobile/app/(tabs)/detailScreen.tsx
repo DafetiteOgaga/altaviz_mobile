@@ -79,7 +79,7 @@ export default function DetailScreen () {
 	const notWorkshopAndHR = role!=='workshop'&&role!=='human-resource'
 	return (
 		<ScrollView style={[ScreenStyle.allScreenContainer, styles.detailMain, {marginBottom: 0,}]}>
-			<ThemedText type={'link'}>Assigned to: {assignedTo}</ThemedText>
+			{/* <ThemedText type={'link'}>Assigned to: {assignedTo}</ThemedText>
 			<ThemedText type={'link'}>Managed by: {managedBy}</ThemedText>
 			<ThemedText type={'link'}>Supervised by: {supervisedBy}</ThemedText>
 			<ThemedText type={'link'}>faultid: {item?.id}</ThemedText>
@@ -91,7 +91,7 @@ export default function DetailScreen () {
 			<ThemedText type={'link'}>assigned_to: {item?.assigned_to?.email}</ThemedText>
 			<ThemedText type={'link'}>resolutionDetails: {JSON.stringify(resolutionDetails, null, 4)}</ThemedText>
 			<ThemedText type={'link'}>hasRequestsAndApproved: {hasRequestsAndApproved?.toString()}</ThemedText>
-			<ThemedText type={'link'}>role: {role}</ThemedText>
+			<ThemedText type={'link'}>role: {role}</ThemedText> */}
 			{/* <CustomDropdown /> */}
 			{/* <RequestItem id={item?.id} type={'component'} url='request-component' /> */}
 			<View style={{paddingBottom: 20}}>
@@ -371,7 +371,7 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 	const uniColorMode = useColorMode()
 	const router = useRouter()
 	const { deleteData, isDeleteError, isDeleteLoading, DeleteSetup }: useTypes = useDelete();
-	const { patchData, isPatchError, isPatchLoading, PatchSetup }: useTypes = usePatch();
+	const { patchData, isPatchError, isPatchLoading, PatchSetup } = usePatch();
 	let url: string = ''
 	const handleNavigate = () => {
 		if (label?.toLowerCase()==='engineer') {
@@ -428,7 +428,6 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 				DeleteSetup(url)
 			} else {
 				formData.append('verify_resolve', 'true')
-				// @ts-ignore
 				PatchSetup(url, formData)
 			}
 		} else if (label?.toLowerCase()==='custodian') {
@@ -442,7 +441,6 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 				formData.append('supervisedBy', resolutionDetails.supervisedBy!)
 				formData.append('region', resolutionDetails.region!)
 				formData.append('deliveries', '1')
-				// @ts-ignore
 				PatchSetup(url, formData)
 			}
 		} else if (label?.toLowerCase()==='workshop') {
@@ -458,7 +456,6 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 			}
 		} else if (label?.toLowerCase()==='supervisor') {
 			formData = approveOrRejectAllRequests({ item, buttonText, userEmail })
-			// @ts-ignore
 			PatchSetup(url, formData)
 		} else if (label?.toLowerCase()==='human-resource') {
 			if (modeType==='request') {
@@ -477,7 +474,6 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 				formData = approveOrRejectAllRequests({ item, buttonText, userEmail })
 				// url = `request-status/${userID}/`
 			}
-			// @ts-ignore
 			PatchSetup(url, formData)
 		}
 	}
@@ -492,7 +488,6 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
             // console.log('deleteData||patchData (detailScreen):', deleteData||patchData)
 			Toast.show({
 				type: 'success', // 'success' | 'error' | 'info'
-				// @ts-ignore
 				text1: toTitleCase(deleteData?.msg||patchData?.msg||''),
 			});
 			router.push('/')
