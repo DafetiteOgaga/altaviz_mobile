@@ -145,7 +145,6 @@ export default function EngineerToLocation() {
     // Handle post response
     useEffect(() => {
         if (patchData) {
-            // @ts-ignore
             showToast({ type: "success", msg: patchData?.msg });
             setSelectedEngineers({});
             router.push("/");
