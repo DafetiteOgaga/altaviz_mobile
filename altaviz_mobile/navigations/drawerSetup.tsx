@@ -32,7 +32,7 @@ export default function DrawerNavigator() {
 	const resolvedHeaderTitle = useRef<string|undefined>(undefined)
 	useEffect(()=>{
 		resolvedHeaderTitle.current =
-			(titleKey==='')?'Home Title Drawer':
+			(titleKey==='')?'Dashboard':
 			(titleKey==='blueBlank')?headerTitle:
 			(titleKey==='detailsRequestCardView')?headerTitle:
 			(titleKey==='chatScreen')?headerTitle:
@@ -165,7 +165,7 @@ export default function DrawerNavigator() {
 							// borderTopWidth: 1,  // Add a border
 							// borderColor: 'rgba(255, 255, 255, 0.3)',  // Border color
 							// paddingBottom:400,
-							marginBottom: 50,
+							marginBottom: 70,
 							// width: '80%',
 							// height: 1,
 							// backgroundColor: 'grey',
@@ -190,7 +190,7 @@ export default function DrawerNavigator() {
 							borderTopWidth: 1,  // Add a border
 							borderColor: 'rgba(255, 255, 255, 0.3)',  // Border color
 							// paddingBottom:400,
-							marginBottom: 320,
+							marginBottom: 350,
 							// width: '80%',
 							// height: 1,
 							// backgroundColor: 'grey',
