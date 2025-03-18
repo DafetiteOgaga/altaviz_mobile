@@ -134,10 +134,8 @@ export default function RequestItem({requests}: {requests: any} ) {
     }
     useEffect(()=>{
         if (postData) {
-            // @ts-ignore
             const data:any = {type: 'success', msg: postData?.msg||postData?.received}
             showToast(data)
-            // @ts-ignore
             if (type) {setForm(false)}
             router.push('/')
         } else if (isPostError) {
