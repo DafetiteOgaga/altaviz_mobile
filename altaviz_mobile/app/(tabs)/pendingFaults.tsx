@@ -32,6 +32,7 @@ export default function PendingFaults() {
     //     '\n', {variant},
 	// )
 	const router = useRouter()
+	// @ts-ignore
 	useEffect(()=>{GetSetup(url)}, [url])
 	let name
 	const nameList = String(label).split(' ')
@@ -39,6 +40,7 @@ export default function PendingFaults() {
 	else {name = 'Fault'}
 	const handleRefresh = async () => { // Refresh/pull new data from server upon refresh
         setRefreshing(true);
+		// @ts-ignore
         await GetSetup(url)
         setRefreshing(false);
     }
@@ -59,7 +61,6 @@ export default function PendingFaults() {
 		// setIsNavigating(true)
 		try {
 			router.push({
-				// @ts-ignore
 				pathname: acountUpdate?'/userChangeRequest':supervisor_HelpDesk_HR?'/engineersFaults':'/detailScreen',
 				params: {
 				data: JSON.stringify(item),
