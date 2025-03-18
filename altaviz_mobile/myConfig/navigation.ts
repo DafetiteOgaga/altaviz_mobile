@@ -8,20 +8,8 @@ import { Ionicons } from '@expo/vector-icons';
 type IconNameTYpe = keyof typeof Ionicons.glyphMap;
 export const screenConfig: Record<string, { title: string; icon: IconNameTYpe }> = {
 	index: {
-		title: 'Home Tab/Drawer config',
+		title: 'Dashboard',
 		icon: 'home-outline',
-	},
-	explore: {
-		title: 'Explore Tab config',
-		icon: 'paper-plane',
-	},
-	greet: {
-		title: 'Greetings Tab config',
-		icon: 'library',
-	},
-	testcomp: {
-		title: 'Test Component Drawer config',
-		icon: 'american-football-outline',
 	},
 	login: {
 		title: 'Login',
@@ -31,18 +19,14 @@ export const screenConfig: Record<string, { title: string; icon: IconNameTYpe }>
 		title: 'Logout',
 		icon: 'log-out-outline',
 	},
-    appIndex: {
-		title: 'AppIndex Tab config',
-		icon: 'grid-outline',
-	},
-    pendingFaults: {
-		title: 'Pending Faults Tab config',
-		icon: 'grid-outline',
-	},
-    inspectUserProfile: {
-		title: 'User Profile Tab config',
-		icon: 'grid-outline',
-	},
+    // pendingFaults: {
+	// 	title: 'Pending Faults Tab config',
+	// 	icon: 'grid-outline',
+	// },
+    // inspectUserProfile: {
+	// 	title: 'User Profile Tab config',
+	// 	icon: 'grid-outline',
+	// },
     profile: {
 		title: 'Profile',
 		icon: 'person-circle-outline',
