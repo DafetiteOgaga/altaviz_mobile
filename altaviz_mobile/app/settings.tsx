@@ -12,8 +12,8 @@ export default function Settings() {
     <>
       <Stack.Screen />
       <ThemedView style={[ScreenStyle.allScreenContainer, styles.container]}>
-        <ThemedText type="title">This is the Settings screen.</ThemedText>
-        <ThemedText type="link">Go nowhere!</ThemedText>
+        <ThemedText type="title">This screen is still in development.</ThemedText>
+        {/* <ThemedText type="link">Go nowhere!</ThemedText> */}
       </ThemedView>
     </>
   );
