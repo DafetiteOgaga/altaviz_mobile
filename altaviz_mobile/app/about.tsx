@@ -27,7 +27,7 @@ export default function About() {
 				</View>
 			</View>
 
-			<View style={[styles.directionAndAlign, {marginTop: -10, gap: 3}]}>
+			<View style={[styles.directionAndAlign, {marginTop: -10, gap: 3, flexDirection: 'row',}]}>
 				<View>
 					<Ionicons name='arrow-forward' size={17} color={'white'} />
 				</View>
@@ -45,7 +45,7 @@ export default function About() {
 				<Text style={[styles.default]}>{packageJson.version}</Text>
 			</View>
 			<View>
-				<Text style={[styles.dateTime, {color: uniColorMode.text}]}>{timeAndDate}</Text>
+				<Text style={[styles.dateTime, {color: uniColorMode.text}]}>Updated on {timeAndDate}</Text>
 			</View>
 		</ThemedView>
 	</>);
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
 		color: '#0a7ea4',
 	},
 	directionAndAlign: {
-		flexDirection: 'row',
+		// flexDirection: 'row',
 		alignItems: 'center'
 	}
 });
