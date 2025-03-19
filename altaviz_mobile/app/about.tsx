@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 	},
 	link: {
-		// marginTop: -10,
 		lineHeight: 30,
 		fontSize: 22,
 		color: '#0a7ea4',
