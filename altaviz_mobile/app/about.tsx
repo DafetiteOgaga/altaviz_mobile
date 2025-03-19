@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
 		marginTop: 40,
 		flexDirection: 'row',
 		gap: 5,
-		// paddingVertical: 15,
 	},
 	default: {
 		fontSize: 16,
