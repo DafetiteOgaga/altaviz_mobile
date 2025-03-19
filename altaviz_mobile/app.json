@@ -2,7 +2,7 @@
   "expo": {
     "name": "Altaviz",
     "slug": "altaviz_mobile",
-    "version": "1.0.0",
+    "version": "00000000.0000",
     "orientation": "portrait",
     "icon": "./assets/images/altaviz_logo.png",
     "scheme": "myapp",
@@ -66,4 +66,4 @@
     "owner": "dafetite"
   }
 }
-// test that 
+// test that is good for it to pass
