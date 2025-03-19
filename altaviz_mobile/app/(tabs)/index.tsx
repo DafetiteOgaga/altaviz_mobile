@@ -88,7 +88,7 @@ const Dashboard = () => {
 	// 	// const getVersion = setInterval(() => {
 	// 		GetSetup('version/')
 	// 		// }, 1000*60*60*24);
-	// 	// }, 10000);
+	// 	// }, 10000)
 	// 	// return () => clearInterval(getVersion)
 	// }, [pathname])
 	const lastRun = useGetDataFromStorage("lastRunTime");
