@@ -62,8 +62,6 @@ const styles = StyleSheet.create({
 		borderColor: '#aaa',
         borderRadius: 10,
         height: 40,
-		// marginLeft: 100
-		// paddingBottom: 20
 	},
 	fonts: {
 		fontSize: 18,
