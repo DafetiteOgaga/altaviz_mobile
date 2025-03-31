@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 		// alignItems: 'center',
 	},
 	greetingText: {
-		fontSize: 20,
+		fontSize: 27,
 		fontWeight: 'bold',
 		fontStyle: 'italic',
 		color: '#fff',
