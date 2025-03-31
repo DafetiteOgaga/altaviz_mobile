@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, Linking, StyleSheet, Alert,
-	useColorScheme, Image, ActivityIndicator, ScrollView, RefreshControl } from "react-native";
+	useColorScheme, Image, ActivityIndicator, ScrollView,
+	RefreshControl, ImageBackground } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenStyle } from '../../myConfig/navigation';
 import { useColorMode } from '../../constants/Colors';
@@ -159,342 +160,356 @@ const Dashboard = () => {
 		{lastRun}
 	)
 	// console.log('\nnewversion:', newVersion.current)
+	const headerImage = require('../../assets/images/altavizDoodleLight.png')
+	const backgroundImage = require('../../assets/images/altavizDoodleDark.png')
 	return (
-		<ScrollView
-		refreshControl={
-			<RefreshControl
-			refreshing={refreshing}
-			onRefresh={handleRefresh}
-			colors={[uniColorMode.mb]}
-			tintColor={uniColorMode.mb} // iOS spinner color
-			/>}
-		style={[ScreenStyle.allScreenContainer]}>
-			<View style={[styles.emailInfoBox]}>
-				<View>
-					<Text style={styles.versionInfoLabel}>{packageJson.version}</Text>
-				</View>
-				<View style={{flexDirection: "row", alignItems: 'center',}}>
-					<View style={{paddingTop: 2}}>
-						<Ionicons name={"mail-outline"} size={13} color="#A0AEC0" />
-					</View>
-					<View>
-						<Text style={styles.emailInfoLabel}> {dashboardData?.email}</Text>
-					</View>
-				</View>
-			</View>
-			<ParallaxScrollView
-				headerBackgroundColor={{ light: uniColorMode.background, dark: uniColorMode.background }}
-				headerHeight={DASHBOARD_HEADER_HEIGHT}
-				childrenPadding={10}
-				// onScrollOffsetChange={handleScrollOffsetChange}
-				headerImage={
-					<>
-						{/* <Image source={companyLogo} style={{width: 100, height: 50}} /> */}
+		<ImageBackground source={backgroundImage} style={{ flex: 1 }}>
+			<ScrollView
+			refreshControl={
+				<RefreshControl
+				refreshing={refreshing}
+				onRefresh={handleRefresh}
+				colors={[uniColorMode.mb]}
+				tintColor={uniColorMode.mb} // iOS spinner color
+				/>}
+			style={[ScreenStyle.allScreenContainer]}>
+					<View style={[styles.emailInfoBox]}>
 						<View>
-							<TimeOfDayGreeting name={dashboardData?.first_name}/>
+							<Text style={styles.versionInfoLabel}>{packageJson.version}</Text>
 						</View>
-					</>
-				}
-			>
-				{/* engineer */}
-				{role==='engineer' &&
-				<>
-					<View style={styles.statsMainContainer}>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="cog-outline"
-								userID={dashboardData?.id}
-								mode='request'
-								urlRoute="request-component"
-								label="Pending Component Requests" variant="pendingComponents" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="cube-outline"
-								userID={dashboardData?.id}
-								mode='request'
-								urlRoute="request-part"
-								label="Pending Part Requests" variant="pendingParts" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
+						<View style={{flexDirection: "row", alignItems: 'center',}}>
+							<View style={{paddingTop: 2}}>
+								<Ionicons name={"mail-outline"} size={13} color="#A0AEC0" />
+							</View>
+							<View>
+								<Text style={styles.emailInfoLabel}> {dashboardData?.email}</Text>
+							</View>
 						</View>
 					</View>
-					<View style={styles.statsMainContainer}>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="construct-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="engineer-pending-faults"
-								label="Pending Faults" variant="faults" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="hourglass-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="engineer-unconfirmed-faults"
-								label="Unconfirmed Resolutions" variant="unconfirmedResolutions" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-				</>}
+					
+						<ParallaxScrollView
+							headerBackgroundColor={{ light: uniColorMode.background, dark: uniColorMode.background }}
+							headerHeight={DASHBOARD_HEADER_HEIGHT}
+							childrenPadding={10}
+							// onScrollOffsetChange={handleScrollOffsetChange}
+							headerImage={
+								<>
+									<Image source={headerImage}
+									style={{position: 'absolute', top: 0, left: 0, width: 391.7, height: 200,
+										borderWidth: 0.5, borderColor: '#A4978E'
+									}}
+									/>
+									<View style={{position: 'absolute', top: 10, left: 10, right: 0, bottom: 0,
+										// justifyContent: 'center', alignItems: 'center'
+										}}>
+										<TimeOfDayGreeting name={dashboardData?.first_name}/>
+									</View>
+								</>
+							}
+						>
+								<>
+								{/* engineer */}
+								{role==='engineer' &&
+								<>
+									<View style={styles.statsMainContainer}>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="cog-outline"
+												userID={dashboardData?.id}
+												mode='request'
+												urlRoute="request-component"
+												label="Pending Component Requests" variant="pendingComponents" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="cube-outline"
+												userID={dashboardData?.id}
+												mode='request'
+												urlRoute="request-part"
+												label="Pending Part Requests" variant="pendingParts" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+									<View style={styles.statsMainContainer}>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="construct-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="engineer-pending-faults"
+												label="Pending Faults" variant="faults" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="hourglass-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="engineer-unconfirmed-faults"
+												label="Unconfirmed Resolutions" variant="unconfirmedResolutions" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+								</>}
 
-				{/* custodian */}
-				{role==='custodian' &&
-				<>
-					<View style={styles.statsMainContainer}>
-						<CreateFaultButton
-							icon="construct-outline"
-							screen='/createFault'
-							userEmail={dashboardData?.email}
-							// userID={dashboardData?.id}
-							// mode='fault'
-							// urlRoute="pending-faults"
-							label="Log Fault"
-							// variant="faults" // screen="pendingFaults"
-							// onRefresh={handleRefresh}
-							// endOnRefresh={setRefreshing}
-							/>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="construct-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="pending-faults"
-								label="Pending Faults" variant="faults" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="hourglass-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="unconfirmed-faults"
-								label="Unconfirmed Resolutions" variant="unconfirmedResolutions" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-				</>}
+								{/* custodian */}
+								{role==='custodian' &&
+								<>
+									<View style={styles.statsMainContainer}>
+										<CreateFaultButton
+											icon="construct-outline"
+											screen='/createFault'
+											userEmail={dashboardData?.email}
+											// userID={dashboardData?.id}
+											// mode='fault'
+											// urlRoute="pending-faults"
+											label="Log Fault"
+											// variant="faults" // screen="pendingFaults"
+											// onRefresh={handleRefresh}
+											// endOnRefresh={setRefreshing}
+											/>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="construct-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="pending-faults"
+												label="Pending Faults" variant="faults" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="hourglass-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="unconfirmed-faults"
+												label="Unconfirmed Resolutions" variant="unconfirmedResolutions" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+								</>}
 
-				{/* workshop */}
-				{role==='workshop' &&
-				<>
-					<View style={styles.statsMainContainer}>
-						<View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
-							<CreateFaultButton
-								icon="cog-outline"
-								screen='/requestItem'
-								url='request-component'
-								userEmail={dashboardData?.email}
-								// userID={dashboardData?.id}
-								// mode='fault'
-								// urlRoute="pending-faults"
-								label="Request Component"
-								// variant="faults" // screen="pendingFaults"
-								// onRefresh={handleRefresh}
-								// endOnRefresh={setRefreshing}
-								/>
-							<CreateFaultButton
-							icon="cube-outline"
-							screen='/requestItem'
-							url='post-part'
-							userEmail={dashboardData?.email}
-							// userID={dashboardData?.id}
-							// mode='fault'
-							// urlRoute="pending-faults"
-							label="Post Part"
-							// variant="faults" // screen="pendingFaults"
-							// onRefresh={handleRefresh}
-							// endOnRefresh={setRefreshing}
-							/>
-						</View>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="cog-outline"
-								userID={dashboardData?.id}
-								mode='request'
-								urlRoute="request-component"
-								label="Pending Component Requests" variant="pendingComponents" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="cube-outline"
-								userID={dashboardData?.id}
-								mode='request'
-								urlRoute="post-part"
-								label="Posted Parts" variant="pendingParts" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-				</>}
+								{/* workshop */}
+								{role==='workshop' &&
+								<>
+									<View style={styles.statsMainContainer}>
+										<View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
+											<CreateFaultButton
+												icon="cog-outline"
+												screen='/requestItem'
+												url='request-component'
+												userEmail={dashboardData?.email}
+												// userID={dashboardData?.id}
+												// mode='fault'
+												// urlRoute="pending-faults"
+												label="Request Component"
+												// variant="faults" // screen="pendingFaults"
+												// onRefresh={handleRefresh}
+												// endOnRefresh={setRefreshing}
+												/>
+											<CreateFaultButton
+											icon="cube-outline"
+											screen='/requestItem'
+											url='post-part'
+											userEmail={dashboardData?.email}
+											// userID={dashboardData?.id}
+											// mode='fault'
+											// urlRoute="pending-faults"
+											label="Post Part"
+											// variant="faults" // screen="pendingFaults"
+											// onRefresh={handleRefresh}
+											// endOnRefresh={setRefreshing}
+											/>
+										</View>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="cog-outline"
+												userID={dashboardData?.id}
+												mode='request'
+												urlRoute="request-component"
+												label="Pending Component Requests" variant="pendingComponents" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="cube-outline"
+												userID={dashboardData?.id}
+												mode='request'
+												urlRoute="post-part"
+												label="Posted Parts" variant="pendingParts" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+								</>}
 
-				{/* help-desk */}
-				{role==='help-desk' &&
-				<>
-					<View style={styles.statsMainContainer}>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="hourglass-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="user-request"
-								label="Engineers with Pending Requests" variant="faults" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="ban-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="regional-unconfirmed-faults"
-								label="Engineers with Unresolved Faults" variant="unconfirmedResolutions" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-				</>}
+								{/* help-desk */}
+								{role==='help-desk' &&
+								<>
+									<View style={styles.statsMainContainer}>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="hourglass-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="user-request"
+												label="Engineers with Pending Requests" variant="faults" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="ban-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="regional-unconfirmed-faults"
+												label="Engineers with Unresolved Faults" variant="unconfirmedResolutions" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+								</>}
 
-				{/* supervisor */}
-				{role==='supervisor' &&
-				<>
-					<View style={styles.statsMainContainer}>
-						<CreateFaultButton
-							icon="location-outline"
-							screen='/engineersToLocations'
-							userEmail={dashboardData?.email}
-							// level='supervisor'
-							// onRefresh={handleRefresh}
-							// endOnRefresh={setRefreshing}
-							userID={dashboardData?.id}
-							// mode='fault'
-							urlRoute="new-location-assignment"
-							label="Locations waiting to be Assigned"
-							// variant="faults" // screen="pendingFaults"
-							onRefresh={handleRefresh}
-							endOnRefresh={setRefreshing}
-							/>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="hourglass-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="user-request"
-								label="Engineers with Pending Requests" variant="faults" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="ban-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="regional-unconfirmed-faults"
-								label="Engineers with Unresolved Faults" variant="unconfirmedResolutions" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-				</>}
+								{/* supervisor */}
+								{role==='supervisor' &&
+								<>
+									<View style={styles.statsMainContainer}>
+										<CreateFaultButton
+											icon="location-outline"
+											screen='/engineersToLocations'
+											userEmail={dashboardData?.email}
+											// level='supervisor'
+											// onRefresh={handleRefresh}
+											// endOnRefresh={setRefreshing}
+											userID={dashboardData?.id}
+											// mode='fault'
+											urlRoute="new-location-assignment"
+											label="Locations waiting to be Assigned"
+											// variant="faults" // screen="pendingFaults"
+											onRefresh={handleRefresh}
+											endOnRefresh={setRefreshing}
+											/>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="hourglass-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="user-request"
+												label="Engineers with Pending Requests" variant="faults" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="ban-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="regional-unconfirmed-faults"
+												label="Engineers with Unresolved Faults" variant="unconfirmedResolutions" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+								</>}
 
-				{/* human-resource */}
-				{role==='human-resource' &&
-				<>
-					<View style={styles.statsMainContainer}>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="cog-outline"
-								userID={dashboardData?.id}
-								mode='request'
-								urlRoute="workshop-component-request"
-								label="Workshop Requests" variant="pendingComponents" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="cube-outline"
-								userID={dashboardData?.id}
-								mode='request'
-								urlRoute="post-part"
-								label="Fixed Parts" variant="pendingParts" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-					<View style={styles.statsMainContainer}>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="person-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="approve-user-details-update"
-								label="Account Update Requests" variant="account" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="hourglass-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="all-request-faults"
-								label="Engineers with Requests" variant="unconfirmedResolutions" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-					<View style={styles.statsMainContainer}>
-						<View style={styles.statsContainer}>
-							{/* @ts-ignore */}
-							<StatCard
-								icon="construct-outline"
-								userID={dashboardData?.id}
-								mode='fault'
-								urlRoute="all-pending-faults-wRequests"
-								label="All Faults With requests" variant="allFaults" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-							<StatCard
-								icon="hourglass-outline"
-								userID={dashboardData?.id}
-								mode='request'
-								urlRoute="all-request-only"
-								label="All Combined Requests" variant="allRequests" // screen="pendingFaults"
-								onRefresh={handleRefresh}
-								endOnRefresh={setRefreshing}
-								/>
-						</View>
-					</View>
-				</>}
+								{/* human-resource */}
+								{role==='human-resource' &&
+								<>
+									<View style={styles.statsMainContainer}>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="cog-outline"
+												userID={dashboardData?.id}
+												mode='request'
+												urlRoute="workshop-component-request"
+												label="Workshop Requests" variant="pendingComponents" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="cube-outline"
+												userID={dashboardData?.id}
+												mode='request'
+												urlRoute="post-part"
+												label="Fixed Parts" variant="pendingParts" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+									<View style={styles.statsMainContainer}>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="person-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="approve-user-details-update"
+												label="Account Update Requests" variant="account" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="hourglass-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="all-request-faults"
+												label="Engineers with Requests" variant="unconfirmedResolutions" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+									<View style={styles.statsMainContainer}>
+										<View style={styles.statsContainer}>
+											{/* @ts-ignore */}
+											<StatCard
+												icon="construct-outline"
+												userID={dashboardData?.id}
+												mode='fault'
+												urlRoute="all-pending-faults-wRequests"
+												label="All Faults With requests" variant="allFaults" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+											<StatCard
+												icon="hourglass-outline"
+												userID={dashboardData?.id}
+												mode='request'
+												urlRoute="all-request-only"
+												label="All Combined Requests" variant="allRequests" // screen="pendingFaults"
+												onRefresh={handleRefresh}
+												endOnRefresh={setRefreshing}
+												/>
+										</View>
+									</View>
+								</>}
 
-				{/* white buttons */}
-				{/* <View style={styles.actionContainer}>
-					<ActionButton icon="person-outline" label="Supervisor" onPress={() => router.push('/userProfile')} />
-					<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => router.push('/userProfile')} />
-				</View> */}
-			</ParallaxScrollView>
-		</ScrollView>
+								{/* white buttons */}
+								{/* <View style={styles.actionContainer}>
+									<ActionButton icon="person-outline" label="Supervisor" onPress={() => router.push('/userProfile')} />
+									<ActionButton icon="help-circle-outline" label="Help Desk" onPress={() => router.push('/userProfile')} />
+								</View> */}
+								</>
+						</ParallaxScrollView>
+				{/* </ImageBackground> */}
+			</ScrollView>
+		</ImageBackground>
 	);
 };
 
