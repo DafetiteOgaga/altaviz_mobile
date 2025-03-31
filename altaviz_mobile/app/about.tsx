@@ -54,7 +54,7 @@ export default function About() {
 const styles = StyleSheet.create({
 	container: {
 		alignItems: 'center',
-		marginTop: 200
+		paddingTop: 200
 		// justifyContent: 'center',
 	},
 	brandLogo: {
