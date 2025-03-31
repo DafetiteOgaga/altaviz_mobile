@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ImageBackground } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -63,8 +63,10 @@ export default function ParallaxScrollView({
       ],
     };
   });
-
+  const backgroundImage = require('../assets/images/altavizDoodleDark.png')
   return (
+    // <ImageBackground
+    // source={backgroundImage}>
     <ThemedView style={styles.container}>
       <Animated.ScrollView
         ref={scrollRef}
@@ -82,6 +84,7 @@ export default function ParallaxScrollView({
         <ThemedView style={[styles.content,dynamicStyles.childrenPadding]}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
+    // </ImageBackground>
   );
 }
 
