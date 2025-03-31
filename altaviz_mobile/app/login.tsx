@@ -8,6 +8,7 @@ import Toast from 'react-native-toast-message';
 import { useAsyncStorageMethods } from '@/context/AsyncMethodsContext';
 import { useRouter } from 'expo-router';
 import { getComponentName } from "@/hooks/getComponentName";
+import {DummyAccountsModal} from '../components/dummyAccounts';
 
 interface postType {
     email: string,
@@ -36,6 +37,7 @@ interface notiType {
 export default function Login() {
     getComponentName()
     const router = useRouter();
+    const [showDummyAccounts, setShowDummyAccounts] = useState(false);
     const { setItem } = useAsyncStorageMethods();
     const {postData, isPostError, isPostLoading, PostSetup} = usePost();
     const {getData, isGetError, isGetLoading, GetSetup} = useGet();
@@ -109,6 +111,9 @@ export default function Login() {
             text1: data.msg,
         });
     };
+    const displayDummyAccounts = () => {
+        setShowDummyAccounts(true)
+    }
     // const testCsrf = async () => {
     //     const response = await fetch('https://altavizapp.pythonanywhere.com/test-api/', {
     //       method: 'GET',
@@ -128,65 +133,95 @@ export default function Login() {
     //     }
     // }
 	return (
-		<View style={[ScreenStyle.allScreenContainer, loginStyles.loginContainer]}>
-			<View style={[generalstyles.formContainer,
-				myDynamicStyles.bgColor
-				]}>
-				<Text // form/post container
-				style={[generalstyles.headerFooter, myDynamicStyles.textColor]}>Login</Text>
-                <View>
-                    <TextInput // input2 (body)
-                        style={[
-                            generalstyles.input,
-                            myDynamicStyles.textColor,
-                            myDynamicStyles.inputBgColor,
-                            loginStyles.input,
-                        ]}
-                        placeholder="Email Address"
-                        keyboardType="email-address"
-                        placeholderTextColor={placeholderTextColor}
-                        value={loginPost.email}
-                        onChangeText={email=>setLoginPost({...loginPost, email})}
-                    />
-                </View>
-                <View>
-                    <TextInput // input2 (body)
-                        style={[
-                            generalstyles.input,
-                            myDynamicStyles.textColor,
-                            myDynamicStyles.inputBgColor,
-                            loginStyles.input,
-                        ]}
-                        placeholder="Password"
-                        secureTextEntry={secureText}
-                        placeholderTextColor={placeholderTextColor}
-                        value={loginPost.password}
-                        onChangeText={password=>setLoginPost({...loginPost, password})}
-                    />
-                    <TouchableOpacity
-                    style={loginStyles.icon}
-                    onPress={() => setSecureText(!secureText)}>
-                        <Ionicons name={secureText ? "eye" : "eye-off"} size={24} color="gray" />
+        <>
+            {showDummyAccounts && <DummyAccountsModal visible={showDummyAccounts} onClose={()=>setShowDummyAccounts(false)}/>}
+            <View style={[ScreenStyle.allScreenContainer, loginStyles.loginContainer]}>
+                <View style={loginStyles.DummyAccounts}>
+                    <TouchableOpacity onPress={displayDummyAccounts}
+                    style={[loginStyles.DummyAccountsButton, {backgroundColor: uniColorMode.buttonSpin,}]}>
+                        <Text style={loginStyles.DummyText}>Dummy Accounts</Text>
                     </TouchableOpacity>
                 </View>
-                {isPostLoading?
-                    (<ActivityIndicator size="small" color={uniColorMode.buttonSpin} />):
-                    (<View style={loginStyles.button}>
-                        <Button color={uniColorMode.dkrb} title={isPostLoading?'Login in ...':'Login'}
-                        onPress={handleSubmit}
-                        // onPress={testCsrf}
-                        disabled={isPostLoading}
+                <View style={[generalstyles.formContainer,
+                    myDynamicStyles.bgColor
+                    ]}>
+                    <Text // form/post container
+                    style={[generalstyles.headerFooter, myDynamicStyles.textColor]}>Login</Text>
+                    <View>
+                        <TextInput // input2 (body)
+                            style={[
+                                generalstyles.input,
+                                myDynamicStyles.textColor,
+                                myDynamicStyles.inputBgColor,
+                                loginStyles.input,
+                            ]}
+                            placeholder="Email Address"
+                            keyboardType="email-address"
+                            placeholderTextColor={placeholderTextColor}
+                            value={loginPost.email}
+                            onChangeText={email=>setLoginPost({...loginPost, email})}
                         />
-                    </View>)}
-			</View>
-		</View>
+                    </View>
+                    <View>
+                        <TextInput // input2 (body)
+                            style={[
+                                generalstyles.input,
+                                myDynamicStyles.textColor,
+                                myDynamicStyles.inputBgColor,
+                                loginStyles.input,
+                            ]}
+                            placeholder="Password"
+                            secureTextEntry={secureText}
+                            placeholderTextColor={placeholderTextColor}
+                            value={loginPost.password}
+                            onChangeText={password=>setLoginPost({...loginPost, password})}
+                        />
+                        <TouchableOpacity
+                        style={loginStyles.icon}
+                        onPress={() => setSecureText(!secureText)}>
+                            <Ionicons name={secureText ? "eye" : "eye-off"} size={24} color="gray" />
+                        </TouchableOpacity>
+                    </View>
+                    {isPostLoading?
+                        (<ActivityIndicator size="small" color={uniColorMode.buttonSpin} />):
+                        (<View style={loginStyles.button}>
+                            <Button color={uniColorMode.dkrb} title={isPostLoading?'Login in ...':'Login'}
+                            onPress={handleSubmit}
+                            // onPress={testCsrf}
+                            disabled={isPostLoading}
+                            />
+                        </View>)}
+                </View>
+            </View>
+        </>
 	)
 }
 
 const loginStyles = StyleSheet.create({
+    DummyText: {
+        color: '#fff',
+        fontStyle: 'italic',
+        fontSize: 16,
+    },
+    DummyAccounts: {
+        alignItems: 'flex-end',
+        marginBottom: 200,
+        marginRight: 20,
+        marginTop: 30,
+    },
+    DummyAccountsButton: {
+        // alignItems: 'center',
+        
+        // paddingVertical: 8,
+        // paddingHorizontal: 8,
+        padding: 8,
+        // marginHorizontal: 130,
+        borderRadius: 5,
+        // backgroundColor: '#000',
+    },
     loginContainer: {
-        justifyContent: 'center',
-        // alignSelf: 'center',
+        // marginTop: 150,
+        // justifyContent: 'center', // put this back when dummy accounts are removed
     },
     input: {
         // height: 50,

@@ -27,7 +27,7 @@ export default function About() {
 				</View>
 			</View>
 
-			<View style={[styles.directionAndAlign, {marginTop: -10, gap: 3}]}>
+			<View style={[styles.directionAndAlign, {marginTop: -10, gap: 3, flexDirection: 'row',}]}>
 				<View>
 					<Ionicons name='arrow-forward' size={17} color={'white'} />
 				</View>
@@ -45,7 +45,7 @@ export default function About() {
 				<Text style={[styles.default]}>{packageJson.version}</Text>
 			</View>
 			<View>
-				<Text style={[styles.dateTime, {color: uniColorMode.text}]}>{timeAndDate}</Text>
+				<Text style={[styles.dateTime, {color: uniColorMode.text}]}>Updated on {timeAndDate}</Text>
 			</View>
 		</ThemedView>
 	</>);
@@ -54,7 +54,7 @@ export default function About() {
 const styles = StyleSheet.create({
 	container: {
 		alignItems: 'center',
-		marginTop: 200
+		paddingTop: 200
 		// justifyContent: 'center',
 	},
 	brandLogo: {
@@ -62,8 +62,6 @@ const styles = StyleSheet.create({
 		borderColor: '#aaa',
         borderRadius: 10,
         height: 40,
-		// marginLeft: 100
-		// paddingBottom: 20
 	},
 	fonts: {
 		fontSize: 18,
@@ -72,7 +70,6 @@ const styles = StyleSheet.create({
 		marginTop: 40,
 		flexDirection: 'row',
 		gap: 5,
-		// paddingVertical: 15,
 	},
 	default: {
 		fontSize: 16,
@@ -93,13 +90,12 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 	},
 	link: {
-		// marginTop: -10,
 		lineHeight: 30,
 		fontSize: 22,
 		color: '#0a7ea4',
 	},
 	directionAndAlign: {
-		flexDirection: 'row',
+		// flexDirection: 'row',
 		alignItems: 'center'
 	}
 });

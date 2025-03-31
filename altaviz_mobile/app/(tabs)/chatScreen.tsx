@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, ScrollView, Text, StyleSheet, FlatList, Image, ActivityIndicator,
-	TextInput, TouchableOpacity, RefreshControl, Keyboard, Platform, KeyboardAvoidingView } from "react-native";
+	TextInput, TouchableOpacity, RefreshControl, Keyboard, Platform,
+	KeyboardAvoidingView, ImageBackground } from "react-native";
 import { useGet, usePost } from "../../requests/makeRequests";
 import { getComponentName } from "../../hooks/getComponentName";
 import { useLocalSearchParams, usePathname } from "expo-router";
@@ -126,13 +127,15 @@ export default function ChatScreen () {
 	console.log('\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 100))
 	console.log('updateData:', JSON.stringify(updateData, null, 4).slice(0, 500))
 	console.log('message:', updateData?.message)
+	console.log({refreshData})
+	console.log({chatData})
 	// console.log('refreshData length:', refreshData?.results?.length)
 	// if (updateData&&!updateData.count&&!chatData) chatData = [{
 	// 	new: ['empty', 'no chat history'],
 	// 	message: 'no message',
 	// 	id: 0,
 	// }]
-	if (refreshData?.results?.length) {
+	if (chatData&&refreshData?.results?.length) {
 		chatData = [...refreshData?.results, ...chatData]
 	}
 	console.log(
@@ -163,8 +166,12 @@ export default function ChatScreen () {
 	// 	};
 	//   });
 	// console.log('heightAboveKeyboard.current (chatscreen):', heightAboveKeyboard)
+	const headerImage = require('../../assets/images/altavizDoodleDark.png')
 	return (
-		<View style={{flex: 1}}>
+		<ImageBackground
+		source={headerImage}
+		resizeMode="cover"
+		style={{flex: 1}}>
 			<ScrollView
 			ref={scrollViewRef} // Attach the ref to ScrollView
 			onScroll={handleScroll} // Track user's scrolling behavior
@@ -274,7 +281,7 @@ export default function ChatScreen () {
 					</View>
 				</ScrollView>
 			</KeyboardAvoidingView> */}
-		</View>
+		</ImageBackground>
 	)
 }
 
