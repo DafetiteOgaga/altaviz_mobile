@@ -10,6 +10,7 @@ import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { AsyncStorageProvider } from '@/context/AsyncMethodsContext';
 import { HeaderProvider } from '../context/headerUpdate';
 import { getComponentName } from '@/hooks/getComponentName';
+import { ImageBackground } from 'react-native';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,12 +31,14 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
+  const backgroundImage = require('../assets/images/altavizDoodleLight.png')
   return (
     // Wrap the app in the GestureHandlerRootView to enable gesture handling
     <HeaderProvider>
       <AsyncStorageProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView
+        style={{ flex: 1 }}
+        >
           <ThemeProvider value={{
                       ...DarkTheme,
                       colors: {
@@ -43,11 +46,18 @@ export default function RootLayout() {
                         background: uniColorMode.vvvdrkbltr,
                         // text: '#FF5733',
                       }}}>
+                        {/* <ImageBackground
+                        source={backgroundImage}
+                        style={{ flex: 1 }}
+                        resizeMode="cover"
+                        > */}
             <DrawerNavigator // The DrawerNavigator component (wraps the entire app)
             />
+            {/* </ImageBackground> */}
           </ThemeProvider>
         </GestureHandlerRootView>
         <Toast
+          // style={{ zIndex: 500 }}
           config={toastConfig}
           position="top"
           visibilityTime={3000}
