@@ -48,7 +48,7 @@ const Dashboard = () => {
 	const [newVersionNumber, setNewVersionNumber] = useState<boolean|null>(null);
 	const [newVersion, setNewVersion] = useState<boolean|null>(null);
 	useEffect(() => {
-		if (getData?.version && getData.version !== packageJson.version) {
+		if (getData?.version && getData.version > packageJson.version) {
 			setNewVersion(true);
 			setModalVisible(true);
 			setNewVersionNumber(getData?.version);
@@ -96,7 +96,7 @@ const Dashboard = () => {
 	useEffect(() => {
 		const now = Date.now();
 		console.log({now})
-		// const TWENTY_FOUR_HOURS = 1000 * 60
+		// const TWENTY_FOUR_HOURS = 1000 * 60 // 1 minute in milliseconds
 		const TWENTY_FOUR_HOURS = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
 
 		if (!lastRun || now - parseInt(lastRun) >= TWENTY_FOUR_HOURS) {

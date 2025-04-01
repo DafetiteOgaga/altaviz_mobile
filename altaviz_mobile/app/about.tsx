@@ -51,16 +51,17 @@ export default function About() {
 			</View>
 			
 			{/* version checks */}
-			<View style={{marginTop: 200}}>
+			<View style={{marginTop: 200, alignItems: 'center'}}>
 				<Text style={[styles.default]}>App version: {packageJson.version}</Text>
 				<Text style={[styles.default]}>Ser version: {serverVersion}</Text>
+				<Text style={[styles.default]}>{serverVersion>packageJson.version?'Update available':'Up to date'}</Text>
 			</View>
 		</ThemedView>
 	</>);
 }
 
 function ServerVersion () {
-	const [serverV, setServerV] = useState(null)
+	const [serverV, setServerV] = useState('19880522.0000')
 	const pathname = usePathname().split('/')[1]
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
 	useEffect(() => {
