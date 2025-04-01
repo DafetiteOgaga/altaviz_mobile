@@ -4,7 +4,7 @@ import {
     ActivityIndicator, Modal, TextInput
 } from "react-native";
 import { useColorMode } from "../../constants/Colors";
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, usePathname } from 'expo-router';
 import { generalstyles } from "../../myConfig/navigation";
 import { useHeader } from "../../context/headerUpdate";
 import { usePatch, useGet } from "../../requests/makeRequests";
@@ -42,7 +42,8 @@ export default function EngineerToLocation() {
 
     const { getData, isGetError, isGetLoading, GetSetup } = useGet();
     const { setHeaderTitle } = useHeader();
-    useEffect(()=>setHeaderTitle('Assign Engineers to Locations'))
+    const pathname = usePathname().split('/')[1]
+    useEffect(()=>{if (pathname==='engineersToLocations') setHeaderTitle('Assign Engineers to Locations')}, [pathname])
     const userData = useGetDataFromStorage("loginData");
     const {patchData, isPatchError, isPatchLoading, PatchSetup}: UsePostReturn = usePatch();
     const uniColorMode = useColorMode();
