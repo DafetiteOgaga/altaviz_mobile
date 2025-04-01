@@ -736,3 +736,18 @@ const styles = StyleSheet.create({
 	},
 });
 export default Dashboard;
+
+// export function ServerVersion () {
+// 	const [serverV, setServerV] = useState(null)
+// 	const pathname = usePathname().split('/')[1]
+// 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+// 	useEffect(() => {
+// 		if (getData?.version) {
+// 			setServerV(getData.version)
+// 		}
+// 	}, [getData]);
+// 	useEffect(() => {
+// 		GetSetup("version/");
+// 	}, [pathname]);
+// 	return serverV
+// }
