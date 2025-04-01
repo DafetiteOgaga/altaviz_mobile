@@ -1,6 +1,6 @@
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, usePathname } from 'expo-router';
 import { StyleSheet, View, Image, TouchableOpacity, Linking, Text } from 'react-native';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
 import { ScreenStyle } from '../myConfig/navigation';
@@ -8,6 +8,7 @@ import { getComponentName } from '@/hooks/getComponentName';
 import { useColorMode } from '@/constants/Colors';
 import { currentTimeAndDate } from '@/hooks/TimeOfDayGreeting';
 import { Ionicons } from '@expo/vector-icons';
+import { useGet } from '@/requests/makeRequests';
 
 export default function About() {
 	getComponentName()
@@ -15,6 +16,7 @@ export default function About() {
 	const packageJson = require("../package.json");
 	const timeAndDate = currentTimeAndDate()
 	console.log({timeAndDate})
+	const serverVersion = ServerVersion()
 	return (
 	<>
 		<Stack.Screen />
@@ -47,8 +49,29 @@ export default function About() {
 			<View>
 				<Text style={[styles.dateTime, {color: uniColorMode.text}]}>Updated on {timeAndDate}</Text>
 			</View>
+			
+			{/* version checks */}
+			<View style={{marginTop: 200}}>
+				<Text style={[styles.default]}>App version: {packageJson.version}</Text>
+				<Text style={[styles.default]}>Ser version: {serverVersion}</Text>
+			</View>
 		</ThemedView>
 	</>);
+}
+
+function ServerVersion () {
+	const [serverV, setServerV] = useState(null)
+	const pathname = usePathname().split('/')[1]
+	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
+	useEffect(() => {
+		if (getData?.version) {
+			setServerV(getData.version)
+		}
+	}, [getData]);
+	useEffect(() => {
+		GetSetup("version/");
+	}, [pathname]);
+	return serverV
 }
 
 const styles = StyleSheet.create({
