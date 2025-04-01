@@ -64,7 +64,7 @@ const Dashboard = () => {
 		if (newVersionNumber) {
 			setModalVisible(false);
 			console.log('update clicked')
-			Linking.openURL(`https://github.com/DafetiteOgaga/altavizMobileReleases/releases/download/${newVersionNumber}/altaviz.apk`)
+			Linking.openURL(`https://github.com/DafetiteOgaga/altavizMobileReleases/releases/download/${newVersionNumber}altavizMobile-${newVersionNumber}.apk`)
 			setNewVersion(false);
 		}
 	};
