@@ -46,14 +46,8 @@ export default function RootLayout() {
                         background: uniColorMode.vvvdrkbltr,
                         // text: '#FF5733',
                       }}}>
-                        {/* <ImageBackground
-                        source={backgroundImage}
-                        style={{ flex: 1 }}
-                        resizeMode="cover"
-                        > */}
             <DrawerNavigator // The DrawerNavigator component (wraps the entire app)
             />
-            {/* </ImageBackground> */}
           </ThemeProvider>
         </GestureHandlerRootView>
         <Toast
