@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
 	container: {
 		alignItems: 'center',
 		paddingTop: 200
-		// justifyContent: 'center',
 	},
 	brandLogo: {
 		borderWidth: 1,
