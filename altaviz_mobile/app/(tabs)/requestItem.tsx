@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, TextInput,
 
 import { useColorMode } from '../../constants/Colors';
 // import { StatusBar } from 'expo-status-bar';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, usePathname } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
 // import { Ionicons } from '@expo/vector-icons';
 import { useHeader } from '../../context/headerUpdate';
@@ -54,6 +54,7 @@ interface UsePostReturn {
 // console.log('imported requestItem.tsx')
 export default function RequestItem({requests}: {requests: any} ) {
     getComponentName()
+    const path = usePathname()
     const navProps = useLocalSearchParams()
     let {id, email, type, url, setForm, screen} = requests||{}
     let urlKey:string
@@ -101,7 +102,11 @@ export default function RequestItem({requests}: {requests: any} ) {
             showToast(data)
         }
     }, [getData, isGetError])
-    useEffect(()=>setHeaderTitle(url==='post-part'?'Post Part':`${toTitleCase(type?String(type):urlKey)} Request`))
+    useEffect(()=>{
+        if (path.split('/')[1]==='requestItem') {
+            setHeaderTitle(url==='post-part'?'Post Part':`${toTitleCase(type?String(type):urlKey)} Request`)
+        }
+    })
     // const initials = {email: '', password: ''};
     // const [loginPost, setLoginPost] = useState<postType>(initials)
     // const [formData, setFormData] = useState(new FormData())
