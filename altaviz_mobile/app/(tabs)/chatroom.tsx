@@ -1,6 +1,6 @@
 import { Link, Stack } from 'expo-router';
 import { StyleSheet, View, FlatList, ScrollView, Text, Image, RefreshControl,
-	TouchableOpacity
+	TouchableOpacity, ImageBackground
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 // import { ThemedText } from '../../components/ThemedText';
@@ -44,55 +44,61 @@ export default function ChatRoom() {
 	// const userPicture = userData?.profile_picture
 	// const userUname = userData?.username
 	// const userEmail = userData?.email
+	const backgroundImage = require('../../assets/images/altavizDoodleDark.png')
 	return (
-		<FlatList
-		refreshControl={
-			<RefreshControl
-			refreshing={refreshing}
-			onRefresh={handleRefresh}
-			colors={[uniColorMode.mb]}
-			tintColor={uniColorMode.mb} // iOS spinner color
-			/>}
-		data={everyone}
-		keyExtractor={(item: Record<string, any>, index:number) => item?.id?.toString()}
-		renderItem={({ item }) => {
-			// console.log('item type:', typeof item?.id)
-			// console.log('userID type:', typeof userID)
-			if (item?.id===chatObj.userID) {return null}
-			const contactID = item?.id
-			const contactPic = item?.profile_picture
-			return (
-			<View style={styles.container}>
-				<TouchableOpacity
-				onPress={()=>{router.push({
-					pathname: '/(tabs)/chatScreen',
-					params: {
-						cid: contactID,
-						cppicture: contactPic,
-						chatObj: JSON.stringify(chatObj)
-					}
-				})}}
-				// to={`chat/${item?.id}`}
-				// href={'/(tabs)/blueBlank'}
-				>
-					<View style={[styles.itemcontainer, {position: 'fixed'}]}>
-						<View>
-							<View style={Number(item?.id)%5===1?styles.notification:undefined} />
-							<Image
-							source={{ uri: `${baseUrl}${item?.profile_picture}` }}
-							style={[styles.headerImageIcon, {borderColor: '#fff',}]}
-							resizeMode="contain"
-							/>
+		<ImageBackground
+		source={backgroundImage}
+		resizeMode="cover"
+		style={{flex: 1}}>
+			<FlatList
+			refreshControl={
+				<RefreshControl
+				refreshing={refreshing}
+				onRefresh={handleRefresh}
+				colors={[uniColorMode.mb]}
+				tintColor={uniColorMode.mb} // iOS spinner color
+				/>}
+			data={everyone}
+			keyExtractor={(item: Record<string, any>, index:number) => item?.id?.toString()}
+			renderItem={({ item }) => {
+				// console.log('item type:', typeof item?.id)
+				// console.log('userID type:', typeof userID)
+				if (item?.id===chatObj.userID) {return null}
+				const contactID = item?.id
+				const contactPic = item?.profile_picture
+				return (
+				<View style={styles.container}>
+					<TouchableOpacity
+					onPress={()=>{router.push({
+						pathname: '/(tabs)/chatScreen',
+						params: {
+							cid: contactID,
+							cppicture: contactPic,
+							chatObj: JSON.stringify(chatObj)
+						}
+					})}}
+					// to={`chat/${item?.id}`}
+					// href={'/(tabs)/blueBlank'}
+					>
+						<View style={[styles.itemcontainer, {position: 'fixed'}]}>
+							<View>
+								<View style={Number(item?.id)%5===1?styles.notification:undefined} />
+								<Image
+								source={{ uri: `${baseUrl}${item?.profile_picture}` }}
+								style={[styles.headerImageIcon, {borderColor: '#fff',}]}
+								resizeMode="contain"
+								/>
+							</View>
+							<View>
+								<Text style={styles.name}>{toTitleCase(item?.first_name||'')} {item?.id}</Text>
+							</View>
 						</View>
-						<View>
-							<Text style={styles.name}>{toTitleCase(item?.first_name||'')} {item?.id}</Text>
-						</View>
-					</View>
-				</TouchableOpacity>
-			</View>
-		)}}
-		// ListEmptyComponent={()=><Text style={[generalstyles.notFound, {color: 'white'}]}>No Post found</Text>}
-		/>
+					</TouchableOpacity>
+				</View>
+			)}}
+			// ListEmptyComponent={()=><Text style={[generalstyles.notFound, {color: 'white'}]}>No Post found</Text>}
+			/>
+		</ImageBackground>
 	);
 }
 

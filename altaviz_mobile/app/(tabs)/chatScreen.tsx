@@ -178,10 +178,10 @@ export default function ChatScreen () {
 	// 	};
 	//   });
 	// console.log('heightAboveKeyboard.current (chatscreen):', heightAboveKeyboard)
-	const headerImage = require('../../assets/images/altavizDoodleDark.png')
+	const backgroundImage = require('../../assets/images/altavizDoodleDark.png')
 	return (
 		<ImageBackground
-		source={headerImage}
+		source={backgroundImage}
 		resizeMode="cover"
 		style={{flex: 1}}>
 			<ScrollView
