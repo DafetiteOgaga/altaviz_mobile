@@ -31,15 +31,15 @@ export default function ChatScreen () {
 	const {getData:updateData, isGetError:updateError, isGetLoading:updateLoading, GetSetup:updateGet} = useGet();
 	const {postData, isPostError, isPostLoading, PostSetup} = usePost();
 	const productionServer = baseUrl.split(':')[0]!=='http'
-	// console.log(
-	// 	'\nid (chatScreen):',
-	// 	'\ncid:', cid,
-	// 	'\ncppicture:', cppicture,
-	// 	'\nuid:', userID,
-	// 	'\nuserPicture:', userPicture,
-	// 	'\nuserUname:', userUname,
-	// 	'\nuserEmail:', userEmail,
-	// )
+	console.log(
+		'\nid (chatScreen):',
+		'\ncid:', cid,
+		'\ncppicture:', cppicture,
+		'\nuid:', userID,
+		'\nuserPicture:', userPicture,
+		'\nuserUname:', userUname,
+		'\nuserEmail:', userEmail,
+	)
 	
 	// const [page, setPage] = useState<number>(2);
 	const handleRefresh = async () => { // Refresh/pull new data from server upon refresh
@@ -117,9 +117,14 @@ export default function ChatScreen () {
 		}
 	}, [chatData]);
 	// console.log('\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 100))
-	// console.log('updateData:', JSON.stringify(updateData, null, 4).slice(0, 500))
+	console.log('updateData:', JSON.stringify(updateData, null, 4).slice(0, 500))
 	// console.log('updateData?.[0]?.contact:', JSON.stringify(updateData?.[0]?.contact, null, 4))
-	const contact = updateData?.[0]?.contact?.first_name||updateData?.results?.[0]?.user?.first_name||'Fetching...'
+	const existingChat = (updateData?.results?.[0]?.user?.username!==userUname)?
+	updateData?.results?.[0]?.user?.username:updateData?.results?.[0]?.contact?.username;
+	console.log({existingChat});
+	const contact = updateData?.[0]?.contact?.first_name||
+					existingChat||
+					'Fetching...'
 	// console.log('contact:', contact)
 	// console.log('message:', updateData?.message)
 	// console.log({refreshData})
