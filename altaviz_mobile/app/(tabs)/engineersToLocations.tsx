@@ -6,7 +6,7 @@ import {
 import { useColorMode } from "../../constants/Colors";
 import { useRouter, useLocalSearchParams, usePathname } from 'expo-router';
 import { generalstyles } from "../../myConfig/navigation";
-import { useHeader } from "../../context/headerUpdate";
+// import { useHeader } from "../../context/headerUpdate";
 import { usePatch, useGet } from "../../requests/makeRequests";
 import Toast from "react-native-toast-message";
 import { toTitleCase } from "../../hooks/useAllCases";
@@ -41,9 +41,9 @@ export default function EngineerToLocation() {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
     const { getData, isGetError, isGetLoading, GetSetup } = useGet();
-    const { setHeaderTitle } = useHeader();
-    const pathname = usePathname().split('/')[1]
-    useEffect(()=>{if (pathname==='engineersToLocations') setHeaderTitle('Assign Engineers to Locations')}, [pathname])
+    // const { setHeaderTitle } = useHeader();
+    // const pathname = usePathname().split('/')[1]
+    // useEffect(()=>{if (pathname==='engineersToLocations') setHeaderTitle('Assign Engineers to Locations')}, [pathname])
     const userData = useGetDataFromStorage("loginData");
     const {patchData, isPatchError, isPatchLoading, PatchSetup}: UsePostReturn = usePatch();
     const uniColorMode = useColorMode();
