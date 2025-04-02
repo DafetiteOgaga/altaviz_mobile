@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, ActivityIndicator, Modal, FlatList, 
 import { useColorMode } from '../../constants/Colors';
 import { useRouter } from 'expo-router';
 import { generalstyles } from '../../myConfig/navigation';
-import { useHeader } from '../../context/headerUpdate';
+// import { useHeader } from '../../context/headerUpdate';
 import { usePost, useGet } from '../../requests/makeRequests'
 import Toast from 'react-native-toast-message';
 import { toTitleCase } from '../../hooks/useAllCases';
@@ -31,7 +31,7 @@ export default function CreateFault() {
     const [modalItemVisible, setModalItemVisible] = useState<any>(false);
     // const [modalQuantityVisible, setModalQuantityVisible] = useState<any>(false);
     const {getData, isGetError, isGetLoading, GetSetup} = useGet();
-    const { setHeaderTitle } = useHeader();
+    // const { setHeaderTitle } = useHeader();
     const userData = useGetDataFromStorage('loginData')
     const {postData, isPostError, isPostLoading, PostSetup}: UsePostReturn = usePost();
     // const [secureText, setSecureText] = useState(true);
@@ -118,7 +118,7 @@ export default function CreateFault() {
     };
     const selectItemObj = {name: `Select Fault`, id: 0}
     // const selectQuantityObj = 'Select Quantity'
-    useEffect(()=>setHeaderTitle('Log Fault'), [itemList])
+    // useEffect(()=>setHeaderTitle('Log Fault'), [itemList])
 	return (
         <>
             {/* <Text style={{color: 'white'}}>Log fault page</Text> */}
