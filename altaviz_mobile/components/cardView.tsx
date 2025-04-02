@@ -4,7 +4,7 @@ import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
-import { useHeader } from '@/context/headerUpdate';
+// import { useHeader } from '@/context/headerUpdate';
 import { getComponentName } from '@/hooks/getComponentName';
 
 export function CardView ({mode, icon, color, item, role, label, swapCard}: {
@@ -18,8 +18,8 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 	swapCard?: boolean
 }) {
 	getComponentName()
-	const { setHeaderTitle } = useHeader();
-	useEffect(()=>setHeaderTitle(String(label)), [label])
+	// const { setHeaderTitle } = useHeader();
+	// useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
 	// console.log('item (cardView):', JSON.stringify(item, null, 4))
 	const numberOfRequests = (item?.faults)?

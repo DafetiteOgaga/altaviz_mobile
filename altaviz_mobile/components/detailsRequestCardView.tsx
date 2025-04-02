@@ -17,8 +17,8 @@ export function DetailsRequestCardView ({mode, icon, color, item, role, label}: 
 	label?: string
 }) {
 	getComponentName()
-	const { setHeaderTitle } = useHeader();
-	useEffect(()=>setHeaderTitle(String(label)), [label])
+	// const { setHeaderTitle } = useHeader();
+	// useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
 	// console.log('item (DetailsRequestCardView):', JSON.stringify(item, null, 4))
 	const numberOfRequests = (item?.faults)?

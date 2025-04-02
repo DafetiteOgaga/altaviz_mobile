@@ -12,7 +12,6 @@ import { timeAgo } from "../../hooks/timeAgo";
 import { useHeader } from '../../context/headerUpdate';
 import { toTitleCase } from "@/hooks/useAllCases";
 import { ChatInput } from "@/components/chatInput";
-// import { KeyboardState } from '@/components/keyboardState';
 
 export default function ChatScreen () {
 	getComponentName()
@@ -24,31 +23,24 @@ export default function ChatScreen () {
 	const updateRef = useRef<boolean>(false);
 	const currentIDRef = useRef<any|null>(null);
 	const newIDRef = useRef<any|null>(null);
-	// const previousChats = useRef<any>(null);
-	// const [page, setPage] = useState<number>(2);
 	const isUserScrollingRef = useRef(false)
-	// const isAtBottomRef = useRef(true); // Track if user is at bottom
 	const {cid, cppicture, chatObj} = useLocalSearchParams();
 	const {userID, userPicture, userUname, userEmail} = JSON.parse(String(chatObj))
 	let [chatData, setChatData] = useState<any>(null);
-	// const [updateChatData, setUpdateChatData] = useState<any>(null);
-	// const [chatMessage, setChatMessage] = useState('');
-	// const flatListRef = useRef<FlatList>(null);
 	const {getData:refreshData, isGetError:refreshError, isGetLoading:refreshLoading, GetSetup:refreshGet} = useGet();
 	const {getData:updateData, isGetError:updateError, isGetLoading:updateLoading, GetSetup:updateGet} = useGet();
 	const {postData, isPostError, isPostLoading, PostSetup} = usePost();
-	console.log('baseUrl:', baseUrl)
 	const productionServer = baseUrl.split(':')[0]!=='http'
-	console.log(
-		'\nid (chatScreen):',
-		'\ncid:', cid,
-		'\ncppicture:', cppicture,
-		'\nuid:', userID,
-		'\nuserPicture:', userPicture,
-		'\nuserUname:', userUname,
-		'\nuserEmail:', userEmail,
-	)
-	currentIDRef.current = cid
+	// console.log(
+	// 	'\nid (chatScreen):',
+	// 	'\ncid:', cid,
+	// 	'\ncppicture:', cppicture,
+	// 	'\nuid:', userID,
+	// 	'\nuserPicture:', userPicture,
+	// 	'\nuserUname:', userUname,
+	// 	'\nuserEmail:', userEmail,
+	// )
+	
 	// const [page, setPage] = useState<number>(2);
 	const handleRefresh = async () => { // Refresh/pull new data from server upon refresh
 		// console.log('refreshing:', refreshing)
@@ -56,17 +48,18 @@ export default function ChatScreen () {
         refreshGet(`chat-user/${cid}/${userID}/mobile/?page=2`)
         setRefreshing(false);
     }
+	currentIDRef.current = cid
 	useEffect(() => {
-		console.log('currentIDRef.current:', currentIDRef.current)
-		console.log('newIDRef.current:', newIDRef.current)
-		console.log('updateRef.current:', updateRef.current)
-		console.log('currentIDRef === newIDRef:', currentIDRef.current===newIDRef.current)
+		// console.log('currentIDRef.current:', currentIDRef.current)
+		// console.log('newIDRef.current:', newIDRef.current)
+		// console.log('updateRef.current:', updateRef.current)
+		// console.log('currentIDRef === newIDRef:', currentIDRef.current===newIDRef.current)
 		if (!updateRef.current||currentIDRef.current!==newIDRef.current) {
 			updateGet(`chat-user/${cid}/${userID}/mobile/`)
 			newIDRef.current = currentIDRef.current
 			setChatData(null)
 		}
-		setHeaderTitle(`Chats`)
+		// setHeaderTitle(`Chats`)
 		return () => setChatData(null)
 	}, [cid])
 	useEffect(()=>{
@@ -81,19 +74,18 @@ export default function ChatScreen () {
 	})
 	useEffect(() => {
 		if (updateData?.results) {
-			console.log('updateData (useefect) #####:', JSON.stringify(updateData, null, 4).slice(0, 100))
+			// console.log('updateData (useefect) #####:', JSON.stringify(updateData, null, 4).slice(0, 100))
 			setChatData([...updateData?.results]?.reverse())
-			console.log('initMount:', initMount.current)
+			// console.log('initMount:', initMount.current)
 			if (initMount.current) {initMount.current = false}
-			console.log('initMount:', initMount.current)
+			// console.log('initMount:', initMount.current)
 			updateRef.current = true
 		}
 		if (updateData&&!updateData.count) {setChatData({new: 'no chat history'})}
 	}, [updateData, updateError, updateLoading])
 	useEffect(() => {initMount.current = true}, [])
-	// console.log({chatMessage})
 	const handleSend = (chatMessageString:string) => {
-		console.log('chatMessageString:', chatMessageString)
+		// console.log('chatMessageString:', chatMessageString)
 		if (chatMessageString) {
 			const formData = new FormData()
 			formData.append('currentUser', userEmail)
@@ -108,7 +100,7 @@ export default function ChatScreen () {
 			}, 100);
 		}
 	}
-	console.log({baseUrl})
+	// console.log({baseUrl})
 	// console.log('initMount:', initMount.current)
 	// Create a ref for ScrollView
 	const scrollViewRef = useRef<ScrollView>(null);
@@ -124,11 +116,25 @@ export default function ChatScreen () {
 			scrollViewRef.current?.scrollToEnd({ animated: false });
 		}
 	}, [chatData]);
-	console.log('\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 100))
-	console.log('updateData:', JSON.stringify(updateData, null, 4).slice(0, 500))
-	console.log('message:', updateData?.message)
-	console.log({refreshData})
-	console.log({chatData})
+	// console.log('\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 100))
+	// console.log('updateData:', JSON.stringify(updateData, null, 4).slice(0, 500))
+	// console.log('updateData?.[0]?.contact:', JSON.stringify(updateData?.[0]?.contact, null, 4))
+	const contact = updateData?.[0]?.contact?.first_name||updateData?.results?.[0]?.user?.first_name||'Fetching...'
+	// console.log('contact:', contact)
+	// console.log('message:', updateData?.message)
+	// console.log({refreshData})
+	// console.log({chatData})
+	
+	useEffect(() => {
+	// 	console.log('useeffect'.repeat(15),
+	// 	'\nupdteData:', !!updateData,
+	// 	'\npath:', path,
+	// )
+		if (updateData&&path==='chatScreen') {
+			// console.log('setting header title: '.repeat(5), toTitleCase(contact))
+			setHeaderTitle(toTitleCase(contact))
+		}
+	})
 	// console.log('refreshData length:', refreshData?.results?.length)
 	// if (updateData&&!updateData.count&&!chatData) chatData = [{
 	// 	new: ['empty', 'no chat history'],
@@ -138,13 +144,14 @@ export default function ChatScreen () {
 	if (chatData&&refreshData?.results?.length) {
 		chatData = [...refreshData?.results, ...chatData]
 	}
-	console.log(
-		'\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 50),
-		'\nupdateData:', JSON.stringify(updateData, null, 4).slice(0, 50),
-		'\ncount:', updateData?.count,
-		'\nupdateData&&!updateData?.count:', updateData&&!updateData?.count
-	)
-	console.log({path})
+	// console.log(
+	// 	'\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 50),
+	// 	'\nupdateData:', JSON.stringify(updateData, null, 4).slice(0, 50),
+	// 	'\ncount:', updateData?.count,
+	// 	'\nupdateData&&!updateData?.count:', updateData&&!updateData?.count
+	// )
+	// console.log({path})
+	// useEffect(()=>{if (updateData) setHeaderTitle(toTitleCase(`${updateData.contact.first_name}`||''))}, [updateData])
 	// const heightAboveKeyboard = KeyboardState()
 	// const [heightAboveKeyboard, setHeightAboveKeyboard] = useState(false)
 	// useEffect(() => {
@@ -195,8 +202,8 @@ export default function ChatScreen () {
 			// 			<Text style={styles.noChatHistory}>No chat history</Text>
 			// 			:
 			(!chatData) ?
-				null
-				// <ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />
+				// null
+				<ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />
 				:
 				(chatData?.new) ?
 					<Text style={[styles.noChatHistory, {color: uniColorMode.text}]}>{toTitleCase(chatData?.new)}</Text>

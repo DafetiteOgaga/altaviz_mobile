@@ -17,8 +17,8 @@ export function EngineerCardView ({mode, icon, color, item, role, label}: {
 	label: string
 }) {
 	getComponentName()
-	const { setHeaderTitle } = useHeader();
-	useEffect(()=>setHeaderTitle(String(label)), [label])
+	// const { setHeaderTitle } = useHeader();
+	// useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
 	const numberOfRequests = (item?.faults)?
 		(item?.faults?.reduce?.((sum:number, requests:any)=>(sum + (requests?.requestStatus?(requests?.requestComponent?.length||0):0) +

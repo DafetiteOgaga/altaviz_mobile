@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, usePathname } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
 import { useHeader } from '../../context/headerUpdate';
 import { useGet } from '../../requests/makeRequests';
@@ -10,9 +10,11 @@ import { CardView } from '../../components/cardView';
 import { EngineerCardView } from '../../components/engineersCardView';
 import { useGetDataFromStorage } from '../../context/useGetDataFromStorage';
 import { getComponentName } from '@/hooks/getComponentName';
+import { toTitleCase } from '@/hooks/useAllCases';
 
 export default function EngineersFaults() {
 	getComponentName()
+	const path = usePathname()
 	const userDetails = useGetDataFromStorage('headerDetails')
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 	const uniColorMode = useColorMode();
@@ -34,7 +36,11 @@ export default function EngineersFaults() {
         setRefreshing(false);
     }
 	const {getIcon, color} = useGetIcon({variant: String(variant)})
-	useEffect(()=>setHeaderTitle(`${user}'s ${String(type)}`), [userData?.id, data, type, variant])
+	useEffect(()=>{
+		if (path.split('/')[1]==='engineersFaults') {
+			setHeaderTitle(`${toTitleCase(String(user||''))}'s ${String(type)}`)
+		}
+	}, [userData?.id, data, type, variant])
 	const role = userDetails?.role
 	// console.log('in engineersFaults', {role})
 	// console.log(

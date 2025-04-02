@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { useNavigation, usePathname } from 'expo-router';
 import { DrawerActions } from '@react-navigation/native';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { screenConfig } from '@/myConfig/navigation'
 import { CustomDrawerHeader } from './drawerHeader';
 import { Image, TouchableOpacity, StyleSheet, ActivityIndicator, Text } from 'react-native';
@@ -17,7 +17,7 @@ export default function DrawerNavigator() {
 	const { headerTitle } = useHeader();
 	const uniColorMode = useColorMode();
 	let path:string|null = usePathname();
-	console.log({path})
+	// console.log({path})
 	const navigation: any|undefined = useNavigation();
 	const [,titleKey] = path?.split('/')
 	const drawerData = useGetDataFromStorage('headerDetails')
@@ -31,28 +31,46 @@ export default function DrawerNavigator() {
 	let fault = true
 	if (String(headerTitle)?.split?.(' ')?.some?.(item=>item.toLowerCase()==='component'||item.toLowerCase()==='part')) fault = false
 	const resolvedHeaderTitle = useRef<string|undefined>(undefined)
+	// const [headerTitleUsed, setHeaderTitleUsed] = useState<string|undefined>(undefined)
 	useEffect(()=>{
-		resolvedHeaderTitle.current =
+		// console.log(' changing header title 00000 '.repeat(11))
+		const generatedTitle =
+		// setHeaderTitleUsed(
 			(titleKey==='')?'Dashboard':
-			(titleKey==='blueBlank')?headerTitle:
-			(titleKey==='detailsRequestCardView')?headerTitle:
+			// (titleKey==='blueBlank')?headerTitle:
+			// (titleKey==='detailsRequestCardView')?headerTitle:
 			(titleKey==='chatScreen')?headerTitle:
-			(titleKey==='cardView')?headerTitle:
-			(titleKey==='engineersCardView')?headerTitle:
-			(titleKey==='engineersToLocations')?headerTitle:
-			(titleKey==='userChangeRequest')?headerTitle:
+			(titleKey==='inspectUserProfile')?headerTitle:
+			// (titleKey==='cardView')?headerTitle:
+			// (titleKey==='engineersCardView')?headerTitle:
+			// (titleKey==='engineersToLocations')?headerTitle:
+			// (titleKey==='userChangeRequest')?headerTitle:
 			(titleKey==='engineersFaults')?headerTitle:
-			(titleKey==='createFault')?headerTitle:
+			// (titleKey==='createFault')?headerTitle:
 			(titleKey==='requestItem')?headerTitle:
-			(titleKey==='pendingFaults'&&fault)?headerTitle:
-			(titleKey==='pendingFaults'&&!fault)?headerTitle:
-			(titleKey==='detailScreen'&&fault)?headerTitle:
-			(titleKey==='detailScreen'&&!fault)?headerTitle:
+			// (titleKey==='pendingFaults'&&fault)?headerTitle:
+			// (titleKey==='pendingFaults'&&!fault)?headerTitle:
+			// (titleKey==='detailScreen'&&fault)?headerTitle:
+			// (titleKey==='detailScreen'&&!fault)?headerTitle:
+			(titleKey==='detailScreen')?headerTitle:
 			// (titleKey!=='pendingFaults'&&titleKey!=='detailScreen')?
 			`${screenConfig[titleKey]?.title}`
+		// )
+		resolvedHeaderTitle.current = generatedTitle
+		// console.log('resolvedHeaderTitle (changed):', resolvedHeaderTitle.current)
 	})
-	
+	if (resolvedHeaderTitle.current!==headerTitle) {
+		if (path.split('/')[1]==='chatScreen') {
+			resolvedHeaderTitle.current = headerTitle
+		} else if (path.split('/')[1]==='inspectUserProfile') {
+			resolvedHeaderTitle.current = headerTitle
+		}
+	}
+	// if ()&&) resolvedHeaderTitle.current = headerTitle
 	resolvedHeaderTitle?.current!?.trim()
+	// console.log('resolvedHeaderTitle (global):', resolvedHeaderTitle.current)
+	// console.log('headerTitle (global):', headerTitle)
+	// console.log('headerTitleUsed:', headerTitleUsed)
 	return (
 		<>
 			<Drawer
@@ -129,6 +147,7 @@ export default function DrawerNavigator() {
 					options={({navigation})=>({
 						title: screenConfig['index'].title,
 						headerTitle: resolvedHeaderTitle.current,
+						// headerTitle: headerTitleUsed,
 						drawerIcon: ({focused, color, size}) => (
 							<Ionicons name={screenConfig['index'].icon} size={size} color={focused? color : color} />
 						)
