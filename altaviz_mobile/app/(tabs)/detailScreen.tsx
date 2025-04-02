@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { ScrollView, StyleSheet, ActivityIndicator, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, usePathname } from 'expo-router';
 import { useHeader } from '@/context/headerUpdate';
 import { toTitleCase } from '@/hooks/useAllCases';
 import { ScreenStyle } from '@/myConfig/navigation';
@@ -16,6 +16,7 @@ import { getComponentName } from '@/hooks/getComponentName';
 
 export default function DetailScreen () {
 	getComponentName()
+	const path = usePathname()
 	const [renderComponentRequestForm, setRenderComponentRequestForm] = useState<boolean>(false)
 	const [renderPartRequestForm, setRenderPartRequestForm] = useState<boolean>(false)
 	const uniColorMode = useColorMode();
@@ -56,7 +57,7 @@ export default function DetailScreen () {
 		// (item?.type==='fixed-part')?'request':
 		item?.type?'request':'fault'
 	const title = `${modeType==='fault'?'Fault':String(type).toLowerCase()==='parts'?'Post':'Request'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
-	useEffect(()=>setHeaderTitle(title), [title])
+	useEffect(()=>{if (path.split('/')[1]==='detailScreen') setHeaderTitle(title)}, [title])
 	const resolvedBy = (item?.replacement_engineer?.email)||(item?.assigned_to?.email)
 	const resolutionDetails = {
 		loggedBy: item?.logged_by?.custodian?.email,
