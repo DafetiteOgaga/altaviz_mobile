@@ -10,7 +10,7 @@ import { useColorMode } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { toTitleCase } from '../../hooks/useAllCases';
 import { baseUrl } from '../../constants/urlOrigin';
-import { useHeader } from '../../context/headerUpdate';
+// import { useHeader } from '../../context/headerUpdate';
 import { getComponentName } from '@/hooks/getComponentName';
 // import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
 
@@ -22,8 +22,8 @@ interface getTypes {
 }
 export default function UserChangeRequest() {
 	getComponentName()
-	const { setHeaderTitle } = useHeader();
-	useEffect(()=>setHeaderTitle('Details Update Request'))
+	// const { setHeaderTitle } = useHeader();
+	// useEffect(()=>setHeaderTitle('Details Update Request'))
 	// const baseUrl = useGetDataFromStorage('baseUrl')
 	// console.log('baseUrl (inspectUserProfile):', baseUrl)
 	const uniColorMode = useColorMode();
