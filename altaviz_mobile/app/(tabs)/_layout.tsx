@@ -68,28 +68,28 @@ export default function TabLayout() {
             <Tabs.Screen // pendingFaults screen
             name="chatScreen" // screen name (navigation)
             options={{
-                title: 'chatScreen',
+                title: screenConfig.chatScreen.title, //,
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // pendingFaults screen
             name="pendingFaults" // screen name (navigation)
             options={{
-                title: 'pending',
+                title: screenConfig.pendingFaults.title, //,
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // pendingFaults screen
             name="detailScreen" // screen name (navigation)
             options={{
-                title: 'Detail Screen',
+                title: 'screenConfig.detailScreen.title', //,
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // UserProfile screen
             name="inspectUserProfile" // screen name (navigation)
             options={{
-                title: 'user',
+                title: 'screenConfig.inspectUserProfile.title',
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
@@ -103,35 +103,35 @@ export default function TabLayout() {
             <Tabs.Screen // UserProfile screen
             name="createFault" // screen name (navigation)
             options={{
-                title: 'Create Fault',
+                title: screenConfig.createFault.title,
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // UserProfile screen
             name="engineersFaults" // screen name (navigation)
             options={{
-                title: 'Engineer Fault',
+                title: 'screenConfig.engineersFaults.title',
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // UserProfile screen
             name="engineersToLocations" // screen name (navigation)
             options={{
-                title: 'Engineer to Location',
+                title: screenConfig.engineersToLocations.title,
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // UserProfile screen
             name="userChangeRequest" // screen name (navigation)
             options={{
-                title: 'Account Details Change',
+                title: screenConfig.userChangeRequest.title,
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
             <Tabs.Screen // UserProfile screen
             name="blueBlank" // screen name (navigation)
             options={{
-                title: 'Blue Blank Screen',
+                title: screenConfig.blueBlank.title,
                 href: null, // Hides tab but keeps screen accessible via navigation.navigate()
             }}
             />
