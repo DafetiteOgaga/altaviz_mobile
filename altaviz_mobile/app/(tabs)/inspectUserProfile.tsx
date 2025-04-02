@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Button, ActivityIndicator, ScrollView,
 	Image, TouchableOpacity
  } from 'react-native';
 import React, {useEffect} from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, usePathname } from 'expo-router';
 import { ScreenStyle } from '../../myConfig/navigation';
 // import { ThemedText } from '../../components/ThemedText';
 import { useGet } from '../../requests/makeRequests';
@@ -11,13 +11,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { toTitleCase } from '../../hooks/useAllCases';
 import { baseUrl } from '../../constants/urlOrigin';
 import { getComponentName } from '../../hooks/getComponentName';
+import { useHeader } from '@/context/headerUpdate';
 import { PhoneNumberSeparator } from '../../components/phoneNumberSeparator';
 // import { useGetDataFromStorage } from '@/context/useGetDataFromStorage';
 
 export default function InspectUserProfile() {
 	getComponentName()
+	const path = usePathname()
 	// const baseUrl = useGetDataFromStorage('baseUrl')
 	// console.log('baseUrl (InspectUserProfile):', baseUrl)
+	const { setHeaderTitle } = useHeader();
 	const uniColorMode = useColorMode();
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
 	const {id} = useLocalSearchParams();
@@ -31,6 +34,11 @@ export default function InspectUserProfile() {
 	}, [url])
 	let userData: any
 	if (getData) userData = getData
+	useEffect(()=>{
+		if (userData&&path.split('/')[1]==='inspectUserProfile') {
+			setHeaderTitle(toTitleCase(`${userData.first_name}'s`||''))
+		}
+	}, [userData])
 
 	return (
 		<ScrollView style={[ScreenStyle.allScreenContainer, styles.mainContainer]}>
