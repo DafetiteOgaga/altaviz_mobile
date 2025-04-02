@@ -19,14 +19,42 @@ export const screenConfig: Record<string, { title: string; icon: IconNameTYpe }>
 		title: 'Logout',
 		icon: 'log-out-outline',
 	},
-    // pendingFaults: {
-	// 	title: 'Pending Faults Tab config',
-	// 	icon: 'grid-outline',
-	// },
-    // inspectUserProfile: {
-	// 	title: 'User Profile Tab config',
-	// 	icon: 'grid-outline',
-	// },
+    pendingFaults: {
+		title: 'Pending List',
+		icon: 'grid-outline',
+	},
+    detailScreen: {
+		title: 'Detail Screen',
+		icon: 'grid-outline',
+	},
+    chatScreen: {
+		title: 'chats',
+		icon: 'grid-outline',
+	},
+    createFault: {
+		title: 'Log Fault',
+		icon: 'grid-outline',
+	},
+    blueBlank: {
+		title: 'BlueBlank',
+		icon: 'grid-outline',
+	},
+    userChangeRequest: {
+		title: 'Change Account Details',
+		icon: 'grid-outline',
+	},
+    engineersFaults: {
+		title: "Engineer's Faults",
+		icon: 'grid-outline',
+	},
+    engineersToLocations: {
+		title: 'Assign Engineers to Locations',
+		icon: 'grid-outline',
+	},
+    inspectUserProfile: {
+		title: 'Profile',
+		icon: 'person-circle-outline',
+	},
     profile: {
 		title: 'Profile',
 		icon: 'person-circle-outline',

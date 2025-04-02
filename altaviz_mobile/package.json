@@ -1,7 +1,7 @@
 {
   "name": "altaviz_mobile",
   "main": "expo-router/entry",
-  "version": "20250402.1245",
+  "version": "20250402.1246",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
