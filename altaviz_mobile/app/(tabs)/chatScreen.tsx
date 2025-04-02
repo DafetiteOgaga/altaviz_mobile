@@ -119,7 +119,12 @@ export default function ChatScreen () {
 	// console.log('\nchatData:', JSON.stringify(chatData, null, 4).slice(0, 100))
 	// console.log('updateData:', JSON.stringify(updateData, null, 4).slice(0, 500))
 	// console.log('updateData?.[0]?.contact:', JSON.stringify(updateData?.[0]?.contact, null, 4))
-	const contact = updateData?.[0]?.contact?.first_name||updateData?.results?.[0]?.user?.first_name||'Fetching...'
+	const existingChat = (updateData?.results?.[0]?.user?.username!==userUname)?
+	updateData?.results?.[0]?.user?.username:updateData?.results?.[0]?.contact?.username;
+	console.log({existingChat});
+	const contact = updateData?.[0]?.contact?.first_name||
+					existingChat||
+					'Fetching...'
 	// console.log('contact:', contact)
 	// console.log('message:', updateData?.message)
 	// console.log({refreshData})
