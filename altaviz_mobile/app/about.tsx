@@ -15,7 +15,7 @@ export default function About() {
 	const uniColorMode = useColorMode()
 	const packageJson = require("../package.json");
 	const timeAndDate = currentTimeAndDate()
-	console.log({timeAndDate})
+	// console.log({timeAndDate})
 	const serverVersion = ServerVersion()
 	return (
 	<>
