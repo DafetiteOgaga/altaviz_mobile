@@ -12,6 +12,7 @@ const HeaderContext = createContext<HeaderContextType | null>(null);
 // Create the provider component
 export const HeaderProvider = ({ children }: { children: React.ReactNode }) => {
     const [headerTitle, setHeaderTitle] = useState<string>('');
+    // console.log('========== headerTitle (context api):', headerTitle)
 
     return (
         <HeaderContext.Provider value={{ headerTitle, setHeaderTitle }}>
