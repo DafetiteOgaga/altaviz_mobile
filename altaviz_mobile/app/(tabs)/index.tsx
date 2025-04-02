@@ -38,7 +38,7 @@ const Dashboard = () => {
 	getComponentName()
 	const packageJson = require("../../package.json");
 	const pathname = usePathname().split('/')[1]
-	console.log('version:', packageJson.version)
+	// console.log('version:', packageJson.version)
 	const router = useRouter();
 	const segments = useSegments();
 	const { setItem, getItem, removeItem } = useAsyncStorageMethods();
@@ -53,11 +53,11 @@ const Dashboard = () => {
 			setModalVisible(true);
 			setNewVersionNumber(getData?.version);
 		} else setNewVersion(false);
-		console.log(
-			'\ncurrentVersion:', packageJson.version,
-			"\nnew version:", getData?.version,
-            "\nnew version available", newVersion,
-		)
+		// console.log(
+		// 	'\ncurrentVersion:', packageJson.version,
+		// 	"\nnew version:", getData?.version,
+        //     "\nnew version available", newVersion,
+		// )
 	}, [getData]);
 
 	const handleUpdate = () => {
@@ -95,7 +95,7 @@ const Dashboard = () => {
 	const lastRun = useGetDataFromStorage("lastRunTime");
 	useEffect(() => {
 		const now = Date.now();
-		console.log({now})
+		// console.log({now})
 		// const TWENTY_FOUR_HOURS = 1000 * 60 // 1 minute in milliseconds
 		const TWENTY_FOUR_HOURS = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
 
@@ -147,7 +147,7 @@ const Dashboard = () => {
 			visible={modalVisible}
 			onClose={() => {
 				setNewVersion(false);
-				console.log('close clicked')
+				// console.log('close clicked')
 				// setModalVisible(false);
 			}}
 			onUpdate={handleUpdate}
@@ -155,10 +155,10 @@ const Dashboard = () => {
 			/>
 		)
 	}
-	console.log('\n',{newVersion})
-	console.log('pathname:', pathname?pathname:'no pathname',
-		{lastRun}
-	)
+	// console.log('\n',{newVersion})
+	// console.log('pathname:', pathname?pathname:'no pathname',
+	// 	{lastRun}
+	// )
 	// console.log('\nnewversion:', newVersion.current)
 	const headerImage = require('../../assets/images/altavizDoodleLight.png')
 	const backgroundImage = require('../../assets/images/altavizDoodleDark.png')

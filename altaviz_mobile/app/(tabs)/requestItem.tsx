@@ -101,7 +101,7 @@ export default function RequestItem({requests}: {requests: any} ) {
             showToast(data)
         }
     }, [getData, isGetError])
-    useEffect(()=>setHeaderTitle(url==='post-part'?'Post Part':`${toTitleCase(type?String(type):urlKey)} Request`), [type])
+    useEffect(()=>setHeaderTitle(url==='post-part'?'Post Part':`${toTitleCase(type?String(type):urlKey)} Request`))
     // const initials = {email: '', password: ''};
     // const [loginPost, setLoginPost] = useState<postType>(initials)
     // const [formData, setFormData] = useState(new FormData())

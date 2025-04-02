@@ -17,6 +17,7 @@ export default function DrawerNavigator() {
 	const { headerTitle } = useHeader();
 	const uniColorMode = useColorMode();
 	let path:string|null = usePathname();
+	console.log({path})
 	const navigation: any|undefined = useNavigation();
 	const [,titleKey] = path?.split('/')
 	const drawerData = useGetDataFromStorage('headerDetails')

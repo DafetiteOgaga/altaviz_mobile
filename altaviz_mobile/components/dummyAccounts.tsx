@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Modal, TouchableOpacity, Linking, StyleSheet,
 	FlatList, ActivityIndicator
- } from "react-native";
+} from "react-native";
 import packageJson from "../package.json";
 import { useColorMode } from "@/constants/Colors";
 import { useGet } from "@/requests/makeRequests";
@@ -19,7 +19,7 @@ const DummyAccountsModal = ({ visible, onClose, onUpdate, newVersion }: any) => 
 	// if (isGetLoading) return <Text style={{color: '#fff'}}>Loading...</Text>;
 	// if (isGetError) return <Text style={{color: '#fff'}}>Error...</Text>;
 	const dummyAccounts = getData;
-	console.log('dummyAccounts:', JSON.stringify(dummyAccounts, null, 2));
+	// console.log('dummyAccounts:', JSON.stringify(dummyAccounts, null, 2));
 	const copyToClipboard = (email: string) => {
         Clipboard.setStringAsync(email);
         Toast.show({ type: "success", text1: `Copied ${toTitleCase(email)} to Clipboard!` });
