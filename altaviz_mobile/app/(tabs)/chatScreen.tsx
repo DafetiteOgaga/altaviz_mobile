@@ -53,7 +53,7 @@ export default function ChatScreen () {
 	const handleRefresh = async () => { // Refresh/pull new data from server upon refresh
 		// console.log('refreshing:', refreshing)
         setRefreshing(true);
-        await refreshGet(`chat-user/${cid}/${userID}/mobile/?page=2`)
+        refreshGet(`chat-user/${cid}/${userID}/mobile/?page=2`)
         setRefreshing(false);
     }
 	useEffect(() => {
