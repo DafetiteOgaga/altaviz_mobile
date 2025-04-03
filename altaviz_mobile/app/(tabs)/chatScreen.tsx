@@ -68,7 +68,7 @@ export default function ChatScreen () {
 			path==='chatScreen') {
 			const timeInterval = setInterval(() => {
 				updateGet(`chat-user/${cid}/${userID}/mobile/`)
-			}, 2000);
+			}, 1500);
 			return () => clearInterval(timeInterval);
 		}
 	})
