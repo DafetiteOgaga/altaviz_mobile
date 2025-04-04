@@ -2,7 +2,7 @@
   "expo": {
     "name": "Altaviz",
     "slug": "altaviz_mobile",
-    "version": "20250402.1451",
+    "version": "20250403.1442",
     "orientation": "portrait",
     "icon": "./assets/images/altaviz_logo.png",
     "scheme": "myapp",
