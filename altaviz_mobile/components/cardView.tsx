@@ -6,6 +6,7 @@ import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
 // import { useHeader } from '@/context/headerUpdate';
 import { getComponentName } from '@/hooks/getComponentName';
+import { DateDifference } from '@/hooks/DateDifference';
 
 export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 	// getComponentName()
@@ -18,6 +19,8 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 	swapCard?: boolean
 }) {
 	getComponentName()
+	const [requestDuration, requestColorStyle, requestMode, returnedRequestMode] = DateDifference(item?.requested_at)?.split?.('-')||[]
+	const [faultDuration, faultColorStyle, faultMode, returnedfaultMode] = DateDifference(item?.created_at)?.split?.('-')||[]
 	// const { setHeaderTitle } = useHeader();
 	// useEffect(()=>setHeaderTitle(String(label)), [label])
 	const uniColorMode = useColorMode();
@@ -31,6 +34,16 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 				(item?.requestComponent?.length||0) +
 				(item?.requestPart?.length||0)
 				:'None'
+	// console.log(
+	// 	'\n (in cardView):',
+	// 	'\n', {mode},
+	// 	'\n', {icon},
+	// 	'\n', {color},
+	// 	// '\n', {item},
+	// 	'\n', {label},
+	// 	'\n', {role},
+    //     '\n', {swapCard},
+	// )
 	// console.log('role (in cardView)', {role})
 	// console.log('number of requests', {numberOfRequests})
 	// console.log('requestStatus (in cardView)', item?.requestStatus)
@@ -47,14 +60,17 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 						<View style={[styles.titleContainer, {backgroundColor: uniColorMode.vvvdrkbltr}]}>
 							<Ionicons name={icon} size={15} color={color} />
 							<Text style={[styles.title, { color: color }]}>
-								{toTitleCase(String(mode))} #{item.id}
+								{toTitleCase(
+									(role==='human-resource'&&label?.toLowerCase()==='fixed parts')?String(label):
+									(role==='workshop'&&label?.toLowerCase()==='posted parts')?String(label):
+									String(mode))} #{item.id}
 							</Text>
 						</View>
 						{/* nested box details */}
 						<View style={[styles.cardContent, {
 							backgroundColor: uniColorMode.shadowdkr,
 							borderColor: uniColorMode.dkrb,
-							flexDirection: notWorkshopAndHR?'column':'row',
+							flexDirection: 'column',
 							justifyContent: notWorkshopAndHR?'center':'space-evenly',
 							}]}>
 							<View style={styles.textBox1}>
@@ -79,7 +95,7 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 							<View style={styles.textBox}>
 								<View>
 									<Text style={[styles.subText, styles.outerTextColor]}>
-										Status: <View style={[
+										Status:  <View style={[
 													styles.pending,
 													{backgroundColor: (!item?.approved&&!item?.rejected)?'orange':
 														item?.approved?'green':
@@ -87,6 +103,11 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 												]}><Text style={[
 														styles.pendingText,
 														]}>{(!item?.approved&&!item?.rejected)?'Pending':item?.approved?'Approved':'Rejected'}</Text></View>
+									</Text>
+								</View>
+								<View>
+									<Text style={[styles.timeText, {color: requestColorStyle}]}>
+										{requestDuration} {returnedRequestMode} ago
 									</Text>
 								</View>
 							</View>
@@ -133,7 +154,7 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 							<View style={styles.textBox}>
 								<View>
 									<Text style={[styles.subText, styles.outerTextColor]}>
-										Status: <View style={[
+										Status:  <View style={[
 													styles.pending,
 													{backgroundColor: (!item?.confirm_resolve&&!item?.verify_resolve)?'orange':
 														item?.confirm_resolve?'green':
@@ -147,6 +168,11 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 														'Unconfirmed'}
 													</Text>
 												</View>
+									</Text>
+								</View>
+								<View>
+									<Text style={[styles.timeText, {color: faultColorStyle}]}>
+										{faultDuration} {returnedfaultMode} ago
 									</Text>
 								</View>
 							</View>
@@ -214,7 +240,12 @@ const styles = StyleSheet.create({
 	},
 	textBox: {
 		flexDirection: 'row',
-		// justifyContent: 'space-evenly',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	timeText: {
+		fontStyle: 'italic',
+		paddingRight: 10
 	},
 	textBox1: {
 		flexDirection: 'row',
