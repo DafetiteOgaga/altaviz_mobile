@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity,
 import React, {useEffect, useState} from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenStyle, generalstyles } from '../../myConfig/navigation';
-import { useHeader } from '@/context/headerUpdate';
+// import { useHeader } from '@/context/headerUpdate';
 import { useGet } from '@/requests/makeRequests';
 import { useColorMode } from '@/constants/Colors';
 import { useGetIcon } from '@/components/getIcon';
@@ -35,9 +35,11 @@ export default function PendingFaults() {
 	// @ts-ignore
 	useEffect(()=>{GetSetup(url)}, [url])
 	let name
+	// console.log('in pendingFaults', {label})
 	const nameList = String(label).split(' ')
-	if (String(label).split(' ').length===3||label==='Posted Parts') {name = nameList[1]}
+	if (nameList.length===3||label==='Posted Parts'||label==='Fixed Parts') {name = nameList[1]}
 	else {name = 'Fault'}
+	// console.log('name:', {name})
 	const handleRefresh = async () => { // Refresh/pull new data from server upon refresh
         setRefreshing(true);
 		// @ts-ignore
