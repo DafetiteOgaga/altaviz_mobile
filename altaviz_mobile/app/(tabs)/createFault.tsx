@@ -212,7 +212,9 @@ const faultStyles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "gray",
         borderRadius: 8,
-        paddingHorizontal: 10,
+        // paddingHorizontal: 10,
+        // paddingVertical: 10,
+        padding: 10,
         fontSize: 16,
     },
     inputContainer: {

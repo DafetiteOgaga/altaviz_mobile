@@ -4,7 +4,7 @@ import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorMode } from '../constants/Colors';
 import { toTitleCase } from '../hooks/useAllCases';
-import { useHeader } from '../context/headerUpdate';
+// import { useHeader } from '../context/headerUpdate';
 import { getComponentName } from '@/hooks/getComponentName';
 
 export function DetailsRequestCardView ({mode, icon, color, item, role, label}: {
