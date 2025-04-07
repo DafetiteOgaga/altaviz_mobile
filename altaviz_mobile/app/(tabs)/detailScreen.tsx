@@ -13,6 +13,7 @@ import { useDelete, usePatch } from '@/requests/makeRequests';
 import Toast from 'react-native-toast-message';
 import RequestItem from './requestItem';
 import { getComponentName } from '@/hooks/getComponentName';
+import { DateDifference } from '@/hooks/DateDifference';
 
 export default function DetailScreen () {
 	getComponentName()
@@ -43,8 +44,8 @@ export default function DetailScreen () {
 	// 	// '\narrayData (detailScreen):', parsedArray,
 	// 	'\nvartiant (detailScreen):', variant,
 	// )
-	const [requestDuration, requestColorStyle, requestMode] = dateDifference(item?.requested_at)?.split?.('-')||[]
-	const [faultDuration, fauktColorStyle, faultMode] = dateDifference(item?.created_at)?.split?.('-')||[]
+	const [requestDuration, requestColorStyle, requestMode, returnedRequestMode] = DateDifference(item?.requested_at)?.split?.('-')||[]
+	const [faultDuration, faultColorStyle, faultMode, returnedfaultMode] = DateDifference(item?.created_at)?.split?.('-')||[]
 	const loggedBy = item?.logged_by?.custodian?.id
 	const assignedTo = item?.fault?.assigned_to?.id||item?.assigned_to?.id
 	const managedBy = item?.fault?.managed_by?.id||item?.managed_by?.id
@@ -56,7 +57,12 @@ export default function DetailScreen () {
 	const modeType =
 		// (item?.type==='fixed-part')?'request':
 		item?.type?'request':'fault'
-	const title = `${modeType==='fault'?'Fault':String(type).toLowerCase()==='parts'?'Post':'Request'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
+	// console.log('modeType (detailScreen):', modeType)
+	// console.log('type (detailScreen):', type)
+	const title = `${modeType==='fault'?'Fault':
+					(String(type).toLowerCase()==='parts'&&role==='human-resource')?'Fixed Part':
+					String(type).toLowerCase()==='parts'?'Posted Part':
+					'Request'} #${item?.id} - ${toTitleCase(item?.name?.name||item?.title?.name||'')}`
 	useEffect(()=>{if (path.split('/')[1]==='detailScreen') setHeaderTitle(title)}, [title])
 	const resolvedBy = (item?.replacement_engineer?.email)||(item?.assigned_to?.email)
 	const resolutionDetails = {
@@ -119,15 +125,12 @@ export default function DetailScreen () {
 
 								{/* Status Section */}
 								<View style={styles.statusContainer}>
-									<Text style={styles.label}>Status:</Text>
+									<Text style={styles.label}>Status:{'  '}</Text>
 									<Text style={[styles.statusText, { backgroundColor: getStatusColor({item, type: 'request'}) }]}>
 										{getStatusText({item, type: 'request'})}
 									</Text>
 									<Text style={[styles.statusText, { color: requestColorStyle }]}>
-										({requestDuration} {
-										(requestMode==='d'&&requestDuration==='1')?'Day':requestMode==='d'&&requestDuration!=='1'?'Days':
-										(requestMode==='h'&&requestDuration==='1')?'Hour':requestMode==='h'&&requestDuration!=='1'?'Hours':
-										(requestDuration==='1')?'Minute': 'Minutes'} Ago)
+										({requestDuration} {returnedRequestMode} ago)
 									</Text>
 								</View>
 
@@ -183,15 +186,12 @@ export default function DetailScreen () {
 
 									{/* Status Section */}
 									<View style={styles.statusContainer}>
-										<Text style={styles.label}>Status:</Text>
+										<Text style={styles.label}>Status:{'  '}</Text>
 										<Text style={[styles.statusText, { backgroundColor: getStatusColor({item, type: 'fault'}) }]}>
 											{getStatusText({item, type: 'fault'})}
 										</Text>
-										<Text style={[styles.statusText, { color: fauktColorStyle }]}>
-											({faultDuration} {
-											(faultMode==='d'&&faultDuration==='1')?'Day':faultMode==='d'&&faultDuration!=='1'?'Days':
-											(faultMode==='h'&&faultDuration==='1')?'Hour':faultMode==='h'&&faultDuration!=='1'?'Hours':
-											(faultDuration==='1')?'Minute': 'Minutes'} Ago)
+										<Text style={[styles.statusText, { color: faultColorStyle }]}>
+											({faultDuration} {returnedfaultMode} ago)
 										</Text>
 									</View>
 
@@ -649,21 +649,28 @@ const formatDate = (isoString: string) => {
 	return `${formattedDate} at ${formattedTime}`
 };
 
-const dateDifference = (isoString: string) => {
-	if (!isoString) return
-	const now = new Date();
-	const date = new Date(isoString);
-	const timeDiff = now.getTime() - date.getTime();
-	let daysDiff = `${Math.ceil(timeDiff / (1000 * 60 * 60 * 24))}-red-d`
-	if (Number(daysDiff.split('-')[0]) < 1) {
-		daysDiff = `${Math.ceil(timeDiff / (1000 * 60 * 60))}-grey-h`
-		if (Number(daysDiff.split('-')[0]) < 1) {
-			daysDiff = `${Math.ceil(timeDiff / (1000 * 60))}-grey-m`
-		}
-	}
-	// console.log('Days diff: (detailScreen):', daysDiff)
-	return daysDiff
-};
+// const dateDifference = (isoString: string) => {
+// 	if (!isoString) return
+// 	const now = new Date();
+// 	const date = new Date(isoString);
+// 	const isToday = now.toDateString() === date.toDateString();
+// 	console.log({now}, {date})
+// 	const timeDiff = now.getTime() - date.getTime();
+// 	console.log({timeDiff})
+// 	let daysDiff = `${Math.ceil(timeDiff / (1000 * 60 * 60 * 24))}-red-d`
+// 	if (isToday) {
+// 		let hoursOrMinutes = Math.floor(timeDiff / (1000 * 60 * 60))
+// 		daysDiff = `${hoursOrMinutes}-grey-h`
+// 		console.log({daysDiff})
+// 		if (hoursOrMinutes < 1) {
+// 			hoursOrMinutes = Math.floor(timeDiff / (1000 * 60))
+// 			daysDiff = `${hoursOrMinutes}-grey-m`
+// 		}
+// 	}
+// 	// console.log('Days diff: (detailScreen):', daysDiff)
+// 	console.log({daysDiff})
+// 	return daysDiff
+// };
 
 // Styles
 const styles = StyleSheet.create({
