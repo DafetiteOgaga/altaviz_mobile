@@ -39,7 +39,7 @@ export function DetailsRequestCardView ({mode, icon, color, item, role, label}: 
 				backgroundColor: uniColorMode.newdrkb}]}>
 				<View style={styles.cardContainer}>
 					<View style={[styles.titleContainer, {backgroundColor: uniColorMode.vvvdrkbltr}]}>
-						<Ionicons name={'person-circle-outline'} size={15} color={color} />
+						<Ionicons name={'person-circle-outline'} size={18} color={color} />
 						<Text style={[styles.title, { color: color }]}>
 							{toTitleCase(`${item?.requestUser?.first_name} ${item?.requestUser?.last_name}`)} #{item.id}
 						</Text>
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
 		padding: 2,
 		borderRadius: 5,
 		alignSelf: 'flex-start',
+		alignItems: 'center',
 		flexDirection: 'row',
 		marginBottom: 3,
 		paddingHorizontal: 5,
