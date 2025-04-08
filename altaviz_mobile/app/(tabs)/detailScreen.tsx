@@ -27,8 +27,8 @@ export default function DetailScreen () {
 	let { data, arrayData, type, variant, engineer } = useLocalSearchParams();
 	const { color, getIcon } = useGetIcon({variant: String(variant)})
 
-	const handerComponentRequestFormRender = (switchValue=null)=>{setRenderComponentRequestForm(switchValue!==null?switchValue:!renderComponentRequestForm)}
-	const handerPartRequestFormRender = (switchValue=null)=>{setRenderPartRequestForm(switchValue!==null?switchValue:!renderPartRequestForm)}
+	const handleComponentRequestFormRender = (switchValue=null)=>{setRenderComponentRequestForm(switchValue!==null?switchValue:!renderComponentRequestForm)}
+	const handlePartRequestFormRender = (switchValue=null)=>{setRenderPartRequestForm(switchValue!==null?switchValue:!renderPartRequestForm)}
 	let item: any
 	let parsedArray: any
 	// @ts-ignore
@@ -75,12 +75,20 @@ export default function DetailScreen () {
 	}
 	const hasRequestsAndApproved = item?.requestComponent?.some?.((comp:any)=>comp.approved)||item?.requestPart?.some?.((part:any)=>part.approved)||false
 	// console.log({hasRequestsAndApproved})
-	const requests = {
+	const requestsForComponents = {
 		email: userDetails?.email,
 		id: item?.id,
 		type: 'component',
 		url: 'request-component',
-		setForm: handerComponentRequestFormRender,
+		setForm: handleComponentRequestFormRender,
+		screen: 'detailScreen',
+	}
+	const requestsForParts = {
+		email: userDetails?.email,
+		id: item?.id,
+		type: 'part',
+		url: 'request-part',
+		setForm: handlePartRequestFormRender,
 		screen: 'detailScreen',
 	}
 	const notWorkshopAndHR = role!=='workshop'&&role!=='human-resource'
@@ -280,11 +288,11 @@ export default function DetailScreen () {
 							<>
 							{renderComponentRequestForm&&
 							<View>
-								<RequestItem requests={requests} />
+								<RequestItem requests={requestsForComponents} />
 							</View>}
 							{renderPartRequestForm&&
 							<View>
-								<RequestItem requests={requests} />
+								<RequestItem requests={requestsForParts} />
 							</View>}
 							</>
 							{/* button */}
@@ -316,10 +324,12 @@ export default function DetailScreen () {
 														label={role}
 														// type={item?.type}
 														background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-														buttonText={['Request Component', 'Requesting...']}
+														buttonText={['Request Component', 'Requesting...', 'Close Form']}
 														modeType={modeType}
 														textColor={'#17A2B8'}
-														setForm={handerComponentRequestFormRender}
+														formState={renderComponentRequestForm}
+														role={role}
+														setForm={handleComponentRequestFormRender}
 														onPress={5}
 														/>
 													<ActionButton
@@ -328,10 +338,12 @@ export default function DetailScreen () {
 														label={role}
 														// type={item?.type}
 														background={[uniColorMode.newdrkb1, uniColorMode.vdrkb]}
-														buttonText={['Request Part', 'Requesting...']}
+														buttonText={['Request Part', 'Requesting...', 'Close Form']}
 														modeType={modeType}
 														textColor={'#007BFF'}
-														setForm={handerPartRequestFormRender}
+														formState={renderPartRequestForm}
+														role={role}
+														setForm={handlePartRequestFormRender}
 														onPress={5}
 														/>
 												</View>}
@@ -381,7 +393,7 @@ export default function DetailScreen () {
 	);
 };
 
-const ActionButton = ({ item, icon, label, id, type, background, buttonText, modeType, textColor, userID, userEmail, setForm, onPress, resolutionDetails }: customComponent) => {
+const ActionButton = ({ item, icon, label, id, type, background, buttonText, modeType, textColor, userID, userEmail, setForm, formState, role, onPress, resolutionDetails }: customComponent) => {
 	getComponentName()
 	const uniColorMode = useColorMode()
 	const router = useRouter()
@@ -515,7 +527,7 @@ const ActionButton = ({ item, icon, label, id, type, background, buttonText, mod
 		onPress={onPress?handleNavigate:handleRequests} disabled={isDeleteLoading}
 		style={[styles.actionButton, {backgroundColor: isDeleteLoading?background?.[1]:background?.[0]}]}>
 			<Ionicons name={icon} size={15} color={textColor?textColor:uniColorMode.text} />
-			<Text style={[styles.actionText, {color: textColor?textColor:uniColorMode.text}]}>{(isDeleteLoading||isPatchLoading)?buttonText?.[1]:buttonText?.[0]}</Text>
+			<Text style={[styles.actionText, {color: textColor?textColor:uniColorMode.text}]}>{(isDeleteLoading||isPatchLoading)?buttonText?.[1]:(role==='engineer'&&formState)?buttonText?.[2]:buttonText?.[0]}</Text>
 		</TouchableOpacity>
 	)
 };
@@ -572,6 +584,8 @@ type customComponent = {
 	modeType?: string,
 	textColor?: string,
 	resolutionDetails?: any,
+	formState?: boolean,
+	role?: string,
 	setForm?: ()=>void,
 	onRefresh?: ()=>void,
 	endOnRefresh?: (value: boolean)=>void,

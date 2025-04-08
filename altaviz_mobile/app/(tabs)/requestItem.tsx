@@ -172,6 +172,7 @@ export default function RequestItem({requests}: {requests: any} ) {
             setModalQuantityVisible(false)
         }
     };
+    // console.log('\n:', {type}, '\n', urlKey, '\n', {url})
     const selectItemObj = {name: `Select ${toTitleCase(type?type:urlKey!)}`, quantity: 1}
     const selectQuantityObj = 'Select Quantity'
 	return (
@@ -203,6 +204,10 @@ export default function RequestItem({requests}: {requests: any} ) {
                                 <Modal visible={modalItemVisible} animationType="fade" transparent>
                                     <View style={requestStyles.modalOverlay}>
                                         <View style={[requestStyles.modalContent, {backgroundColor: uniColorMode.newdrkb1}]}>
+                                            {/* {type&&
+                                                <View>
+                                                    <Text style={requestStyles.compOrPartText}>Select {toTitleCase(type)}</Text>
+                                                </View>} */}
                                             <FlatList
                                                 data={[...[selectItemObj], ...itemList]}
                                                 keyExtractor={(item, index) => index.toString()}
@@ -211,7 +216,10 @@ export default function RequestItem({requests}: {requests: any} ) {
                                                     if (item.name==='Select an Item') {item.quantity=undefined}
                                                     return (
                                                     <TouchableOpacity style={requestStyles.item} onPress={() => handleSelect({item: {item: item, type: 'item'}})}>
-                                                        <Text style={requestStyles.itemText}>{toTitleCase(item.name)} {item.quantity?`(${item.quantity})`:undefined}</Text>
+                                                        <Text
+                                                        style={requestStyles.itemText}>
+                                                            {toTitleCase(item.name)} {!item.quantity?undefined:(type&&item.name!==`Select ${toTitleCase(type)}`)?`(${item.quantity})`:undefined}
+                                                        </Text>
                                                     </TouchableOpacity>
                                                 )}}
                                             />
@@ -344,6 +352,11 @@ const requestStyles = StyleSheet.create({
     itemText: {
         fontSize: 16,
         color: "#eee",
+    },
+    compOrPartText: {
+        fontSize: 18,
+        color: "#eee",
+        marginLeft: 15,
     },
     closeButton: {
         marginTop: 5,
