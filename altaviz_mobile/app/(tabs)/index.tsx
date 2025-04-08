@@ -194,11 +194,15 @@ const Dashboard = () => {
 							// onScrollOffsetChange={handleScrollOffsetChange}
 							headerImage={
 								<>
-									<Image source={headerImage}
-									style={{position: 'absolute', top: 0, left: 0, width: 391.7, height: 200,
-										borderWidth: 0.5, borderColor: '#A4978E'
-									}}
-									/>
+									<View>
+										<Image source={headerImage}
+										resizeMode="cover"
+										style={{position: 'absolute', top: -15, left: -20,
+											width: 436, height: 200.1,
+											borderWidth: 0.5, borderColor: '#A4978E'
+										}}
+										/>
+									</View>
 									<View style={{position: 'absolute', top: 10, left: 10, right: 0, bottom: 0,
 										// justifyContent: 'center', alignItems: 'center'
 										}}>

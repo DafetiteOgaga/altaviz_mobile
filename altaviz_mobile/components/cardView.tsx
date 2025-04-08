@@ -85,7 +85,7 @@ export function CardView ({mode, icon, color, item, role, label, swapCard}: {
 							{notWorkshopAndHR&&
 							<View style={styles.textBox2}>
 								<Text style={[styles.subText, styles.outerTextColor]}>
-									Details: <Text style={{color: uniColorMode.ltrb}}>{toTitleCase(item?.fault?.title?.name)}</Text>
+									Fault: <Text style={{color: uniColorMode.ltrb}}>{toTitleCase(item?.fault?.title?.name)}</Text>
 								</Text>
 								<Text style={[styles.subText, styles.outerTextColor]}>
 									Bank: <Text style={{color: 'cyan'}}>{item?.fault?.logged_by?.branch?.bank?.name?.toUpperCase()}</Text>
