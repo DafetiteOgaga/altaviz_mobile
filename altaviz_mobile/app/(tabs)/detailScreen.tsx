@@ -101,6 +101,7 @@ export default function DetailScreen () {
 				<ThemedText type={'link'}>resolutionDetails: {JSON.stringify(resolutionDetails, null, 4)}</ThemedText>
 				<ThemedText type={'link'}>hasRequestsAndApproved: {hasRequestsAndApproved?.toString()}</ThemedText>
 				<ThemedText type={'link'}>role: {role}</ThemedText> */}
+				{/* <ThemedText type={'link'}>item: {JSON.stringify(item, null, 4)}</ThemedText> */}
 				{/* <CustomDropdown /> */}
 				{/* <RequestItem id={item?.id} type={'component'} url='request-component' /> */}
 				<View style={{paddingBottom: 20}}>
@@ -163,12 +164,22 @@ export default function DetailScreen () {
 								// Request Details workshop
 								<View style={[styles.infoContainer, { backgroundColor: uniColorMode.newdrkb1 }]}>
 									<View style={styles.bankId}>
-									<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: '/inspectUserProfile', additionals: {id: userDetails?.id}}} />
+										<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: '/inspectUserProfile', additionals: {id: userDetails?.id}}} />
 										{/* @ts-ignore */}
 										<InfoRow label="ID" value={`#${item?.id}`} valueColor={{ color: 'white', fontStyle: 'italic', }} line={{borderWidth: 1, gap: 0}} />
 									</View>
 									{/* <InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={toTitleCase(item?.user?.first_name||'')} valueColor={{ color: 'orange', textDecorationLine: 'underline' }} icon="person-outline" iconColor={{ color: 'slateblue' }} pressValue={{path: '/inspectUserProfile', additionals: {id: userDetails?.id}}} /> */}
 									<InfoRow label={`${item?.type==='fixed-part'?'Posted':'Requested'} by`} value={formatDate(item?.requested_at)} valueColor={{ color: 'lightsteelblue' }} icon="calendar-outline" iconColor={{ color: 'slateblue' }} />
+									{(item?.fault)&&
+										<>
+											<InfoRow label="Fault" value={toTitleCase(item?.fault?.title?.name||'')}
+											valueColor={{ color: 'lightsteelblue' }}
+											// valueColor={{ color: 'orange', textDecorationLine: 'underline' }}
+											icon="alert-circle-outline" iconColor={{ color: 'red' }}
+											// pressValue={{path: '/blueBlank', additionals: {id: assignedTo, faultID: item?.fault?.id, arrayData: parsedArrayString}}}
+											/>
+											<InfoRow label="Fault ID" value={`#${item?.fault?.id}`} valueColor={{ color: 'lightsteelblue' }} icon="barcode-outline" iconColor={{ color: 'red' }} />
+										</>}
 									<InfoRow label="Reason" value={item?.other} valueColor={{ color: 'lightsteelblue' }} icon="help-circle-outline" iconColor={{ color: 'white' }} />
 								</View>}
 							</View>
