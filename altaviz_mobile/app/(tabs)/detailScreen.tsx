@@ -248,6 +248,7 @@ export default function DetailScreen () {
 											{item?.requestComponent?.map?.((component: Record<string|number, any>, index: number) => {
 												const approved = component.approved
 												const rejected = component.rejected
+												console.log('detailScreen:', JSON.stringify(component, null, 4))
 												// console.log('detailScreen:', {approved}, {rejected})
 												return (
 													<View
@@ -255,7 +256,7 @@ export default function DetailScreen () {
 													style={[styles.requestRow]}>
 														<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
 														<Text style={styles.requestLabel}>{toTitleCase(component.name.name||'')}:</Text>
-														<Text style={styles.requestLabel}>#{component.id}</Text>
+														<Text style={styles.requestLabel}>{component.quantityRequested}</Text>
 													</View>
 												);
 											})}
@@ -275,7 +276,7 @@ export default function DetailScreen () {
 													style={[styles.requestRow]}>
 														<Ionicons name={approved?'checkmark':rejected?'close':'ellipsis-horizontal-circle-outline'} size={15} color={approved?'green':rejected?'red':'lightsteelblue'} />
 														<Text style={styles.requestLabel} numberOfLines={1} ellipsizeMode="tail">{toTitleCase(part.name.name||'')}:</Text>
-														<Text style={styles.requestLabel}>#{part.id}</Text>
+														<Text style={styles.requestLabel}>{part.quantityRequested}</Text>
 													</View>
 												);
 											})}
