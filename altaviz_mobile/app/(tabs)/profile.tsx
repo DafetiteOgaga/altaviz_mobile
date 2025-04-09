@@ -92,7 +92,8 @@ export default function UserProfile() {
 					<View style={styles.sectionContainer}>
 						<Text style={styles.sectionTitle}>About</Text>
 						{userData?.role==='custodian' &&
-						<View style={styles.infoItemContainer}>
+						<>
+						{/* style={styles.infoItemContainer}> */}
 							<View style={styles.infoItem}>
 								<Ionicons name="business-outline" size={20} color={uniColorMode.text} />
 								<Text style={styles.infoText}>{toTitleCase(userData?.branch?.bank?.name||'')}</Text>
@@ -101,31 +102,31 @@ export default function UserProfile() {
 								<Ionicons name="card-outline" size={20} color={uniColorMode.text} />
 								<Text style={styles.infoText}>{toTitleCase(userData?.branch?.name||'')}</Text>
 							</View>
-						</View>}
+						</>}
 						<View style={styles.infoItem}>
 							<Ionicons name="mail-outline" size={20} color={uniColorMode.text} />
 							<Text style={styles.infoText}>{userData?.email}</Text>
 						</View>
-						<View style={styles.infoItemContainer}>
-							<View style={styles.infoItem}>
-								<Ionicons name="call-outline" size={20} color={uniColorMode.text} />
-								<Text style={styles.infoText}>{PhoneNumberSeparator(userData?.phone||'')}</Text>
-							</View>
-							<View style={styles.infoItem}>
-								<Ionicons name="logo-whatsapp" size={20} color={uniColorMode.text} />
-								<Text style={styles.infoText}>{PhoneNumberSeparator(userData?.wphone||'')}</Text>
-							</View>
+						{/* <View style={styles.infoItemContainer}> */}
+						<View style={styles.infoItem}>
+							<Ionicons name="call-outline" size={20} color={uniColorMode.text} />
+							<Text style={styles.infoText}>{PhoneNumberSeparator(userData?.phone||'')}</Text>
 						</View>
-						<View style={styles.infoItemContainer}>
-							<View style={styles.infoItem}>
-								<Ionicons name="location-outline" size={20} color={uniColorMode.text} />
-								<Text style={styles.infoText}>{toTitleCase(userData?.region?.name||'')}</Text>
-							</View>
-							<View style={styles.infoItem}>
-								<Ionicons name="locate-outline" size={20} color={uniColorMode.text} />
-								<Text style={styles.infoText}>{toTitleCase(userData?.state?.name||'')}</Text>
-							</View>
+						<View style={styles.infoItem}>
+							<Ionicons name="logo-whatsapp" size={20} color={uniColorMode.text} />
+							<Text style={styles.infoText}>{PhoneNumberSeparator(userData?.wphone||'')}</Text>
 						</View>
+						{/* </View> */}
+						{/* <View style={styles.infoItemContainer}> */}
+						<View style={styles.infoItem}>
+							<Ionicons name="location-outline" size={20} color={uniColorMode.text} />
+							<Text style={styles.infoText}>{toTitleCase(userData?.region?.name||'')}</Text>
+						</View>
+						<View style={styles.infoItem}>
+							<Ionicons name="locate-outline" size={20} color={uniColorMode.text} />
+							<Text style={styles.infoText}>{toTitleCase(userData?.state?.name||'')}</Text>
+						</View>
+						{/* </View> */}
 						<View style={styles.infoItem}>
 							<Ionicons name="location-outline" size={20} color={uniColorMode.text} />
 							<Text style={styles.infoText}>{toTitleCase((userData?.role==='custodian')?userData?.branch?.location?.location:userData?.location?.location||'')}</Text>
