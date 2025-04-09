@@ -248,7 +248,7 @@ export default function DetailScreen () {
 											{item?.requestComponent?.map?.((component: Record<string|number, any>, index: number) => {
 												const approved = component.approved
 												const rejected = component.rejected
-												console.log('detailScreen:', JSON.stringify(component, null, 4))
+												// console.log('detailScreen:', JSON.stringify(component, null, 4))
 												// console.log('detailScreen:', {approved}, {rejected})
 												return (
 													<View
