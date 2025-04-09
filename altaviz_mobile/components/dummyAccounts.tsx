@@ -33,12 +33,12 @@ const DummyAccountsModal = ({ visible, onClose, onUpdate, newVersion }: any) => 
 					>
 						<Text style={styles.title}>Dummy Accounts</Text>
 						<Text style={[styles.text1, {color: 'red', fontStyle: 'italic', fontSize: 15}]}>These accounts are for test purposes and will be remove when the app is in use.</Text>
-						<View style={{ flexDirection: "row", gap: 5, justifyContent: "space-between" }}>
+						<View style={{ flexDirection: "row", gap: 5, justifyContent: "space-around",  }}>
 							<Text style={styles.text}><Text style={{fontWeight: 'bold'}}>Password:</Text> <Text style={{color: 'gold'}}>password123</Text></Text>
 							<TouchableOpacity onPress={() => {
 								copyToClipboard('password123');
 							}}>
-								<Ionicons name="copy-outline" size={15} color="#fff" />
+								<Ionicons name="copy-outline" size={16} color="#fff" />
 							</TouchableOpacity>
 						</View>
 					</View>
@@ -59,15 +59,17 @@ const DummyAccountsModal = ({ visible, onClose, onUpdate, newVersion }: any) => 
 												(item.role==='help-desk')?'darkgoldenrod':
 												'magenta'}
 									return (
-										<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-											<Text style={styles.text}>{toTitleCase(item.email)}</Text>
-											<Text style={[styles.text, colorText]}>{toTitleCase(item.role)}</Text>
-											<TouchableOpacity onPress={() => {
-												copyToClipboard(item.email);
-												onClose();
-											}}>
-												<Ionicons name="copy-outline" size={20} color="#fff" />
-											</TouchableOpacity>
+										<View style={{ flexDirection: "row", justifyContent: "center", paddingHorizontal: 10, gap: 5, flexWrap: "wrap", alignItems: "baseline" }}>
+											<Text style={styles.text}>{toTitleCase(item.email)}:</Text>
+											<View style={{ flexDirection: "row", gap: 5, alignItems: "stretch" }}>
+												<Text style={[styles.text, colorText]}>{toTitleCase(item.role)}</Text>
+												<TouchableOpacity onPress={() => {
+													copyToClipboard(item.email);
+													onClose();
+												}}>
+													<Ionicons name="copy-outline" size={20} color="#fff" />
+												</TouchableOpacity>
+											</View>
 										</View>
 								)}}
 								keyExtractor={(item) => item.id.toString()}
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	modalContainer: {
-		width: "80%",
+		width: "85%",
 		// backgroundColor: "#fff", // White background
 		borderRadius: 10,
 		padding: 20,
