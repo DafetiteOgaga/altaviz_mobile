@@ -18,10 +18,8 @@ export default function PendingFaults() {
 	const userDetails = useGetDataFromStorage('headerDetails')
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 	const uniColorMode = useColorMode();
-	const [isNavigating, setIsNavigating] = useState<boolean>(false);
-	const [modalItemVisible, setModalItemVisible] = useState<any>(false);
 	const {getData, isGetError, isGetLoading, GetSetup} = useGet();
-	
+	const [showWaiting, setShowWaiting] = useState(false);
 	const {url, label, mode, variant} = useLocalSearchParams();
 	// console.log(
 	// 	'\nin pendingFaults #######:',
@@ -51,56 +49,48 @@ export default function PendingFaults() {
 	// useEffect(()=>setHeaderTitle(String(label)), [isGetLoading, url, label, variant])
 	const role = userDetails?.role
 	// console.log('in pendingFaults', {role})
-	const acountUpdate = (role==='human-resource'&&label==='Account Update Requests')||null
+	const accountUpdate = (role==='human-resource'&&label==='Account Update Requests')||null
 	// console.log('in pendingFaults', {role})
 	const HRExceptuion = String(url)?.split?.('-')?.[3]?.split?.('/')?.[0]
 	const supervisor_HelpDesk_HR = role==='help-desk'||role==='supervisor'||(role==='human-resource'&&mode==='fault'&&!HRExceptuion)
 	// console.log('pendingFaults (first item):', JSON.stringify(getData?.[0], null, 4))
 	const allHRRequests = String(url)?.split?.('/')[0] === 'all-request-only'
 	const navigationHandler = (item:any, user:any) => {
-		if (isNavigating) return
-		setTimeout(() => setIsNavigating(true), 10);
-		// setIsNavigating(true)
-		try {
-			router.push({
-				pathname: acountUpdate?'/userChangeRequest':supervisor_HelpDesk_HR?'/engineersFaults':'/detailScreen',
-				params: {
-				data: JSON.stringify(item),
-				arrayData: JSON.stringify(getData),
-				type: name,
-				variant: variant,
-				user: user,
-				label: String(label),
-			}})
-			setTimeout(() => setIsNavigating(false), 1000);
-		} catch (error) {
-			console.log('error:', error)
-		}
+		setShowWaiting(true);
+		const clicked = setTimeout(() => {
+				router.push({
+					pathname: accountUpdate?'/userChangeRequest':supervisor_HelpDesk_HR?'/engineersFaults':'/detailScreen',
+					params: {
+						data: JSON.stringify(item),
+						arrayData: JSON.stringify(getData),
+						type: name,
+						variant: variant,
+						user: user,
+						label: String(label),
+					}
+				})
+				setShowWaiting(false);
+		}, 100);
+		return () => {clearTimeout(clicked)}
 	}
 	return (
 		<>
 			{(!isGetLoading&&getData)?
 				(<>
-					{isNavigating && (
-						<Modal visible={isNavigating} animationType="fade" transparent>
-							<View style={styles.overlay}>
-								<ActivityIndicator size="large" color={uniColorMode.buttonSpin} />
-							</View>
-						</Modal>
-					)}
+					{showWaiting && <Waiting />}
 
 					<View style={[ScreenStyle.allScreenContainer, styles.listContainer]}>
 						<FlatList
 						data={getData}
 						keyExtractor={(item: Record<string, any>) => item.id.toString()}
 						renderItem={({ item }) => {
-							const user = acountUpdate?userDetails?.id:item?.first_name
+							const user = accountUpdate?userDetails?.id:item?.first_name
 							// console.log('pendingFaults:', {user})
 							return (
 								<TouchableOpacity
 								activeOpacity={0.8}
 								onPress={()=>{navigationHandler(item, user)}}
-								>{acountUpdate?
+								>{accountUpdate?
 									<DetailsRequestCardView mode={String(mode)} icon={getIcon!} color={color!} item={item} role={role} label={String(label)}/>
 									:
 									supervisor_HelpDesk_HR?
@@ -126,6 +116,17 @@ export default function PendingFaults() {
 				<ActivityIndicator style={styles.loading} size="large" color={uniColorMode.buttonSpin} />
 			}
 		</>
+	)
+}
+
+function Waiting () {
+	const uniColorMode = useColorMode();
+	return (
+		<Modal visible={true} animationType="fade" transparent>
+			<View style={styles.overlay}>
+				<ActivityIndicator size="large" color={uniColorMode.buttonSpin} />
+			</View>
+		</Modal>
 	)
 }
 
